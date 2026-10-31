@@ -28,6 +28,7 @@
       "electron/**/*"
     ],
     "win": {
+      "icon": "electron/assets/icon.png",
       "target": [
         "nsis"
       ]
@@ -44,7 +45,26 @@
         "dmg",
         "zip"
       ],
-      "category": "public.app-category.navigation"
+      "icon": "electron/assets/icon.icns",
+      "category": "public.app-category.navigation",
+      "identity": null,
+      "hardenedRuntime": false
+    },
+    "dmg": {
+      "title": "RailScope",
+      "icon": "electron/assets/icon.icns",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     }
   },
   "dependencies": {
