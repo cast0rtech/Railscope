@@ -84,8 +84,8 @@ manager = ConnectionManager()
 # ==============================================================================
 class TelemetryPoint(BaseModel):
     train_id: str = Field(..., max_length=50, description="Identificador único del tren")
-    operator: str = Field(..., max_length=50, description="Operador ferroviario (p.ej. Renfe, SBB, DB)")
-    country: str = Field(..., min_length=2, max_length=2, description="Código ISO de país (p.ej. ES, CH, DE)")
+    operator: str = Field(..., max_length=50, description="Operador ferroviario (p.ej. Renfe, SBB, DB, Shinkansen)")
+    country: str = Field(..., min_length=2, max_length=10, description="Código ISO de país o región (p.ej. ES, DE, JP, CN, FR/DE)")
     lat: float = Field(..., ge=-90.0, le=90.0, description="Latitud GPS")
     lon: float = Field(..., ge=-180.0, le=180.0, description="Longitud GPS")
     is_realtime: bool = Field(default=True, description="Indicador de posición satelital en tiempo real")

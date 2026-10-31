@@ -111,6 +111,27 @@ GRID_ZONES: List[Dict[str, Any]] = [
         "client": hafas_clients["DB"],
         "bbox": (51.05, 6.85, 50.85, 7.15),
     },
+    {
+        "id": "DE_HAMBURG",
+        "operator": "DB",
+        "country": "DE",
+        "client": hafas_clients["DB"],
+        "bbox": (53.65, 9.90, 53.45, 10.15),
+    },
+    {
+        "id": "DE_STUTTGART",
+        "operator": "DB",
+        "country": "DE",
+        "client": hafas_clients["DB"],
+        "bbox": (48.85, 9.10, 48.70, 9.30),
+    },
+    {
+        "id": "DE_NUREMBERG",
+        "operator": "DB",
+        "country": "DE",
+        "client": hafas_clients["DB"],
+        "bbox": (49.50, 11.00, 49.40, 11.15),
+    },
     # Austria (ÖBB)
     {
         "id": "AT_VIENNA",
@@ -132,6 +153,20 @@ GRID_ZONES: List[Dict[str, Any]] = [
         "country": "AT",
         "client": hafas_clients["OEBB"],
         "bbox": (47.35, 11.30, 47.20, 11.50),
+    },
+    {
+        "id": "AT_LINZ",
+        "operator": "OEBB",
+        "country": "AT",
+        "client": hafas_clients["OEBB"],
+        "bbox": (48.35, 14.20, 48.25, 14.35),
+    },
+    {
+        "id": "AT_GRAZ",
+        "operator": "OEBB",
+        "country": "AT",
+        "client": hafas_clients["OEBB"],
+        "bbox": (47.10, 15.35, 47.00, 15.48),
     },
 ]
 

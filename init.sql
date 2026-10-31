@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS train_telemetry (
     time TIMESTAMPTZ NOT NULL,
     train_id VARCHAR(50) NOT NULL,
     operator VARCHAR(50) NOT NULL,
-    country VARCHAR(2) NOT NULL,
+    country VARCHAR(10) NOT NULL,
     lat DOUBLE PRECISION NOT NULL,
     lon DOUBLE PRECISION NOT NULL,
     is_realtime BOOLEAN NOT NULL DEFAULT TRUE,

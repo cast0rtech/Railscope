@@ -1,4 +1,4 @@
-# 🚄 RailScope EU — Real-Time European Rail Telemetry Platform
+# 🚄 RailScope Global — Real-Time Rail Telemetry Platform (Europe & Asia)
 
 <div align="center">
 
@@ -10,7 +10,7 @@
 [![TimescaleDB](https://img.shields.io/badge/TimescaleDB-PostgreSQL_15-FDB515?logo=postgresql&logoColor=white)](https://www.timescale.com/)
 [![Docker Compose](https://img.shields.io/badge/Docker-Compose_v3.8-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-**Real-time tracking, spatiotemporal indexing, and live visualization of high-speed passenger rail traffic across Europe.**
+**Rastreo en tiempo real, indexación espacio-temporal y visualización en vivo del tráfico ferroviario y de alta velocidad en Europa y Asia.**
 
 [🌐 Ver Aplicación en Vivo (Live Demo)](https://cast0rtech.github.io/Railscope/) • [📖 Arquitectura](#arquitectura-del-sistema) • [🚀 Despliegue Rápido](#guía-de-despliegue-rápido) • [📡 Endpoints API](#referencia-de-la-api--websockets)
 
@@ -20,22 +20,22 @@
 
 ## 📌 Descripción del Proyecto
 
-**RailScope EU** es una plataforma telemática distribuida de alto rendimiento diseñada para la ingesta, indexación espacio-temporal y visualización en tiempo real del tráfico ferroviario europeo. 
+**RailScope Global** es una plataforma telemática distribuida de alto rendimiento diseñada para la ingesta, indexación espacio-temporal y visualización en tiempo real del tráfico ferroviario y corredores de alta velocidad en **Europa** y **Asia**.
 
-Monitorea simultáneamente los corredores de alta velocidad de los operadores nacionales estatales y de las nuevas compañías privadas surgidas tras la liberalización ferroviaria en España, Francia, Italia, Alemania, Suiza y Austria.
+Monitorea simultáneamente los corredores de alta velocidad de operadores nacionales y compañías privadas en España, Francia, Italia, Alemania, Suiza, Austria, Reino Unido, Países Bajos, Bélgica, Suecia, Polonia, Portugal, así como las redes líderes de Asia en Japón (Shinkansen), China (CR / Fuxing), Corea del Sur (KTX / SRT), Taiwán (THSR), India (Vande Bharat), Uzbekistán (Afrosiyob), Turquía (YHT), Arabia Saudí (Haramain) e Indonesia (Whoosh).
 
 ---
 
 ## ⚡ Características Principales
 
-* **Cobertura Ferroviaria Multiórgano:** Rastreo en vivo de flotas estatales y operadoras privadas liberalizadas.
+* **Cobertura Ferroviaria Multicontinental (Europa & Asia):** Rastreo en vivo de flotas estatales y operadoras privadas liberalizadas con filtrado por continente y país.
 * **Ingesta Concurrente con Semáforo:** Worker asíncrono con clientes HAFAS y barrido geográfico por cuadrículas (*Bounding Boxes*) limitado a 2 conexiones simultáneas para prevenir bloqueos de IP.
 * **Persistencia Espacio-Temporal en TimescaleDB:** 
-  * Tabla `train_telemetry` convertida en **Hypertable** particionada por tiempo.
-  * Índices compuestos optimizados para búsquedas geoespaciales por cuadrante (`lat`, `lon`, `time DESC`).
+  * Tabla `train_telemetry` convertida en **Hypertable** particionada por tiempo con índices compuestos geoespaciales (`lat`, `lon`, `time DESC`).
   * Downsampling continuo cada 15 minutos (*Continuous Aggregate*) y política de retención estricta de 7 días.
 * **Retransmisión Ultrarrápida por WebSockets:** Servidor FastAPI con `ConnectionManager` nativo y difusión masiva paralela tras cada lote de coordenadas.
-* **Mapa Interactivo de Alto Rendimiento:** Frontend React + Vite con Leaflet y agrupación dinámica de marcadores (`react-leaflet-cluster`) que disuelve o agrupa miles de convoyes según el nivel de zoom.
+* **Mapa Interactivo de Alto Rendimiento:** Frontend React + Vite con Leaflet y agrupación dinámica de marcadores (`react-leaflet-cluster`) con controles de navegación continentales y encuadre fluido (*flyTo*).
+* **Compilación Móvil Nativa (Android APK):** Soporte móvil con Capacitor 6 y configuración optimizada para red local (`usesCleartextTraffic`).
 * **Seguridad de Nivel Producción:**
   * Contenedores Docker optimizados para ejecución con usuarios no privilegiados (*non-root*).
   * Política de Seguridad de Contenido (*Content Security Policy - CSP*) estricta.
@@ -47,20 +47,40 @@ Monitorea simultáneamente los corredores de alta velocidad de los operadores na
 
 ## 🚅 Operadores Ferroviarios Soportados
 
+### 🇪🇺 Europa
 | País / Región | Operador | Tipo | Modelo de Tren / Material Rodante | Velocidad Máx. | Corredores Clave |
 | :--- | :--- | :---: | :--- | :---: | :--- |
 | **España** 🇪🇸 | **iryo** (ILSA) | **Privado** | Frecciarossa 1000 (ETR 1000) | 300 km/h | Madrid - Zaragoza - Barcelona, Madrid - Valencia, Madrid - Sevilla/Málaga |
 | **España** 🇪🇸 | **Ouigo España** | **Privado** | Alstom Euroduplex (2 pisos) | 300 km/h | Madrid Chamartín - Barcelona, Madrid - Valencia, Valladolid/Segovia |
-| **España** 🇪🇸 | **Renfe AVE / Avlo** | **Estatal** | Talgo S-106 Avril / S-103 | 310 km/h | Eje Troncal Madrid - Cataluña, Andalucía, Levante y Norte |
+| **España** 🇪🇸 | **Renfe AVE / Avlo** | **Estatal** | Talgo S-106 Avril / S-103 | 310 km/h | Eje Troncal Madrid - Cataluña, Andalucía, Levante, Galicia y Norte |
 | **Italia** 🇮🇹 | **Italo** (NTV) | **Privado** | Alstom AGV 575 / Italo EVO | 300 km/h | Turín - Milán - Bolonia - Florencia - Roma - Nápoles - Salerno; Venecia |
-| **Italia** 🇮🇹 | **Trenitalia FS** | **Estatal** | Frecciarossa 1000 / ETR 500 | 300 km/h | Eje Norte-Sur Milán - Roma - Nápoles, Corredor Véneto |
+| **Italia** 🇮🇹 | **Trenitalia FS** | **Estatal** | Frecciarossa 1000 / ETR 500 | 300 km/h | Eje Norte-Sur Milán - Roma - Nápoles, Corredor Véneto, Calabria |
 | **Alemania** 🇩🇪 | **FlixTrain** | **Privado** | Vectron Express | 200 km/h | Berlín - Frankfurt - Stuttgart, Hamburgo - Colonia, Múnich |
 | **Alemania** 🇩🇪 | **Deutsche Bahn (DB)** | **Estatal** | ICE 3 / ICE 4 / ICE Neo | 300 km/h | Múnich - Núremberg - Berlín, Frankfurt - Colonia, Hamburgo |
-| **Francia** 🇫🇷 | **Eurostar** | **Privado/Int.** | Siemens Velaro e320 / PBKA | 300 km/h | París - Bruselas - Colonia - Düsseldorf - Ámsterdam |
-| **Francia** 🇫🇷 | **SNCF TGV inOui** | **Estatal** | TGV Duplex / TGV M | 320 km/h | París - Lyon - Marsella/Niza, París - Burdeos |
+| **Francia** 🇫🇷 | **Eurostar** | **Privado/Int.** | Siemens Velaro e320 / PBKA | 300 km/h | París - Bruselas - Colonia - Düsseldorf - Ámsterdam; Londres |
+| **Francia** 🇫🇷 | **SNCF TGV inOui** | **Estatal** | TGV Duplex / TGV M | 320 km/h | París - Lyon - Marsella/Niza, París - Burdeos, París - Lille |
 | **Austria / Alemania** 🇦🇹🇩🇪 | **Westbahn** | **Privado** | Stadler KISS 200 | 200 km/h | Viena Westbahnhof - Salzburgo - Múnich Hbf |
 | **Austria** 🇦🇹 | **ÖBB Railjet** | **Estatal** | Siemens Viaggio / Nightjet | 230 km/h | Viena - Linz - Salzburgo - Innsbruck, Graz |
-| **Suiza** 🇨🇭 | **SBB CFF FFS** | **Estatal** | Stadler Giruno / Twindexx | 250 km/h | Zúrich - Basilea - Ginebra, Túnel de Base de San Gotardo hacia Italia |
+| **Suiza** 🇨🇭 | **SBB CFF FFS** | **Estatal** | Stadler Giruno / Twindexx | 250 km/h | Zúrich - Basilea - Ginebra, Túnel de Base de San Gotardo |
+| **Reino Unido** 🇬🇧 | **LNER / Avanti** | **Franquicia** | Hitachi Azuma / Class 390 Pendolino | 200 km/h | Londres King's Cross - Edimburgo; Londres Euston - Mánchester |
+| **Países Bajos** 🇳🇱 | **NS** | **Estatal** | ICNG (Alstom Coradia Stream) | 200 km/h | Ámsterdam Centraal - Róterdam - Breda |
+| **Bélgica** 🇧🇪 | **SNCB / NMBS** | **Estatal** | Siemens HLE 18 / M7 | 200 km/h | Bruselas-Midi - Amberes - Lieja |
+| **Suecia** 🇸🇪 | **SJ** | **Estatal** | X2000 / SJ 3000 | 205 km/h | Estocolmo Central - Gotemburgo - Malmö |
+| **Polonia** 🇵🇱 | **PKP Intercity** | **Estatal** | ED250 Pendolino | 200 km/h | Varsovia Central - Cracovia - Gdansk |
+| **Portugal** 🇵🇹 | **CP** | **Estatal** | Alfa Pendular (CPA 4000) | 220 km/h | Lisboa Santa Apolónia - Oporto Campanhã |
+
+### 🌏 Asia
+| País / Región | Operador | Tipo | Modelo de Tren / Material Rodante | Velocidad Máx. | Corredores Clave |
+| :--- | :--- | :---: | :--- | :---: | :--- |
+| **Japón** 🇯🇵 | **JR Shinkansen** | **Concesión** | Shinkansen N700S / E5 Hayabusa | 320 km/h | Tokaido/Sanyo (Tokio - Shin-Osaka - Hakata); Tohoku (Tokio - Shin-Aomori) |
+| **China** 🇨🇳 | **China Railway (CR)** | **Estatal** | CR400AF/BF Fuxing Hao / CRH380 | 350 km/h | Pekín - Shanghái (HSR); Pekín - Cantón; Cantón - Shenzhen - Hong Kong |
+| **Corea del Sur** 🇰🇷 | **Korail KTX / SRT** | **Estatal/Priv.** | KTX-Sancheon / SR Class 130000 | 305 km/h | Seúl / Suseo - Daejeon - Daegu - Busan (Gyeongbu) y Honam |
+| **Taiwán** 🇹🇼 | **THSR** | **Privado** | THSR 700T Series | 300 km/h | Taipéi Main Station - Taichung - Kaohsiung Zuoying |
+| **India** 🇮🇳 | **Indian Railways** | **Estatal** | Vande Bharat Express (Train 18) | 160 km/h | Nueva Delhi - Varanasi; Mumbai Central - Gandhinagar Capital |
+| **Uzbekistán** 🇺🇿 | **Afrosiyob (UTY)** | **Estatal** | Talgo 250 Afrosiyob | 250 km/h | Taskent - Samarcanda - Bujará |
+| **Turquía** 🇹🇷 | **TCDD Taşımacılık** | **Estatal** | YHT HT65000 / Siemens Velaro TR | 300 km/h | Ankara - Estambul Söğütlüçeşme; Ankara - Konya |
+| **Arabia Saudí** 🇸🇦 | **Haramain (SAR)** | **Estatal** | Talgo 350 SRO | 300 km/h | La Meca - Yeda (Aeropuerto) - Medina |
+| **Indonesia** 🇮🇩 | **Whoosh (KCIC)** | **Consorcio** | KCIC400AF Red Panda | 350 km/h | Yakarta Halim - Karawang - Bandung Tegalluar (350 km/h) |
 
 ---
 

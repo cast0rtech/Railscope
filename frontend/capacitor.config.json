@@ -1,0 +1,9 @@
+{
+  "appId": "eu.railscope.app",
+  "appName": "RailScope",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
+
