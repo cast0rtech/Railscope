@@ -18,7 +18,8 @@ const OPERATOR_CONFIG = {
   WESTBAHN: { name: 'Westbahn', color: '#00B5B8', country: 'AT/DE', continent: 'EU', type: 'Privado', model: 'Stadler KISS 200' },
 
   // --- EUROPA: Estatales ---
-  RENFE: { name: 'Renfe AVE/Avlo', color: '#7B2082', country: 'ES', continent: 'EU', type: 'Estatal', model: 'S-106 Avril / S-103' },
+  RENFE: { name: 'Renfe AVE / Avlo / Alvia / Avant', color: '#7B2082', country: 'ES', continent: 'EU', type: 'Estatal', model: 'S-106 Avril / S-130 Alvia / S-104' },
+  RENFE_CERCANIAS: { name: 'Renfe Cercanías / Rodalies', color: '#E3001B', country: 'ES', continent: 'EU', type: 'Cercanías', model: 'Civia Serie 465 / 447' },
   SNCF: { name: 'SNCF TGV inOui', color: '#0088CE', country: 'FR', continent: 'EU', type: 'Estatal', model: 'TGV Duplex / M' },
   DB: { name: 'Deutsche Bahn ICE', color: '#E2001A', country: 'DE', continent: 'EU', type: 'Estatal', model: 'ICE 3 / ICE 4 / Neo' },
   FS: { name: 'Trenitalia FS', color: '#00875A', country: 'IT', continent: 'EU', type: 'Estatal', model: 'Frecciarossa 1000' },
@@ -153,7 +154,7 @@ const createUserLocationIcon = () => {
 const HIGH_SPEED_CORRIDORS = [
   // --- EUROPA: ESPAÑA ---
   {
-    train_id: 'IRYO-6014', operator: 'IRYO', country: 'ES', continent: 'EU',
+    train_id: 'IRYO-6014', train_name: 'iryo 6014', operator: 'IRYO', country: 'ES', continent: 'EU',
     origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', speed: 295,
     line_name: 'LAV Madrid - Zaragoza - Barcelona (Línea 050 Adif)',
     waypoints: [
@@ -194,7 +195,7 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'OUIGO-9710', operator: 'OUIGO', country: 'ES', continent: 'EU',
+    train_id: 'OUIGO-9710', train_name: 'Ouigo 9710', operator: 'OUIGO', country: 'ES', continent: 'EU',
     origin: 'Madrid Chamartín', dest: 'Barcelona Sants', speed: 300,
     line_name: 'LAV Madrid - Barcelona (Línea 050 Adif)',
     waypoints: [
@@ -227,7 +228,7 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'RENFE-AVE-2143', operator: 'RENFE', country: 'ES', continent: 'EU',
+    train_id: 'RENFE-AVE-2143', train_name: 'AVE 2143', operator: 'RENFE', country: 'ES', continent: 'EU',
     origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', speed: 305,
     line_name: 'LAV Madrid - Barcelona (Línea 050 Adif)',
     waypoints: [
@@ -236,7 +237,7 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'RENFE-AVLO-2151', operator: 'RENFE', country: 'ES', continent: 'EU',
+    train_id: 'RENFE-AVLO-2151', train_name: 'Avlo 2151', operator: 'RENFE', country: 'ES', continent: 'EU',
     origin: 'Madrid Chamartín', dest: 'Valencia J.Sorolla', speed: 295,
     line_name: 'LAV Madrid - Levante (Línea 040 Adif)',
     waypoints: [
@@ -244,7 +245,7 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'RENFE-AVE-3102', operator: 'RENFE', country: 'ES', continent: 'EU',
+    train_id: 'RENFE-AVE-3102', train_name: 'AVE 3102', operator: 'RENFE', country: 'ES', continent: 'EU',
     origin: 'Madrid P.Atocha', dest: 'Sevilla S.Justa', speed: 285,
     line_name: 'LAV Madrid - Sevilla (Línea 010 Adif)',
     waypoints: [
@@ -252,11 +253,146 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'RENFE-AVE-4210', operator: 'RENFE', country: 'ES', continent: 'EU',
+    train_id: 'RENFE-AVE-4210', train_name: 'AVE 4210', operator: 'RENFE', country: 'ES', continent: 'EU',
     origin: 'Madrid Chamartín', dest: 'Ourense', speed: 290,
     line_name: 'LAV Madrid - Galicia (Línea 082 Adif)',
     waypoints: [
       [40.4720, -3.6826], [40.9100, -4.1100], [41.3000, -4.9100], [41.5136, -5.7419], [42.0000, -6.6000], [42.3480, -7.8640]
+    ]
+  },
+  {
+    train_id: 'RENFE-ALVIA-04143', train_name: 'Alvia 04143', service: 'Alvia', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Santander', speed: 250,
+    model: 'Talgo S-130 / S-730 Alvia',
+    line_name: 'LAV Madrid - Segovia - Valladolid - Palencia - Santander',
+    waypoints: [
+      [40.4720, -3.6826], [40.9100, -4.1100], [41.6420, -4.7280], [41.9214, -4.4922],
+      [42.0167, -4.5333], [42.2667, -4.4056], [42.4111, -4.3639], [42.5936, -4.3300],
+      [42.7933, -4.2600], [42.8761, -4.1561], [42.9986, -4.1378], [43.1558, -4.0583],
+      [43.2625, -4.0628], [43.3458, -4.0536], [43.4594, -3.8122]
+    ]
+  },
+  {
+    train_id: 'RENFE-ALVIA-04140', train_name: 'Alvia 04140', service: 'Alvia', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Santander', dest: 'Madrid Chamartín', speed: 250,
+    model: 'Talgo S-130 / S-730 Alvia',
+    line_name: 'LAV Santander - Palencia - Valladolid - Segovia - Madrid',
+    waypoints: [
+      [43.4594, -3.8122], [43.3458, -4.0536], [43.2625, -4.0628], [43.1558, -4.0583],
+      [42.9986, -4.1378], [42.8761, -4.1561], [42.7933, -4.2600], [42.5936, -4.3300],
+      [42.4111, -4.3639], [42.2667, -4.4056], [42.0167, -4.5333], [41.9214, -4.4922],
+      [41.6420, -4.7280], [40.9100, -4.1100], [40.4720, -3.6826]
+    ]
+  },
+  {
+    train_id: 'RENFE-ALVIA-04181', train_name: 'Alvia 04181', service: 'Alvia', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Gijón', speed: 250,
+    model: 'Talgo S-130 Alvia',
+    line_name: 'LAV Madrid - León - Variante de Pajares - Oviedo - Gijón',
+    waypoints: [
+      [40.4720, -3.6826], [40.9100, -4.1100], [41.6420, -4.7280], [42.0167, -4.5333],
+      [42.5987, -5.5667], [42.8025, -5.6289], [43.1611, -5.8281], [43.3667, -5.8500], [43.5357, -5.6615]
+    ]
+  },
+  {
+    train_id: 'RENFE-ALVIA-02184', train_name: 'Alvia 02184', service: 'Alvia', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid P.Atocha', dest: 'Cádiz', speed: 250,
+    model: 'Talgo S-130 Alvia',
+    line_name: 'LAV Madrid - Córdoba - Sevilla - Cádiz',
+    waypoints: [
+      [40.4065, -3.6896], [38.9892, -3.9189], [37.8882, -4.7892], [37.3920, -5.9753],
+      [36.7000, -6.1333], [36.5298, -6.2926]
+    ]
+  },
+  // --- MEDIA DISTANCIA & REGIONAL ---
+  {
+    train_id: 'RENFE-AVANT-08122', train_name: 'Avant 08122', service: 'Avant', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid P.Atocha', dest: 'Toledo', speed: 250,
+    model: 'Renfe Serie 104 Avant',
+    line_name: 'LAV Madrid - Toledo (Media Distancia Alta Velocidad)',
+    waypoints: [
+      [40.4065, -3.6896], [40.2372, -3.7667], [40.0300, -3.8800], [39.8628, -4.0189]
+    ]
+  },
+  {
+    train_id: 'RENFE-REG-18012', train_name: 'Regional Exprés 18012', service: 'Regional Exprés', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Ávila', speed: 160,
+    model: 'Renfe Serie 449 Media Distancia',
+    line_name: 'Línea Madrid Chamartín - El Escorial - Ávila',
+    waypoints: [
+      [40.4720, -3.6826], [40.6300, -4.0000], [40.5833, -4.1250], [40.6000, -4.3300], [40.6583, -4.6861]
+    ]
+  },
+  {
+    train_id: 'RENFE-EUROMED-01131', train_name: 'Euromed 01131', service: 'Euromed', service_category: 'LARGA_MEDIA', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Barcelona Sants', dest: 'Alicante Terminal', speed: 220,
+    model: 'Talgo S-130 Euromed',
+    line_name: 'Corredor Mediterráneo: Barcelona - Valencia - Alicante',
+    waypoints: [
+      [41.3792, 2.1401], [41.1928, 1.2544], [39.9864, -0.0514], [39.4667, -0.3774], [38.3444, -0.4950]
+    ]
+  },
+  // --- CERCANÍAS Y SUBURBANO (COMMUTER) ---
+  {
+    train_id: 'RENFE-CER-C4-1', train_name: 'Cercanías C-4 (Parla - Alcobendas)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Parla', dest: 'Alcobendas - S.S. Reyes', speed: 120,
+    model: 'Civia Serie 465 Cercanías',
+    line_name: 'Línea C-4 Cercanías Madrid (Túnel Sol)',
+    waypoints: [
+      [40.2372, -3.7667], [40.2917, -3.7389], [40.3061, -3.7297], [40.3408, -3.7125],
+      [40.4050, -3.6883], [40.4168, -3.7038], [40.4461, -3.6917], [40.4720, -3.6826],
+      [40.5403, -3.6931], [40.5475, -3.6358]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-C5-1', train_name: 'Cercanías C-5 (Móstoles - Humanes)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Móstoles El Soto', dest: 'Humanes', speed: 110,
+    model: 'Renfe Serie 446 Cercanías',
+    line_name: 'Línea C-5 Cercanías Madrid',
+    waypoints: [
+      [40.3236, -3.8864], [40.3497, -3.8294], [40.3756, -3.7858], [40.4050, -3.6883],
+      [40.3958, -3.6781], [40.3408, -3.7125], [40.2828, -3.7942], [40.2522, -3.8317]
+    ]
+  },
+  {
+    train_id: 'RENFE-ROD-R1-1', train_name: 'Rodalies R1 (Molins de Rei - Mataró)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Molins de Rei', dest: 'Mataró', speed: 110,
+    model: 'Civia Serie 465 Rodalies',
+    line_name: 'Línea R1 Rodalies Barcelona (Litoral)',
+    waypoints: [
+      [41.4117, 2.0208], [41.3600, 2.1000], [41.3792, 2.1401], [41.3870, 2.1700],
+      [41.3917, 2.1817], [41.4083, 2.1883], [41.4481, 2.2472], [41.4681, 2.2817],
+      [41.4883, 2.3600], [41.5333, 2.4450]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-VLC-1', train_name: 'Cercanías C-1 (Valencia Nord - Gandía)', service: 'Cercanías Valencia', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Valencia Nord', dest: 'Gandía', speed: 120,
+    model: 'Civia Serie 464 Cercanías',
+    line_name: 'Línea C-1 Cercanías Valencia',
+    waypoints: [
+      [39.4670, -0.3770], [39.4230, -0.3950], [39.4030, -0.4040], [39.3620, -0.4140],
+      [39.2020, -0.3110], [39.1620, -0.2610], [39.0720, -0.2450], [39.0350, -0.2220], [38.9680, -0.1810]
+    ]
+  },
+  {
+    train_id: 'SBB-SBAHN-S12', train_name: 'S-Bahn S12 (Zürich)', service: 'S-Bahn Zürich', service_category: 'CERCANIAS', operator: 'SBB', country: 'CH', continent: 'EU',
+    origin: 'Brugg AG', dest: 'Winterthur', speed: 125,
+    model: 'Stadler Regio-Dosto S-Bahn',
+    line_name: 'S-Bahn Zürich Linie S12',
+    waypoints: [
+      [47.4833, 8.2167], [47.4736, 8.3075], [47.4083, 8.4417], [47.3782, 8.5402],
+      [47.3917, 8.5833], [47.4986, 8.7236]
+    ]
+  },
+  {
+    train_id: 'DB-SBAHN-S1', train_name: 'S-Bahn S1 (München)', service: 'S-Bahn München', service_category: 'CERCANIAS', operator: 'DB', country: 'DE', continent: 'EU',
+    origin: 'München Hbf', dest: 'München Flughafen', speed: 130,
+    model: 'DB Baureihe 423 S-Bahn',
+    line_name: 'S-Bahn München Linie S1 (Flughafenlinie)',
+    waypoints: [
+      [48.1402, 11.5583], [48.1600, 11.5300], [48.2100, 11.5200], [48.3000, 11.6000],
+      [48.3538, 11.7861]
     ]
   },
 
@@ -627,6 +763,12 @@ const calculateRealTimePosition = (corridor, currentTimeMs) => {
 
   return {
     train_id: corridor.train_id,
+    train_name: corridor.train_name || corridor.train_id,
+    service: corridor.service,
+    service_category: corridor.service_category,
+    model: corridor.model,
+    origin: corridor.origin,
+    dest: corridor.dest,
     operator: corridor.operator,
     country: corridor.country,
     continent: corridor.continent,
@@ -644,6 +786,52 @@ const calculateRealTimePosition = (corridor, currentTimeMs) => {
     last_station_name: stationStatus,
     time: new Date(currentTimeMs).toISOString(),
   };
+};
+
+// ==============================================================================
+// Categorías Ferroviarias: Alta Velocidad, Larga y Media Distancia, Cercanías
+// ==============================================================================
+const SERVICE_CATEGORY_META = {
+  ALL: { label: 'Todos', icon: '🌐', color: '#3B82F6', badgeBg: '#EFF6FF', badgeText: '#1D4ED8' },
+  ALTA_VELOCIDAD: { label: 'Alta Velocidad', icon: '⚡', color: '#7B2082', badgeBg: '#F3E8FF', badgeText: '#6B21A8' },
+  LARGA_MEDIA: { label: 'Larga y Media Distancia', icon: '🚆', color: '#D97706', badgeBg: '#FEF3C7', badgeText: '#92400E' },
+  CERCANIAS: { label: 'Cercanías / Suburbano', icon: '🚊', color: '#DC2626', badgeBg: '#FEE2E2', badgeText: '#991B1B' },
+};
+
+const getTrainServiceCategory = (train) => {
+  if (!train) return 'ALTA_VELOCIDAD';
+  if (train.service_category) return train.service_category;
+
+  const id = (train.train_id || '').toUpperCase();
+  const name = (train.train_name || '').toUpperCase();
+  const service = (train.service || '').toUpperCase();
+  const op = (train.operator || '').toUpperCase();
+  const line = (train.line_name || '').toUpperCase();
+
+  // 1. Cercanías / Rodalies / Suburbano / S-Bahn / Commuter
+  if (
+    id.includes('CER-') || id.includes('ROD-') || id.includes('SBAHN') || id.includes('S-BAHN') ||
+    op.includes('CERCANIAS') || op.includes('RODALIES') || op.includes('CALTRAIN') || op.includes('INSURGENTE') ||
+    service.includes('CERCAN') || service.includes('RODAL') || service.includes('S-BAHN') || service.includes('COMMUTER') ||
+    name.includes('CERCAN') || name.includes('RODAL') || name.includes('S-BAHN') ||
+    line.includes('CERCAN') || line.includes('RODAL') || line.includes('S-BAHN')
+  ) {
+    return 'CERCANIAS';
+  }
+
+  // 2. Larga y Media Distancia (Alvia, Avant, Regional, Euromed, Intercity, Amtrak Regional, VIA Rail, etc.)
+  if (
+    id.includes('ALVIA') || id.includes('AVANT') || id.includes('REG-') || id.includes('EUROMED') || id.includes('INTERCITY') || id.includes('VIA-') ||
+    op.includes('AMTRAK_REGIONAL') || op.includes('VIA_RAIL') || op.includes('ROCKY') || op.includes('TREN_MAYA') ||
+    service.includes('ALVIA') || service.includes('AVANT') || service.includes('REGIONAL') || service.includes('EUROMED') || service.includes('INTERCITY') || service.includes('MEDIA') || service.includes('LARGA') ||
+    name.includes('ALVIA') || name.includes('AVANT') || name.includes('REGIONAL') || name.includes('EUROMED') || name.includes('INTERCITY') ||
+    line.includes('MEDIA DISTANCIA') || line.includes('REGIONAL') || line.includes('INTERCITY')
+  ) {
+    return 'LARGA_MEDIA';
+  }
+
+  // 3. Alta Velocidad por defecto (AVE, Avlo, Iryo, Ouigo, TGV, ICE, Frecciarossa, Shinkansen, etc.)
+  return 'ALTA_VELOCIDAD';
 };
 
 // Componente para animar y centrar el mapa al cambiar de región o continente
@@ -664,6 +852,20 @@ const TrainMap = () => {
   const [trains, setTrains] = useState({});
   const [continentFilter, setContinentFilter] = useState('ALL'); // ALL, EU, AS, NA
   const [filterType, setFilterType] = useState('ALL'); // ALL, PRIVADO, ESTATAL
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState('ALL'); // ALL, ALTA_VELOCIDAD, LARGA_MEDIA, CERCANIAS
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedTrainId, setSelectedTrainId] = useState(null);
+  const markerRefs = useRef({});
+
+  const QUICK_SEARCH_CHIPS = [
+    { label: 'Alvia 04143', query: 'Alvia 04143' },
+    { label: 'AVE 2143', query: 'AVE 2143' },
+    { label: 'iryo 6014', query: 'iryo 6014' },
+    { label: 'Ouigo 9710', query: 'Ouigo 9710' },
+    { label: 'Acela 2150', query: 'Acela' },
+    { label: 'SBB Giruno', query: 'Giruno' },
+  ];
 
   // Obtener ubicación guardada para iniciar inmediatamente en la posición del usuario al abrir o recargar
   const getInitialLocation = () => {
@@ -977,11 +1179,123 @@ const TrainMap = () => {
     };
   }, [engineMode, customServerUrl]);
 
-  // Filtrado de Trenes por Continente y Tipo de Operador
+  // Resultados coincidentes con la búsqueda de trenes
+  const searchResults = useMemo(() => {
+    if (!searchQuery || !searchQuery.trim()) return [];
+    const rawQ = searchQuery.trim().toLowerCase();
+    const tokens = rawQ.split(/\s+/).filter(Boolean);
+
+    return Object.values(trains).filter((t) => {
+      const opKey = t.operator?.toUpperCase() || '';
+      const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+
+      const fieldsToSearch = [
+        t.train_id,
+        t.train_name,
+        t.service,
+        t.operator,
+        cfg.name,
+        cfg.model,
+        t.model,
+        t.line_name,
+        t.last_station_name,
+        t.country,
+        t.origin,
+        t.dest,
+      ].filter(Boolean).map((v) => String(v).toLowerCase()).join(' ');
+
+      const strippedBlob = fieldsToSearch.replace(/[-_ ]/g, '');
+      const strippedQ = rawQ.replace(/[-_ ]/g, '');
+
+      return strippedBlob.includes(strippedQ) || tokens.every((tok) => fieldsToSearch.includes(tok));
+    });
+  }, [trains, searchQuery]);
+
+  // Selección y enfoque inmediato de un tren en el mapa
+  const handleSelectTrain = useCallback((train) => {
+    if (!train || train.lat == null || train.lon == null) return;
+    setSelectedTrainId(train.train_id);
+    setSearchQuery(train.train_name || train.train_id);
+    setIsSearchOpen(false);
+
+    // Ajustar continente si difiere del actual para asegurar visibilidad en mapa
+    const opKey = train.operator?.toUpperCase() || '';
+    const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+    const itemContinent = train.continent || cfg.continent || 'EU';
+    if (continentFilter !== 'ALL' && itemContinent !== continentFilter) {
+      setContinentFilter('ALL');
+    }
+
+    setMapCenter([train.lat, train.lon]);
+    setMapZoom(13);
+
+    setTimeout(() => {
+      const marker = markerRefs.current[train.train_id];
+      if (marker) {
+        marker.openPopup();
+      }
+    }, 350);
+  }, [continentFilter]);
+
+  // Conteo dinámico de trenes por categoría de servicio
+  const serviceCategoryCounts = useMemo(() => {
+    const list = Object.values(trains);
+    let alta = 0, larga = 0, cerc = 0;
+    list.forEach((t) => {
+      const cat = getTrainServiceCategory(t);
+      if (cat === 'ALTA_VELOCIDAD') alta++;
+      else if (cat === 'LARGA_MEDIA') larga++;
+      else if (cat === 'CERCANIAS') cerc++;
+    });
+    return {
+      ALL: list.length,
+      ALTA_VELOCIDAD: alta,
+      LARGA_MEDIA: larga,
+      CERCANIAS: cerc,
+    };
+  }, [trains]);
+
+  // Filtrado de Trenes por Continente, Tipo de Operador, Categoría de Servicio y Búsqueda
   const filteredTrains = useMemo(() => {
     return Object.values(trains).filter((t) => {
       const opKey = t.operator?.toUpperCase() || '';
       const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+      const trainCat = getTrainServiceCategory(t);
+
+      // Filtro de categoría de servicio (Cercanías, Alta Velocidad, Larga y Media Distancia)
+      if (serviceCategoryFilter !== 'ALL' && trainCat !== serviceCategoryFilter) {
+        return false;
+      }
+
+      // Filtro de búsqueda textual en vivo
+      if (searchQuery.trim()) {
+        const rawQ = searchQuery.trim().toLowerCase();
+        const tokens = rawQ.split(/\s+/).filter(Boolean);
+        const catMeta = SERVICE_CATEGORY_META[trainCat] || {};
+        const fieldsToSearch = [
+          t.train_id,
+          t.train_name,
+          t.service,
+          t.operator,
+          cfg.name,
+          cfg.model,
+          t.model,
+          t.line_name,
+          t.last_station_name,
+          t.country,
+          t.origin,
+          t.dest,
+          catMeta.label,
+          trainCat === 'CERCANIAS' ? 'cercanías cercanias rodalies suburbano commuter cercania' : '',
+          trainCat === 'ALTA_VELOCIDAD' ? 'alta velocidad ave avlo tgv ice shinkansen high speed veloz' : '',
+          trainCat === 'LARGA_MEDIA' ? 'larga distancia media distancia alvia avant intercity regional md' : '',
+        ].filter(Boolean).map((v) => String(v).toLowerCase()).join(' ');
+
+        const strippedBlob = fieldsToSearch.replace(/[-_ ]/g, '');
+        const strippedQ = rawQ.replace(/[-_ ]/g, '');
+        const matchesQuery = strippedBlob.includes(strippedQ) || tokens.every((tok) => fieldsToSearch.includes(tok));
+        if (!matchesQuery) return false;
+      }
 
       // Filtro de continente
       const itemContinent = t.continent || cfg.continent || 'EU';
@@ -995,7 +1309,7 @@ const TrainMap = () => {
 
       return true;
     });
-  }, [trains, continentFilter, filterType]);
+  }, [trains, continentFilter, filterType, searchQuery, serviceCategoryFilter]);
 
   const jumpToRegion = (center, zoom, continent = 'ALL') => {
     setMapCenter(center);
@@ -1077,6 +1391,210 @@ const TrainMap = () => {
           </div>
         </div>
 
+        {/* Buscador de Trenes en Tiempo Real (ej. Alvia 04143) */}
+        <div style={{
+          position: 'relative',
+          flex: '1 1 240px',
+          maxWidth: '380px',
+          minWidth: '190px',
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'rgba(30, 41, 59, 0.88)',
+            border: isSearchOpen ? '1.5px solid #3B82F6' : '1px solid rgba(255, 255, 255, 0.16)',
+            borderRadius: '20px',
+            padding: '5px 12px',
+            boxShadow: isSearchOpen ? '0 0 12px rgba(59, 130, 246, 0.35)' : 'none',
+            transition: 'all 0.2s ease',
+          }}>
+            <span style={{ fontSize: '13px', marginRight: '6px', opacity: 0.85 }}>🔍</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsSearchOpen(true);
+              }}
+              onFocus={() => setIsSearchOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  if (searchResults.length > 0) {
+                    handleSelectTrain(searchResults[0]);
+                  }
+                } else if (e.key === 'Escape') {
+                  setIsSearchOpen(false);
+                }
+              }}
+              placeholder="Buscar tren (ej. Alvia 04143, AVE)..."
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                color: '#F8FAFC',
+                fontSize: '12px',
+                fontWeight: 500,
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedTrainId(null);
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  padding: '0 4px',
+                  fontWeight: 700,
+                }}
+                title="Limpiar búsqueda"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Menú Desplegable con Resultados y Sugerencias */}
+          {isSearchOpen && (
+            <div style={{
+              position: 'absolute',
+              top: 'calc(100% + 6px)',
+              left: 0,
+              right: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.98)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              boxShadow: '0 14px 35px rgba(0,0,0,0.7)',
+              backdropFilter: 'blur(16px)',
+              maxHeight: '340px',
+              overflowY: 'auto',
+              zIndex: 2000,
+              padding: '8px',
+            }}>
+              {/* Sugerencias Rápidas */}
+              <div style={{ marginBottom: '8px' }}>
+                <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px', paddingLeft: '4px' }}>
+                  Sugerencias Rápidas:
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {QUICK_SEARCH_CHIPS.map((chip) => (
+                    <button
+                      key={chip.label}
+                      onClick={() => {
+                        setSearchQuery(chip.query);
+                        const match = Object.values(trains).find((t) =>
+                          (t.train_name && t.train_name.toLowerCase().includes(chip.query.toLowerCase())) ||
+                          t.train_id.toLowerCase().includes(chip.query.toLowerCase())
+                        );
+                        if (match) {
+                          handleSelectTrain(match);
+                        }
+                      }}
+                      style={{
+                        backgroundColor: searchQuery.toLowerCase() === chip.query.toLowerCase() ? '#2563EB' : '#1E293B',
+                        color: '#E2E8F0',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '6px',
+                        padding: '3px 8px',
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Lista de Resultados Encontrados */}
+              {searchQuery.trim() && (
+                <div>
+                  <div style={{
+                    fontSize: '10px',
+                    color: '#94A3B8',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    marginBottom: '6px',
+                    paddingLeft: '4px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    paddingTop: '6px',
+                  }}>
+                    Resultados ({searchResults.length}):
+                  </div>
+                  {searchResults.length === 0 ? (
+                    <div style={{ padding: '10px', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>
+                      No se encontró ningún tren para "{searchQuery}".
+                    </div>
+                  ) : (
+                    searchResults.slice(0, 10).map((t) => {
+                      const opKey = t.operator?.toUpperCase() || 'DEFAULT';
+                      const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+                      const isStopped = t.speed === 0 || t.is_stopped;
+
+                      return (
+                        <div
+                          key={t.train_id}
+                          onClick={() => handleSelectTrain(t)}
+                          style={{
+                            padding: '8px 10px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '8px',
+                            backgroundColor: selectedTrainId === t.train_id ? 'rgba(37, 99, 235, 0.28)' : 'transparent',
+                            transition: 'background 0.15s ease',
+                            marginBottom: '2px',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.4)')}
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              selectedTrainId === t.train_id ? 'rgba(37, 99, 235, 0.28)' : 'transparent')
+                          }
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                            <span style={{ ...dotStyle, backgroundColor: cfg.color }} />
+                            <div style={{ overflow: 'hidden' }}>
+                              <div style={{ fontSize: '12px', fontWeight: 700, color: '#F1F5F9', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                {t.train_name || t.train_id}
+                                <span style={{ marginLeft: '6px', fontSize: '10px', color: '#94A3B8', fontWeight: 400 }}>
+                                  ({cfg.name})
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '10px', color: '#94A3B8', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                {t.last_station_name || t.line_name || 'En ruta'}
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <div style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              color: isStopped ? '#EF4444' : '#10B981',
+                            }}>
+                              {isStopped ? '🛑 0 km/h' : `⚡ ${t.speed} km/h`}
+                            </div>
+                            <div style={{ fontSize: '9px', color: '#64748B' }}>
+                              {t.country}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Botones de Acción Móviles */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <button
@@ -1113,6 +1631,50 @@ const TrainMap = () => {
             ⚙️
           </button>
         </div>
+      </div>
+
+      {/* Barra Flotante de Filtros Rápidos por Categoría: Alta Velocidad, Larga y Media Distancia, Cercanías */}
+      <div style={{
+        position: 'absolute',
+        top: '68px',
+        left: '14px',
+        zIndex: 990,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        backgroundColor: 'rgba(15, 23, 42, 0.94)',
+        padding: '5px 8px',
+        borderRadius: '24px',
+        border: '1px solid rgba(255, 255, 255, 0.16)',
+        boxShadow: '0 4px 18px rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(12px)',
+        overflowX: 'auto',
+        maxWidth: 'calc(100vw - 28px)',
+      }}>
+        <button
+          onClick={() => setServiceCategoryFilter('ALL')}
+          style={categoryPillStyle(serviceCategoryFilter === 'ALL', '#2563EB')}
+        >
+          🌐 Todos ({serviceCategoryCounts.ALL})
+        </button>
+        <button
+          onClick={() => setServiceCategoryFilter('ALTA_VELOCIDAD')}
+          style={categoryPillStyle(serviceCategoryFilter === 'ALTA_VELOCIDAD', '#7B2082')}
+        >
+          ⚡ Alta Velocidad ({serviceCategoryCounts.ALTA_VELOCIDAD})
+        </button>
+        <button
+          onClick={() => setServiceCategoryFilter('LARGA_MEDIA')}
+          style={categoryPillStyle(serviceCategoryFilter === 'LARGA_MEDIA', '#D97706')}
+        >
+          🚆 Larga y Media ({serviceCategoryCounts.LARGA_MEDIA})
+        </button>
+        <button
+          onClick={() => setServiceCategoryFilter('CERCANIAS')}
+          style={categoryPillStyle(serviceCategoryFilter === 'CERCANIAS', '#DC2626')}
+        >
+          🚊 Cercanías ({serviceCategoryCounts.CERCANIAS})
+        </button>
       </div>
 
       {/* Panel Desplegable de Filtros y Regiones */}
@@ -1171,6 +1733,37 @@ const TrainMap = () => {
             </div>
           </div>
 
+          {/* Categoría de Servicio */}
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginBottom: '6px' }}>CATEGORÍA DE SERVICIO:</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
+              <button
+                onClick={() => setServiceCategoryFilter('ALL')}
+                style={filterBtnStyle(serviceCategoryFilter === 'ALL', '#2563EB')}
+              >
+                🌐 Todos ({serviceCategoryCounts.ALL})
+              </button>
+              <button
+                onClick={() => setServiceCategoryFilter('ALTA_VELOCIDAD')}
+                style={filterBtnStyle(serviceCategoryFilter === 'ALTA_VELOCIDAD', '#7B2082')}
+              >
+                ⚡ Alta Velocidad ({serviceCategoryCounts.ALTA_VELOCIDAD})
+              </button>
+              <button
+                onClick={() => setServiceCategoryFilter('LARGA_MEDIA')}
+                style={filterBtnStyle(serviceCategoryFilter === 'LARGA_MEDIA', '#D97706')}
+              >
+                🚆 Larga y Media ({serviceCategoryCounts.LARGA_MEDIA})
+              </button>
+              <button
+                onClick={() => setServiceCategoryFilter('CERCANIAS')}
+                style={filterBtnStyle(serviceCategoryFilter === 'CERCANIAS', '#DC2626')}
+              >
+                🚊 Cercanías ({serviceCategoryCounts.CERCANIAS})
+              </button>
+            </div>
+          </div>
+
           {/* Tipo de Operador */}
           <div style={{ marginBottom: '12px' }}>
             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginBottom: '6px' }}>TIPO DE OPERADOR:</div>
@@ -1178,6 +1771,17 @@ const TrainMap = () => {
               <button onClick={() => setFilterType('ALL')} style={filterBtnStyle(filterType === 'ALL')}>Todos</button>
               <button onClick={() => setFilterType('PRIVADO')} style={filterBtnStyle(filterType === 'PRIVADO', '#D97706')}>Privados ★</button>
               <button onClick={() => setFilterType('ESTATAL')} style={filterBtnStyle(filterType === 'ESTATAL')}>Estatales</button>
+            </div>
+          </div>
+
+          {/* Búsqueda Rápida de Trenes Destacados */}
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginBottom: '6px' }}>TRENES DESTACADOS:</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              <button onClick={() => { setSearchQuery('Alvia 04143'); const t = trains['RENFE-ALVIA-04143']; if (t) handleSelectTrain(t); setShowFiltersPanel(false); }} style={{ ...tagBtnStyle, backgroundColor: '#7B2082', color: '#fff' }}>🚆 Alvia 04143 (Santander)</button>
+              <button onClick={() => { setSearchQuery('AVE 2143'); const t = trains['RENFE-AVE-2143']; if (t) handleSelectTrain(t); setShowFiltersPanel(false); }} style={{ ...tagBtnStyle, backgroundColor: '#7B2082', color: '#fff' }}>🚆 AVE 2143 (Barcelona)</button>
+              <button onClick={() => { setSearchQuery('iryo 6014'); const t = trains['IRYO-6014']; if (t) handleSelectTrain(t); setShowFiltersPanel(false); }} style={{ ...tagBtnStyle, backgroundColor: '#D3122A', color: '#fff' }}>🚆 iryo 6014</button>
+              <button onClick={() => { setSearchQuery('Acela'); setShowFiltersPanel(false); }} style={{ ...tagBtnStyle, backgroundColor: '#004B87', color: '#fff' }}>🚆 Amtrak Acela</button>
             </div>
           </div>
 
@@ -1253,6 +1857,9 @@ const TrainMap = () => {
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.ROCKY_MOUNTAINEER.color }} /><span><strong>R.Mountaineer</strong> (CA ★)</span></div>
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.TREN_MAYA.color }} /><span><strong>Tren Maya</strong> (MX)</span></div>
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.EL_INSURGENTE.color }} /><span>El Insurgente (MX)</span></div>
+
+            {/* Cercanías */}
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.RENFE_CERCANIAS.color }} /><span><strong>Renfe Cercanías</strong> (ES)</span></div>
 
             {/* Privados Europa */}
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.IRYO.color }} /><span><strong>iryo</strong> (ES ★)</span></div>
@@ -1496,6 +2103,8 @@ const TrainMap = () => {
           {filteredTrains.map((train) => {
             const opKey = train.operator?.toUpperCase() || 'DEFAULT';
             const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+            const trainCat = getTrainServiceCategory(train);
+            const catMeta = SERVICE_CATEGORY_META[trainCat] || SERVICE_CATEGORY_META.ALL;
 
             let continentLabel = '🇪🇺 Europa';
             if (train.continent === 'AS' || cfg.continent === 'AS') continentLabel = '🌏 Asia';
@@ -1504,23 +2113,48 @@ const TrainMap = () => {
             return (
               <Marker
                 key={train.train_id}
+                ref={(m) => {
+                  if (m) markerRefs.current[train.train_id] = m;
+                }}
                 position={[train.lat, train.lon]}
                 icon={createTrainIcon(train.operator, train.is_realtime, train.speed === 0 || train.is_stopped)}
+                eventHandlers={{
+                  click: () => {
+                    setSelectedTrainId(train.train_id);
+                  },
+                }}
               >
                 <Popup>
                   <div style={{ fontFamily: 'system-ui, sans-serif', minWidth: '230px', color: '#1F2937' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E5E7EB', paddingBottom: '6px', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '15px' }}>{train.train_id}</strong>
-                      <span style={{
-                        backgroundColor: cfg.type.includes('Privado') ? '#FEF3C7' : '#E0E7FF',
-                        color: cfg.type.includes('Privado') ? '#92400E' : '#3730A3',
-                        fontSize: '11px',
-                        padding: '2px 7px',
-                        borderRadius: '4px',
-                        fontWeight: 700,
-                      }}>
-                        {cfg.type}
-                      </span>
+                      <div>
+                        <strong style={{ fontSize: '15px', color: '#0F172A' }}>{train.train_name || train.train_id}</strong>
+                        {train.train_name && (
+                          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 500 }}>ID: {train.train_id}</div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        <span style={{
+                          backgroundColor: catMeta.badgeBg,
+                          color: catMeta.badgeText,
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontWeight: 700,
+                        }}>
+                          {catMeta.icon} {catMeta.label}
+                        </span>
+                        <span style={{
+                          backgroundColor: cfg.type.includes('Privado') ? '#FEF3C7' : '#E0E7FF',
+                          color: cfg.type.includes('Privado') ? '#92400E' : '#3730A3',
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontWeight: 700,
+                        }}>
+                          {cfg.type}
+                        </span>
+                      </div>
                     </div>
                     <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
                       <div><strong>Operador:</strong> {cfg.name} ({train.country})</div>
@@ -1596,6 +2230,135 @@ const TrainMap = () => {
           })}
         </MarkerClusterGroup>
       </MapContainer>
+
+      {/* Tarjeta Flotante del Tren Seleccionado (Información en Vivo) */}
+      {selectedTrainId && trains[selectedTrainId] && (() => {
+        const selTrain = trains[selectedTrainId];
+        const opKey = selTrain.operator?.toUpperCase() || 'DEFAULT';
+        const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+        const isStopped = selTrain.speed === 0 || selTrain.is_stopped;
+        const cardCat = getTrainServiceCategory(selTrain);
+        const cardCatMeta = SERVICE_CATEGORY_META[cardCat] || SERVICE_CATEGORY_META.ALL;
+
+        return (
+          <div style={{
+            position: 'absolute',
+            bottom: '24px',
+            left: '14px',
+            zIndex: 1000,
+            backgroundColor: 'rgba(15, 23, 42, 0.96)',
+            color: '#F8FAFC',
+            borderRadius: '14px',
+            padding: '14px 16px',
+            boxShadow: '0 14px 40px rgba(0,0,0,0.75)',
+            border: '1.5px solid rgba(96, 165, 250, 0.4)',
+            maxWidth: '380px',
+            width: 'calc(100vw - 28px)',
+            backdropFilter: 'blur(14px)',
+            fontFamily: 'system-ui, sans-serif',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '18px' }}>🚆</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '15px', color: '#60A5FA' }}>
+                    {selTrain.train_name || selTrain.train_id}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#94A3B8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>{cfg.name} ({selTrain.country})</span>
+                    <span style={{
+                      backgroundColor: cardCatMeta.badgeBg,
+                      color: cardCatMeta.badgeText,
+                      padding: '1px 6px',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                    }}>
+                      {cardCatMeta.icon} {cardCatMeta.label}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedTrainId(null)}
+                style={closeBtnStyle}
+                title="Cerrar tarjeta"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ fontSize: '12px', lineHeight: 1.6, color: '#E2E8F0' }}>
+              {selTrain.line_name && (
+                <div style={{ marginBottom: '4px' }}>
+                  <span style={{ color: '#94A3B8' }}>Línea: </span>
+                  <span style={{ fontWeight: 600 }}>{selTrain.line_name}</span>
+                </div>
+              )}
+              <div style={{ marginBottom: '4px' }}>
+                <span style={{ color: '#94A3B8' }}>Ruta / Estado: </span>
+                <span style={{ fontWeight: 600, color: '#93C5FD' }}>
+                  {selTrain.last_station_name || 'En tránsito'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ color: '#94A3B8' }}>Velocidad:</span>
+                <span style={{
+                  fontWeight: 700,
+                  color: isStopped ? '#EF4444' : '#10B981',
+                }}>
+                  {isStopped ? '🛑 0 km/h (Parado en estación)' : `⚡ ${selTrain.speed} km/h (En marcha)`}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94A3B8' }}>
+                <span>Posición GPS:</span>
+                <span>{selTrain.lat.toFixed(5)}°, {selTrain.lon.toFixed(5)}°</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+              <button
+                onClick={() => {
+                  setMapCenter([selTrain.lat, selTrain.lon]);
+                  setMapZoom(13);
+                  const m = markerRefs.current[selTrain.train_id];
+                  if (m) m.openPopup();
+                }}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#2563EB',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '7px 12px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                📍 Re-enfocar en mapa
+              </button>
+              <button
+                onClick={() => {
+                  setSearchQuery(selTrain.train_name || selTrain.train_id);
+                }}
+                style={{
+                  backgroundColor: 'rgba(51, 65, 85, 0.7)',
+                  color: '#E2E8F0',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  padding: '7px 12px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Filtrar en mapa
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
@@ -1613,6 +2376,23 @@ const actionPillStyle = (isActive) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '4px',
+});
+
+const categoryPillStyle = (isSelected, activeColor = '#2563EB') => ({
+  background: isSelected ? activeColor : 'rgba(51, 65, 85, 0.75)',
+  color: '#fff',
+  border: isSelected ? '1px solid rgba(255, 255, 255, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+  borderRadius: '20px',
+  padding: '5px 12px',
+  cursor: 'pointer',
+  fontSize: '11px',
+  fontWeight: isSelected ? 700 : 500,
+  whiteSpace: 'nowrap',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '5px',
+  transition: 'all 0.15s ease',
+  boxShadow: isSelected ? '0 2px 8px rgba(0,0,0,0.4)' : 'none',
 });
 
 const filterBtnStyle = (isSelected, activeColor = '#2563EB') => ({

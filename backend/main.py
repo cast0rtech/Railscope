@@ -2,10 +2,10 @@ import os
 import sys
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpg
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, status
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic import BaseModel, Field, model_validator
@@ -247,11 +247,73 @@ async def ingest_telemetry_batch(batch: List[TelemetryPoint]):
     }
 
 @app.get("/api/telemetry/latest", tags=["Telemetry"])
-async def get_latest_telemetry():
+async def get_latest_telemetry(
+    search: Optional[str] = None,
+    category: Optional[str] = Query(None, description="Filtro de servicio: ALTA_VELOCIDAD, LARGA_MEDIA o CERCANIAS"),
+):
     """
     Devuelve la última posición conocida de cada tren utilizando la cláusula
     SQL DISTINCT ON (train_id) sobre la Hypertable de TimescaleDB.
+    Opcionalmente filtra por texto (search) y por categoría de servicio (category).
     """
+    conditions = []
+    params = []
+
+    if search and search.strip():
+        params.append(f"%{search.strip()}%")
+        conditions.append(f"(train_id ILIKE ${len(params)} OR operator ILIKE ${len(params)} OR last_station_name ILIKE ${len(params)})")
+
+    if category:
+        cat = category.strip().upper()
+        if cat == "CERCANIAS":
+            conditions.append("(train_id ILIKE '%CER%' OR train_id ILIKE '%ROD%' OR train_id ILIKE '%SBAHN%' OR operator ILIKE '%CERCANIAS%' OR operator ILIKE '%RODALIES%')")
+        elif cat == "LARGA_MEDIA":
+            conditions.append("(train_id ILIKE '%ALVIA%' OR train_id ILIKE '%AVANT%' OR train_id ILIKE '%REG%' OR train_id ILIKE '%EUROMED%' OR train_id ILIKE '%INTERCITY%' OR operator ILIKE '%REGIONAL%')")
+        elif cat == "ALTA_VELOCIDAD":
+            conditions.append("(speed >= 200 OR operator ILIKE '%AVE%' OR operator ILIKE '%IRYO%' OR operator ILIKE '%OUIGO%' OR operator ILIKE '%TGV%' OR operator ILIKE '%ICE%' OR operator ILIKE '%SHINKANSEN%')")
+
+    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+    query = f"""
+        SELECT DISTINCT ON (train_id)
+            time,
+            train_id,
+            operator,
+            country,
+            lat,
+            lon,
+            is_realtime,
+            last_station_name,
+            speed
+        FROM train_telemetry
+        {where_clause}
+        ORDER BY train_id, time DESC;
+    """
+
+    try:
+        async with app.state.pool.acquire() as conn:
+            if params:
+                rows = await conn.fetch(query, *params)
+            else:
+                rows = await conn.fetch(query)
+
+        # Mapear registros asyncpg a diccionarios JSON-serializables
+        latest_positions = [dict(row) for row in rows]
+        return latest_positions
+    except Exception as e:
+        logger.error(f"Error al consultar la última telemetría: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al recuperar la última posición de los trenes.",
+        )
+
+
+@app.get("/api/telemetry/search", tags=["Telemetry"])
+async def search_telemetry(q: str = Query(..., min_length=1, description="Texto de búsqueda (p.ej. Alvia 04143, AVE, SBB)")):
+    """
+    Búsqueda directa de trenes por identificador (train_id), operador o estación.
+    """
+    search_pattern = f"%{q.strip()}%"
     query = """
         SELECT DISTINCT ON (train_id)
             time,
@@ -264,20 +326,18 @@ async def get_latest_telemetry():
             last_station_name,
             speed
         FROM train_telemetry
-        ORDER BY train_id, time DESC;
+        WHERE train_id ILIKE $1 OR operator ILIKE $1 OR last_station_name ILIKE $1
+        ORDER BY train_id, time DESC
+        LIMIT 50;
     """
-
     try:
         async with app.state.pool.acquire() as conn:
-            rows = await conn.fetch(query)
-
-        # Mapear registros asyncpg a diccionarios JSON-serializables
-        latest_positions = [dict(row) for row in rows]
-        return latest_positions
+            rows = await conn.fetch(query, search_pattern)
+        return [dict(row) for row in rows]
     except Exception as e:
-        logger.error(f"Error al consultar la última telemetría: {e}")
+        logger.error(f"Error al buscar telemetría para '{q}': {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error al recuperar la última posición de los trenes.",
+            detail=f"Error al ejecutar la búsqueda de trenes: {str(e)}",
         )
 
