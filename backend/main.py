@@ -91,6 +91,10 @@ class TelemetryPoint(BaseModel):
     is_realtime: bool = Field(default=True, description="Indicador de posición satelital en tiempo real")
     last_station_name: Optional[str] = Field(default=None, max_length=100, description="Última estación registrada")
     speed: Optional[float] = Field(default=None, ge=0.0, description="Velocidad actual en km/h")
+    service_category: Optional[str] = Field(default=None, max_length=50, description="ALTA_VELOCIDAD, LARGA_MEDIA o CERCANIAS")
+    service: Optional[str] = Field(default=None, max_length=100, description="Tipo de servicio ferroviario")
+    train_name: Optional[str] = Field(default=None, max_length=120, description="Nombre amigable del tren")
+    line_name: Optional[str] = Field(default=None, max_length=150, description="Línea o vía ferroviaria")
     time: Optional[datetime] = Field(default=None, description="Marca de tiempo de la coordenada")
     timestamp: Optional[datetime] = Field(default=None, description="Alias alternativo para time")
 

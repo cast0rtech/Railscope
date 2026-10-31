@@ -20,6 +20,13 @@ const OPERATOR_CONFIG = {
   // --- EUROPA: Estatales ---
   RENFE: { name: 'Renfe AVE / Avlo / Alvia / Avant', color: '#7B2082', country: 'ES', continent: 'EU', type: 'Estatal', model: 'S-106 Avril / S-130 Alvia / S-104' },
   RENFE_CERCANIAS: { name: 'Renfe Cercanías / Rodalies', color: '#E3001B', country: 'ES', continent: 'EU', type: 'Cercanías', model: 'Civia Serie 465 / 447' },
+  VR_CERCANIAS: { name: 'VR Lähijuna / HSL Commuter', color: '#00B140', country: 'FI', continent: 'EU', type: 'Cercanías', model: 'Sm5 Flirt Commuter' },
+  SNCF_TRANSILIEN: { name: 'SNCF RER / Transilien', color: '#E01E37', country: 'FR', continent: 'EU', type: 'Cercanías', model: 'MI 2N / Regio 2N' },
+  TFL_COMMUTER: { name: 'TfL Elizabeth Line / Overground', color: '#6950A1', country: 'UK', continent: 'EU', type: 'Cercanías', model: 'Class 345 / Aventra' },
+  DB_SBAHN: { name: 'DB S-Bahn', color: '#008754', country: 'DE', continent: 'EU', type: 'Cercanías', model: 'Baureihe 423 / 481' },
+  TRENORD: { name: 'Trenord Servizio Suburbano', color: '#008542', country: 'IT', continent: 'EU', type: 'Cercanías', model: 'Caravaggio / TSR' },
+  JR_EAST_COMMUTER: { name: 'JR East Commuter (Yamanote)', color: '#80C241', country: 'JP', continent: 'AS', type: 'Cercanías', model: 'E235 Series' },
+  LIRR: { name: 'MTA Long Island Rail Road', color: '#0039A6', country: 'US', continent: 'NA', type: 'Cercanías', model: 'M9 / M7 EMU' },
   SNCF: { name: 'SNCF TGV inOui', color: '#0088CE', country: 'FR', continent: 'EU', type: 'Estatal', model: 'TGV Duplex / M' },
   DB: { name: 'Deutsche Bahn ICE', color: '#E2001A', country: 'DE', continent: 'EU', type: 'Estatal', model: 'ICE 3 / ICE 4 / Neo' },
   FS: { name: 'Trenitalia FS', color: '#00875A', country: 'IT', continent: 'EU', type: 'Estatal', model: 'Frecciarossa 1000' },
@@ -332,11 +339,35 @@ const HIGH_SPEED_CORRIDORS = [
       [41.3792, 2.1401], [41.1928, 1.2544], [39.9864, -0.0514], [39.4667, -0.3774], [38.3444, -0.4950]
     ]
   },
-  // --- CERCANÍAS Y SUBURBANO (COMMUTER) ---
+  // --- CERCANÍAS Y SUBURBANO (RED GLOBAL COMMUTER EXPANDIDA) ---
+  // ESPAÑA: MADRID
+  {
+    train_id: 'RENFE-CER-C1-1', train_name: 'Cercanías C-1 (Príncipe Pío - Aeropuerto T4)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Príncipe Pío', dest: 'Aeropuerto T4', speed: 110, model: 'Civia Serie 465',
+    line_name: 'Línea C-1 Cercanías Madrid',
+    waypoints: [
+      [40.4208, -3.7194], [40.4050, -3.6883], [40.4203, -3.6914], [40.4461, -3.6917], [40.4720, -3.6826], [40.4900, -3.6600], [40.4919, -3.5931]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-C2-1', train_name: 'Cercanías C-2 (Guadalajara - Chamartín)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Guadalajara', dest: 'Chamartín', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea C-2 Corredor del Henares',
+    waypoints: [
+      [40.6378, -3.1811], [40.5400, -3.3000], [40.4800, -3.3600], [40.4500, -3.5200], [40.3958, -3.6781], [40.4050, -3.6883], [40.4461, -3.6917], [40.4720, -3.6826]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-C3-1', train_name: 'Cercanías C-3 (Aranjuez - Chamartín)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Aranjuez', dest: 'Chamartín', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea C-3 Cercanías Madrid (Túnel Sol)',
+    waypoints: [
+      [40.0333, -3.6167], [40.1667, -3.6833], [40.2417, -3.7000], [40.3500, -3.7000], [40.4050, -3.6883], [40.4168, -3.7038], [40.4461, -3.6917], [40.4720, -3.6826]
+    ]
+  },
   {
     train_id: 'RENFE-CER-C4-1', train_name: 'Cercanías C-4 (Parla - Alcobendas)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
-    origin: 'Parla', dest: 'Alcobendas - S.S. Reyes', speed: 120,
-    model: 'Civia Serie 465 Cercanías',
+    origin: 'Parla', dest: 'Alcobendas - S.S. Reyes', speed: 120, model: 'Civia Serie 465',
     line_name: 'Línea C-4 Cercanías Madrid (Túnel Sol)',
     waypoints: [
       [40.2372, -3.7667], [40.2917, -3.7389], [40.3061, -3.7297], [40.3408, -3.7125],
@@ -345,9 +376,16 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
+    train_id: 'RENFE-CER-C4B-1', train_name: 'Cercanías C-4B (Parla - Colmenar Viejo)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Parla', dest: 'Colmenar Viejo', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea C-4B Cercanías Madrid',
+    waypoints: [
+      [40.2372, -3.7667], [40.3061, -3.7297], [40.4050, -3.6883], [40.4168, -3.7038], [40.4720, -3.6826], [40.5400, -3.6930], [40.6600, -3.7700]
+    ]
+  },
+  {
     train_id: 'RENFE-CER-C5-1', train_name: 'Cercanías C-5 (Móstoles - Humanes)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
-    origin: 'Móstoles El Soto', dest: 'Humanes', speed: 110,
-    model: 'Renfe Serie 446 Cercanías',
+    origin: 'Móstoles El Soto', dest: 'Humanes', speed: 110, model: 'Renfe Serie 446',
     line_name: 'Línea C-5 Cercanías Madrid',
     waypoints: [
       [40.3236, -3.8864], [40.3497, -3.8294], [40.3756, -3.7858], [40.4050, -3.6883],
@@ -355,20 +393,78 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'RENFE-ROD-R1-1', train_name: 'Rodalies R1 (Molins de Rei - Mataró)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
-    origin: 'Molins de Rei', dest: 'Mataró', speed: 110,
-    model: 'Civia Serie 465 Rodalies',
+    train_id: 'RENFE-CER-C7-1', train_name: 'Cercanías C-7 (Alcalá - Las Rozas - Príncipe Pío)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Alcalá de Henares', dest: 'Príncipe Pío', speed: 110, model: 'Civia Serie 465',
+    line_name: 'Línea C-7 Cinturón de Madrid',
+    waypoints: [
+      [40.4800, -3.3600], [40.4050, -3.6883], [40.4720, -3.6826], [40.5000, -3.7200], [40.4900, -3.8700], [40.4500, -3.7800], [40.4208, -3.7194]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-C8-1', train_name: 'Cercanías C-8 (Cercedilla - Chamartín)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Cercedilla', dest: 'Chamartín', speed: 110, model: 'Civia Serie 465',
+    line_name: 'Línea C-8 Sierra de Guadarrama',
+    waypoints: [
+      [40.7417, -4.0583], [40.6700, -4.0100], [40.6000, -3.9900], [40.5000, -3.8700], [40.4720, -3.6826]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-C10-1', train_name: 'Cercanías C-10 (Villalba - Aeropuerto T4)', service: 'Cercanías Madrid', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Villalba', dest: 'Aeropuerto T4', speed: 110, model: 'Civia Serie 465',
+    line_name: 'Línea C-10 Cercanías Madrid',
+    waypoints: [
+      [40.6000, -3.9900], [40.4900, -3.8700], [40.4208, -3.7194], [40.4050, -3.6883], [40.4720, -3.6826], [40.4919, -3.5931]
+    ]
+  },
+
+  // ESPAÑA: BARCELONA & CATALUNYA (RODALIES)
+  {
+    train_id: 'RENFE-ROD-R1-1', train_name: 'Rodalies R1 (Molins de Rei - Mataró - Blanes)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Molins de Rei', dest: 'Blanes', speed: 110, model: 'Civia Serie 465 Rodalies',
     line_name: 'Línea R1 Rodalies Barcelona (Litoral)',
     waypoints: [
       [41.4117, 2.0208], [41.3600, 2.1000], [41.3792, 2.1401], [41.3870, 2.1700],
       [41.3917, 2.1817], [41.4083, 2.1883], [41.4481, 2.2472], [41.4681, 2.2817],
-      [41.4883, 2.3600], [41.5333, 2.4450]
+      [41.4883, 2.3600], [41.5333, 2.4450], [41.6700, 2.7900]
     ]
   },
   {
+    train_id: 'RENFE-ROD-R2N-1', train_name: 'Rodalies R2 Nord (Aeroport T2 - Sant Celoni - Maçanet)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Aeroport T2', dest: 'Maçanet-Massanes', speed: 120, model: 'Serie 450 / 451 Doble Piso',
+    line_name: 'Línea R2 Nord Rodalies',
+    waypoints: [
+      [41.3000, 2.0700], [41.3200, 2.1000], [41.3792, 2.1401], [41.3900, 2.1650], [41.4400, 2.1900], [41.6000, 2.2900], [41.6900, 2.4900], [41.7700, 2.6600]
+    ]
+  },
+  {
+    train_id: 'RENFE-ROD-R2S-1', train_name: 'Rodalies R2 Sud (St. Vicenç de Calders - Estació de França)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'St. Vicenç de Calders', dest: 'Estació de França', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea R2 Sud Costa Daurada / Garraf',
+    waypoints: [
+      [41.1800, 1.5100], [41.2200, 1.7300], [41.2400, 1.8100], [41.2800, 1.9700], [41.3792, 2.1401], [41.3850, 2.1850]
+    ]
+  },
+  {
+    train_id: 'RENFE-ROD-R3-1', train_name: 'Rodalies R3 (L\'Hospitalet - Vic - Puigcerdà)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'L\'Hospitalet', dest: 'Vic', speed: 110, model: 'Serie 447 Rodalies',
+    line_name: 'Línea R3 Línia de Vic',
+    waypoints: [
+      [41.3600, 2.1000], [41.3792, 2.1401], [41.3900, 2.1700], [41.4300, 2.1900], [41.5600, 2.2500], [41.8000, 2.2500], [41.9300, 2.2500]
+    ]
+  },
+  {
+    train_id: 'RENFE-ROD-R4-1', train_name: 'Rodalies R4 (Sant Vicenç - Vilafranca - Terrassa - Manresa)', service: 'Rodalies de Catalunya', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Sant Vicenç de Calders', dest: 'Manresa', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea R4 Penedès - Vallès',
+    waypoints: [
+      [41.1800, 1.5100], [41.3500, 1.7000], [41.4700, 1.9200], [41.3792, 2.1401], [41.3900, 2.1700], [41.5500, 2.1000], [41.5600, 2.0100], [41.7200, 1.8300]
+    ]
+  },
+
+  // ESPAÑA: VALENCIA & ALICANTE
+  {
     train_id: 'RENFE-CER-VLC-1', train_name: 'Cercanías C-1 (Valencia Nord - Gandía)', service: 'Cercanías Valencia', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
-    origin: 'Valencia Nord', dest: 'Gandía', speed: 120,
-    model: 'Civia Serie 464 Cercanías',
+    origin: 'Valencia Nord', dest: 'Gandía', speed: 120, model: 'Civia Serie 464',
     line_name: 'Línea C-1 Cercanías Valencia',
     waypoints: [
       [39.4670, -0.3770], [39.4230, -0.3950], [39.4030, -0.4040], [39.3620, -0.4140],
@@ -376,23 +472,214 @@ const HIGH_SPEED_CORRIDORS = [
     ]
   },
   {
-    train_id: 'SBB-SBAHN-S12', train_name: 'S-Bahn S12 (Zürich)', service: 'S-Bahn Zürich', service_category: 'CERCANIAS', operator: 'SBB', country: 'CH', continent: 'EU',
-    origin: 'Brugg AG', dest: 'Winterthur', speed: 125,
-    model: 'Stadler Regio-Dosto S-Bahn',
-    line_name: 'S-Bahn Zürich Linie S12',
+    train_id: 'RENFE-CER-VLC-2', train_name: 'Cercanías C-2 (Valencia Nord - Xàtiva - Moixent)', service: 'Cercanías Valencia', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Valencia Nord', dest: 'Moixent', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea C-2 Cercanías Valencia',
     waypoints: [
-      [47.4833, 8.2167], [47.4736, 8.3075], [47.4083, 8.4417], [47.3782, 8.5402],
-      [47.3917, 8.5833], [47.4986, 8.7236]
+      [39.4670, -0.3770], [39.3500, -0.4200], [39.1500, -0.4300], [38.9900, -0.5200], [38.8700, -0.7500]
     ]
   },
   {
-    train_id: 'DB-SBAHN-S1', train_name: 'S-Bahn S1 (München)', service: 'S-Bahn München', service_category: 'CERCANIAS', operator: 'DB', country: 'DE', continent: 'EU',
-    origin: 'München Hbf', dest: 'München Flughafen', speed: 130,
-    model: 'DB Baureihe 423 S-Bahn',
+    train_id: 'RENFE-CER-VLC-6', train_name: 'Cercanías C-6 (Valencia Nord - Castellón)', service: 'Cercanías Valencia', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Valencia Nord', dest: 'Castellón de la Plana', speed: 130, model: 'Civia Serie 465',
+    line_name: 'Línea C-6 Cercanías Valencia - Castellón',
+    waypoints: [
+      [39.4670, -0.3770], [39.6800, -0.2800], [39.8100, -0.1900], [39.9400, -0.1000], [39.9864, -0.0514]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-ALC-1', train_name: 'Cercanías C-1 (Alicante - Elche - Murcia)', service: 'Cercanías Murcia/Alicante', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Alicante Terminal', dest: 'Murcia del Carmen', speed: 120, model: 'Serie 599 Diésel / Civia',
+    line_name: 'Línea C-1 Cercanías Murcia/Alicante',
+    waypoints: [
+      [38.3444, -0.4950], [38.3000, -0.5300], [38.2700, -0.7000], [38.1500, -0.8800], [38.0800, -0.9500], [37.9750, -1.1300]
+    ]
+  },
+
+  // ESPAÑA: ANDALUCÍA (SEVILLA & MÁLAGA)
+  {
+    train_id: 'RENFE-CER-SEV-1', train_name: 'Cercanías C-1 (Lora del Río - Sevilla Santa Justa - Lebrija)', service: 'Cercanías Sevilla', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Lora del Río', dest: 'Lebrija', speed: 120, model: 'Civia Serie 465',
+    line_name: 'Línea C-1 Cercanías Sevilla',
+    waypoints: [
+      [37.6600, -5.5300], [37.5200, -5.8000], [37.3920, -5.9750], [37.3780, -5.9740], [37.2800, -5.9200], [37.1800, -5.7800], [36.9200, -6.0700]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-MAL-1', train_name: 'Cercanías C-1 (Málaga Centro - Aeropuerto - Fuengirola)', service: 'Cercanías Málaga', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Málaga Centro Alameda', dest: 'Fuengirola', speed: 110, model: 'Civia Serie 464',
+    line_name: 'Línea C-1 Cercanías Costa del Sol',
+    waypoints: [
+      [36.7167, -4.4250], [36.7120, -4.4320], [36.6740, -4.4900], [36.6200, -4.5000], [36.5900, -4.5300], [36.5400, -4.6250]
+    ]
+  },
+
+  // ESPAÑA: PAÍS VASCO, ASTURIAS Y ARAGÓN
+  {
+    train_id: 'RENFE-CER-BIL-1', train_name: 'Cercanías C-1 (Bilbao Abando - Santurtzi)', service: 'Cercanías Bilbao', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Bilbao Abando', dest: 'Santurtzi', speed: 100, model: 'Serie 446',
+    line_name: 'Línea C-1 Ría de Bilbao',
+    waypoints: [
+      [43.2600, -2.9250], [43.2700, -2.9600], [43.2900, -2.9900], [43.3150, -3.0200], [43.3300, -3.0330]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-DON-1', train_name: 'Cercanías C-1 (Irun - Donostia/San Sebastián - Brinkola)', service: 'Cercanías San Sebastián', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Irun', dest: 'Brinkola', speed: 110, model: 'Civia Serie 447',
+    line_name: 'Línea C-1 Cercanías Gipuzkoa',
+    waypoints: [
+      [43.3400, -1.7900], [43.3200, -1.9300], [43.3180, -1.9770], [43.2600, -1.9750], [43.1400, -2.0700], [43.0400, -2.3100]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-AST-1', train_name: 'Cercanías C-1 (Gijón - Oviedo - Puente de los Fierros)', service: 'Cercanías Asturias', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Gijón Sanz Crespo', dest: 'Puente de los Fierros', speed: 110, model: 'Civia Serie 463',
+    line_name: 'Línea C-1 Cercanías Asturias',
+    waypoints: [
+      [43.5380, -5.6700], [43.4800, -5.7500], [43.3660, -5.8500], [43.3000, -5.8200], [43.1600, -5.8300], [43.0100, -5.7900]
+    ]
+  },
+  {
+    train_id: 'RENFE-CER-ZAR-1', train_name: 'Cercanías C-1 (Casetas - Zaragoza Delicias - Miraflores)', service: 'Cercanías Zaragoza', service_category: 'CERCANIAS', operator: 'RENFE_CERCANIAS', country: 'ES', continent: 'EU',
+    origin: 'Casetas', dest: 'Miraflores', speed: 110, model: 'Civia Serie 463',
+    line_name: 'Línea C-1 Cercanías Zaragoza',
+    waypoints: [
+      [41.7200, -1.0200], [41.6900, -0.9800], [41.6580, -0.9120], [41.6500, -0.8900], [41.6430, -0.8750]
+    ]
+  },
+
+  // EUROPA: FRANCIA (RER PARÍS)
+  {
+    train_id: 'SNCF-RER-A-1', train_name: 'RER A (La Défense - Châtelet - Marne-la-Vallée Chessy)', service: 'RER Île-de-France', service_category: 'CERCANIAS', operator: 'SNCF_TRANSILIEN', country: 'FR', continent: 'EU',
+    origin: 'La Défense', dest: 'Marne-la-Vallée Chessy (Disneyland)', speed: 120, model: 'MI 09 / MI 2N Duplex',
+    line_name: 'Ligne RER A (Réseau Express Régional)',
+    waypoints: [
+      [48.8920, 2.2380], [48.8740, 2.2950], [48.8610, 2.3470], [48.8443, 2.3744], [48.8480, 2.3960], [48.8400, 2.5800], [48.8700, 2.7800]
+    ]
+  },
+  {
+    train_id: 'SNCF-RER-B-1', train_name: 'RER B (Aéroport CDG - Gare du Nord - Antony)', service: 'RER Île-de-France', service_category: 'CERCANIAS', operator: 'SNCF_TRANSILIEN', country: 'FR', continent: 'EU',
+    origin: 'Aéroport CDG 2 TGV', dest: 'Saint-Rémy-lès-Chevreuse', speed: 120, model: 'MI 79 / MI 84',
+    line_name: 'Ligne RER B Express',
+    waypoints: [
+      [49.0040, 2.5710], [48.9300, 2.4200], [48.8809, 2.3553], [48.8610, 2.3470], [48.8340, 2.3320], [48.7500, 2.3000], [48.7000, 2.0700]
+    ]
+  },
+
+  // EUROPA: REINO UNIDO (LONDRES COMMUTER)
+  {
+    train_id: 'TFL-ELIZ-1', train_name: 'Elizabeth Line (Heathrow - Paddington - Liverpool St - Abbey Wood)', service: 'TfL Elizabeth Line', service_category: 'CERCANIAS', operator: 'TFL_COMMUTER', country: 'UK', continent: 'EU',
+    origin: 'Heathrow Airport', dest: 'Abbey Wood', speed: 140, model: 'Alstom Class 345 Aventra',
+    line_name: 'Elizabeth Line (Crossrail)',
+    waypoints: [
+      [51.4700, -0.4500], [51.5160, -0.2800], [51.5170, -0.1770], [51.5160, -0.1300], [51.5180, -0.0820], [51.5050, -0.0180], [51.4900, 0.1200]
+    ]
+  },
+  {
+    train_id: 'GTR-THAMES-1', train_name: 'Thameslink (Brighton - London Bridge - St Pancras - St Albans)', service: 'Thameslink Commuter', service_category: 'CERCANIAS', operator: 'TFL_COMMUTER', country: 'UK', continent: 'EU',
+    origin: 'Brighton', dest: 'Bedford', speed: 160, model: 'Siemens Class 700 Desiro City',
+    line_name: 'Thameslink Core Cross-London Line',
+    waypoints: [
+      [50.8300, -0.1400], [51.1500, -0.1600], [51.5050, -0.0860], [51.5310, -0.1260], [51.7500, -0.3400], [52.1400, -0.4700]
+    ]
+  },
+
+  // EUROPA: ALEMANIA (S-BAHN)
+  {
+    train_id: 'DB-SBAHN-BER-S7', train_name: 'S-Bahn S7 (Potsdam Hbf - Berlin Hbf - Ahrensfelde)', service: 'S-Bahn Berlin', service_category: 'CERCANIAS', operator: 'DB_SBAHN', country: 'DE', continent: 'EU',
+    origin: 'Potsdam Hbf', dest: 'Ahrensfelde', speed: 100, model: 'Baureihe 481 / 483 S-Bahn',
+    line_name: 'S-Bahn Berlin Linie S7 (Stadtbahn)',
+    waypoints: [
+      [52.3910, 13.0670], [52.4210, 13.1790], [52.5070, 13.3320], [52.5250, 13.3690], [52.5215, 13.4110], [52.5030, 13.4690], [52.5710, 13.5650]
+    ]
+  },
+  {
+    train_id: 'DB-SBAHN-FRA-S8', train_name: 'S-Bahn S8 (Wiesbaden - Frankfurt Flughafen - Hanau)', service: 'S-Bahn Rhein-Main', service_category: 'CERCANIAS', operator: 'DB_SBAHN', country: 'DE', continent: 'EU',
+    origin: 'Wiesbaden Hbf', dest: 'Hanau Hbf', speed: 140, model: 'Baureihe 430 S-Bahn',
+    line_name: 'S-Bahn Rhein-Main Linie S8',
+    waypoints: [
+      [50.0710, 8.2430], [49.9980, 8.2600], [50.0510, 8.5700], [50.1070, 8.6630], [50.1010, 8.7600], [50.1210, 8.9290]
+    ]
+  },
+  {
+    train_id: 'DB-SBAHN-S1', train_name: 'S-Bahn S1 (München Hbf - Flughafen München)', service: 'S-Bahn München', service_category: 'CERCANIAS', operator: 'DB_SBAHN', country: 'DE', continent: 'EU',
+    origin: 'München Hbf', dest: 'München Flughafen', speed: 130, model: 'DB Baureihe 423 S-Bahn',
     line_name: 'S-Bahn München Linie S1 (Flughafenlinie)',
     waypoints: [
-      [48.1402, 11.5583], [48.1600, 11.5300], [48.2100, 11.5200], [48.3000, 11.6000],
-      [48.3538, 11.7861]
+      [48.1402, 11.5583], [48.1600, 11.5300], [48.2100, 11.5200], [48.3000, 11.6000], [48.3538, 11.7861]
+    ]
+  },
+
+  // EUROPA: SUIZA (S-BAHN ZÜRICH & BERN)
+  {
+    train_id: 'SBB-SBAHN-S12', train_name: 'S-Bahn S12 (Brugg - Zürich HB - Winterthur)', service: 'S-Bahn Zürich', service_category: 'CERCANIAS', operator: 'SBB', country: 'CH', continent: 'EU',
+    origin: 'Brugg AG', dest: 'Winterthur', speed: 125, model: 'Stadler Regio-Dosto S-Bahn',
+    line_name: 'S-Bahn Zürich Linie S12',
+    waypoints: [
+      [47.4833, 8.2167], [47.4736, 8.3075], [47.4083, 8.4417], [47.3782, 8.5402], [47.3917, 8.5833], [47.4986, 8.7236]
+    ]
+  },
+  {
+    train_id: 'SBB-SBAHN-S1', train_name: 'S-Bahn S1 (Fribourg - Bern Hbf - Thun)', service: 'S-Bahn Bern', service_category: 'CERCANIAS', operator: 'SBB', country: 'CH', continent: 'EU',
+    origin: 'Fribourg', dest: 'Thun', speed: 125, model: 'Stadler FLIRT S-Bahn',
+    line_name: 'S-Bahn Bern Linie S1',
+    waypoints: [
+      [46.8030, 7.1510], [46.8870, 7.3100], [46.9490, 7.4390], [46.8770, 7.5600], [46.7550, 7.6290]
+    ]
+  },
+
+  // EUROPA: ITALIA (SERVIZIO FERROVIARIO SUBURBANO)
+  {
+    train_id: 'TRENORD-S5', train_name: 'Suburbano S5 (Varese - Milano Passante - Treviglio)', service: 'Servizio Ferroviario Suburbano Milano', service_category: 'CERCANIAS', operator: 'TRENORD', country: 'IT', continent: 'EU',
+    origin: 'Varese', dest: 'Treviglio', speed: 130, model: 'TSR / Caravaggio ETR 521',
+    line_name: 'Línea S5 Passante Ferroviario di Milano',
+    waypoints: [
+      [45.8170, 8.8300], [45.6600, 8.7900], [45.5000, 9.1500], [45.4850, 9.1880], [45.4650, 9.2370], [45.5200, 9.5900]
+    ]
+  },
+  {
+    train_id: 'FS-FL1-ROMA', train_name: 'Regionale FL1 (Fiumicino Aeroporto - Roma Tiburtina - Orte)', service: 'Ferrovie Laziali Roma', service_category: 'CERCANIAS', operator: 'FS', country: 'IT', continent: 'EU',
+    origin: 'Fiumicino Aeroporto', dest: 'Fara Sabina / Orte', speed: 120, model: 'Jazz ETR 425 / Pop ETR 104',
+    line_name: 'Línea FL1 Ferrovia Regionale del Lazio',
+    waypoints: [
+      [41.7930, 12.2520], [41.8300, 12.3500], [41.8720, 12.4660], [41.8730, 12.4850], [41.9100, 12.5290], [42.1000, 12.6500]
+    ]
+  },
+
+  // ASIA: JAPÓN (TOKIO COMMUTER)
+  {
+    train_id: 'JR-YAMANOTE-01', train_name: 'Yamanote Line (Tokyo - Shinjuku - Shibuya - Shinagawa)', service: 'JR East Commuter Loop', service_category: 'CERCANIAS', operator: 'JR_EAST_COMMUTER', country: 'JP', continent: 'AS',
+    origin: 'Tokyo Station', dest: 'Shinagawa', speed: 90, model: 'Series E235 Commuter',
+    line_name: 'Yamanote Loop Line (JR East)',
+    waypoints: [
+      [35.6812, 139.7671], [35.6980, 139.7730], [35.7140, 139.7770], [35.7290, 139.7110],
+      [35.6895, 139.7005], [35.6580, 139.7016], [35.6285, 139.7388], [35.6812, 139.7671]
+    ]
+  },
+
+  // NORTEAMÉRICA: EE.UU. Y MÉXICO (COMMUTER)
+  {
+    train_id: 'CALTRAIN-COMM-101', train_name: 'Caltrain Commuter (San Francisco - Palo Alto - San Jose)', service: 'Caltrain Commuter Rail', service_category: 'CERCANIAS', operator: 'CALTRAIN', country: 'US', continent: 'NA',
+    origin: 'San Francisco (4th & King)', dest: 'San Jose Diridon', speed: 125, model: 'Stadler KISS Electric EMU',
+    line_name: 'Caltrain Peninsula Corridor Electrified',
+    waypoints: [
+      [37.7765, -122.3950], [37.6000, -122.3870], [37.4430, -122.1650], [37.3940, -122.0760], [37.3300, -121.9030]
+    ]
+  },
+  {
+    train_id: 'LIRR-COMM-101', train_name: 'Long Island Rail Road (NY Penn - Jamaica - Ronkonkoma)', service: 'MTA LIRR Commuter', service_category: 'CERCANIAS', operator: 'LIRR', country: 'US', continent: 'NA',
+    origin: 'New York Penn Station', dest: 'Ronkonkoma', speed: 130, model: 'Bombardier M7 / M9 EMU',
+    line_name: 'LIRR Main Line Suburbano',
+    waypoints: [
+      [40.7506, -73.9935], [40.7420, -73.9300], [40.6990, -73.8080], [40.7400, -73.6400], [40.7800, -73.1200]
+    ]
+  },
+  {
+    train_id: 'SUBURBANO-CDMX-1', train_name: 'Tren Suburbano CDMX (Buenavista - Cuautitlán)', service: 'Ferrocarril Suburbano CDMX', service_category: 'CERCANIAS', operator: 'EL_INSURGENTE', country: 'MX', continent: 'NA',
+    origin: 'Buenavista', dest: 'Cuautitlán', speed: 130, model: 'CAF UT-01 Suburbano',
+    line_name: 'Sistema 1 Ferrocarril Suburbano del Valle de México',
+    waypoints: [
+      [19.4475, -99.1517], [19.4880, -99.1620], [19.5370, -99.1960], [19.5790, -99.1910], [19.6700, -99.1760]
     ]
   },
 
@@ -808,13 +1095,21 @@ const getTrainServiceCategory = (train) => {
   const op = (train.operator || '').toUpperCase();
   const line = (train.line_name || '').toUpperCase();
 
-  // 1. Cercanías / Rodalies / Suburbano / S-Bahn / Commuter
+  // 1. Cercanías / Rodalies / Suburbano / S-Bahn / RER / Overground / Elizabeth Line / Commuter / Lähijuna
   if (
     id.includes('CER-') || id.includes('ROD-') || id.includes('SBAHN') || id.includes('S-BAHN') ||
+    id.includes('RER-') || id.includes('ELIZ-') || id.includes('THAMES-') || id.includes('LIRR') ||
+    id.includes('YAMANOTE') || id.includes('FL1') || id.includes('PASSANTE') ||
     op.includes('CERCANIAS') || op.includes('RODALIES') || op.includes('CALTRAIN') || op.includes('INSURGENTE') ||
+    op.includes('TRANSILIEN') || op.includes('TFL') || op.includes('TRENORD') || op.includes('DB_SBAHN') ||
     service.includes('CERCAN') || service.includes('RODAL') || service.includes('S-BAHN') || service.includes('COMMUTER') ||
-    name.includes('CERCAN') || name.includes('RODAL') || name.includes('S-BAHN') ||
-    line.includes('CERCAN') || line.includes('RODAL') || line.includes('S-BAHN')
+    service.includes('RER') || service.includes('SUBURB') || service.includes('LÄHIJUNA') ||
+    name.includes('CERCAN') || name.includes('RODAL') || name.includes('S-BAHN') || name.includes('RER') ||
+    name.includes('ELIZABETH') || name.includes('THAMESLINK') || name.includes('OVERGROUND') || name.includes('LIRR') ||
+    name.includes('CALTRAIN') || name.includes('SUBURBANO') || name.includes('LÄHIJUNA') ||
+    line.includes('CERCAN') || line.includes('RODAL') || line.includes('S-BAHN') || line.includes('RER') ||
+    line.includes('SUBURB') || line.includes('PASSANTE') || line.includes('COMMUTER') ||
+    /\bS[- ]?\d+\b/.test(id) || /\bS[- ]?\d+\b/.test(name) || /\bC[- ]?\d+\b/.test(name) || /\bR\d+[N|S]?\b/.test(name)
   ) {
     return 'CERCANIAS';
   }
@@ -1029,7 +1324,7 @@ const TrainMap = () => {
         if (Array.isArray(data)) {
           setTrains((prev) => {
             const updated = { ...prev };
-            data.slice(0, 50).forEach((tr) => {
+            data.slice(0, 150).forEach((tr) => {
               const coords = tr?.location?.coordinates;
               if (coords && coords.length >= 2) {
                 const lon = coords[0];
@@ -1037,10 +1332,15 @@ const TrainMap = () => {
                 const trainId = `VR-${tr.trainNumber}`;
                 const speed = tr.speed != null ? Math.round(tr.speed) : 0;
                 const isStopped = speed === 0 || speed <= 3;
+                // En Finlandia, trenes con número > 8000 o en la región metropolitana de Helsinki (lat 60.1 a 60.5) son cercanías (Lähijuna / Commuter)
+                const isCommuter = (tr.trainNumber >= 8000 && tr.trainNumber <= 9999) || (lat >= 60.10 && lat <= 60.45 && lon >= 24.60 && lon <= 25.30);
 
                 const rawTrain = {
                   train_id: trainId,
-                  operator: 'VR',
+                  train_name: isCommuter ? `Lähijuna VR #${tr.trainNumber}` : `VR #${tr.trainNumber}`,
+                  operator: isCommuter ? 'VR_CERCANIAS' : 'VR',
+                  service: isCommuter ? 'Lähijuna Commuter' : 'InterCity VR',
+                  service_category: isCommuter ? 'CERCANIAS' : 'LARGA_MEDIA',
                   country: 'FI',
                   continent: 'EU',
                   lat: Number(lat.toFixed(5)),
@@ -1051,7 +1351,7 @@ const TrainMap = () => {
                   is_official_gps: true,
                   telemetry_type: 'GPS_SATELLITE',
                   telemetry_source: 'Transpondedor GPS Satelital (Fintraffic / Digitraffic)',
-                  line_name: `Red Nacional VR (Línea #${tr.trainNumber})`,
+                  line_name: isCommuter ? `Red de Cercanías HSL Helsinki (Línea #${tr.trainNumber})` : `Red Nacional VR (Línea #${tr.trainNumber})`,
                   last_station_name: `Tren VR #${tr.trainNumber} (Velocidad: ${speed} km/h)`,
                   time: tr.timestamp || new Date().toISOString(),
                 };
@@ -1064,26 +1364,33 @@ const TrainMap = () => {
       }
     } catch (e) {}
 
-    // C. Open Data Transport Suiza (SBB CFF FFS)
+    // C. Open Data Transport Suiza (SBB CFF FFS - Consultas concurrentes a hubs de Cercanías S-Bahn)
     try {
-      const stations = ['Zurich', 'Basel', 'Geneva', 'Bern', 'Lausanne', 'Luzern'];
-      const randomStation = stations[Math.floor(Math.random() * stations.length)];
-
-      const resp = await fetch(
-        `https://transport.opendata.ch/v1/stationboard?station=${randomStation}&limit=10`
+      const hubs = ['Zurich', 'Bern', 'Basel', 'Geneve', 'Lausanne'];
+      const responses = await Promise.allSettled(
+        hubs.map((hub) =>
+          fetch(`https://transport.opendata.ch/v1/stationboard?station=${hub}&limit=12`).then((r) => r.ok ? r.json() : null)
+        )
       );
-      if (resp.ok) {
-        const data = await resp.json();
-        if (data && Array.isArray(data.stationboard)) {
-          setTrains((prev) => {
-            const updated = { ...prev };
+
+      setTrains((prev) => {
+        const updated = { ...prev };
+        responses.forEach((res) => {
+          if (res.status === 'fulfilled' && res.value && Array.isArray(res.value.stationboard)) {
+            const data = res.value;
             data.stationboard.forEach((item) => {
               const coord = item?.stop?.station?.coordinate;
               if (coord && coord.x && coord.y) {
-                const trainId = `${item.operator || 'SBB'}-${item.name || item.number || 'IC'}`;
+                const trainId = `${item.operator || 'SBB'}-${item.name || item.number || 'TRAIN'}`;
+                const isSBahn = item.category === 'S' || (item.name && item.name.startsWith('S')) || (item.number && String(item.number).startsWith('S'));
+                const isLongDistance = item.category === 'IC' || item.category === 'IR' || item.category === 'ICE';
+
                 const rawTrain = {
                   train_id: trainId,
-                  operator: item.operator || 'SBB',
+                  train_name: isSBahn ? `S-Bahn ${item.name || item.number}` : (item.name || item.number || 'Tren SBB'),
+                  service: isSBahn ? 'S-Bahn Commuter' : (isLongDistance ? 'InterCity / InterRegio' : 'Regional SBB'),
+                  service_category: isSBahn ? 'CERCANIAS' : (isLongDistance ? 'LARGA_MEDIA' : 'ALTA_VELOCIDAD'),
+                  operator: 'SBB',
                   country: 'CH',
                   continent: 'EU',
                   lat: Number(coord.x.toFixed(5)),
@@ -1094,18 +1401,18 @@ const TrainMap = () => {
                   is_official_gps: true,
                   telemetry_type: 'STATION_BOARD',
                   telemetry_source: 'SBB OpenData en Tiempo Real',
-                  line_name: `Línea SBB: ${data.station?.name || randomStation} -> ${item.to || 'Destino'}`,
-                  last_station_name: `Parado en ${data.station?.name || randomStation} (Destino: ${item.to || 'Vía'})`,
+                  line_name: `Línea SBB: ${data.station?.name || 'Suiza'} -> ${item.to || 'Destino'}`,
+                  last_station_name: `Parado en ${data.station?.name || 'Estación'} (Destino: ${item.to || 'Vía'})`,
                   time: new Date().toISOString(),
                   delay: item.stop?.delay || 0,
                 };
                 updated[trainId] = sanitizeTrainSpeed(rawTrain, prev[trainId]);
               }
             });
-            return updated;
-          });
-        }
-      }
+          }
+        });
+        return updated;
+      });
     } catch (err) {}
   }, []);
 
@@ -1960,6 +2267,13 @@ const TrainMap = () => {
 
             {/* Cercanías */}
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.RENFE_CERCANIAS.color }} /><span><strong>Renfe Cercanías</strong> (ES)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.SNCF_TRANSILIEN.color }} /><span><strong>RER / Transilien</strong> (FR)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.TFL_COMMUTER.color }} /><span><strong>Elizabeth Line</strong> (UK)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.DB_SBAHN.color }} /><span><strong>S-Bahn DB</strong> (DE)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.TRENORD.color }} /><span><strong>Trenord Passante</strong> (IT)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.VR_CERCANIAS.color }} /><span><strong>VR Lähijuna</strong> (FI)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.JR_EAST_COMMUTER.color }} /><span><strong>Yamanote Commuter</strong> (JP)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.LIRR.color }} /><span><strong>LIRR Commuter</strong> (US)</span></div>
 
             {/* Privados Europa */}
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.IRYO.color }} /><span><strong>iryo</strong> (ES ★)</span></div>

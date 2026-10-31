@@ -218,10 +218,20 @@ async def process_zone(
 
     for train in active_trains:
         train_id = f"{operator}-{train.id}"
+        train_raw_name = getattr(train, "name", "") or getattr(train, "id", "")
         station_name = getattr(train, "direction", None) or "Desconocido"
         raw_speed = getattr(train, "speed", None)
         lat = float(train.latitude)
         lon = float(train.longitude)
+
+        # Clasificación de categoría de servicio (S-Bahn / Cercanías vs Larga Distancia)
+        is_cercanias = (
+            train_raw_name.upper().startswith("S") or
+            "S-BAHN" in train_raw_name.upper() or
+            "CERCAN" in train_raw_name.upper() or
+            "COMMUTER" in train_raw_name.upper()
+        )
+        service_category = "CERCANIAS" if is_cercanias else "ALTA_VELOCIDAD"
 
         # Si el tren no se mueve geográficamente, la velocidad se corrige siempre a cero
         speed = float(raw_speed) if raw_speed is not None else None
@@ -237,6 +247,10 @@ async def process_zone(
 
         payload.append({
             "train_id": train_id,
+            "train_name": f"{operator} {train_raw_name}" if train_raw_name else train_id,
+            "service": "S-Bahn / Commuter" if is_cercanias else f"InterCity {operator}",
+            "service_category": service_category,
+            "line_name": f"Línea {zone_id} -> {station_name}",
             "operator": operator,
             "country": country,
             "lat": lat,
