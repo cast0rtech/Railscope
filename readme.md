@@ -1,4 +1,4 @@
-# 🚄 RailScope Global — Real-Time Rail Telemetry Platform (Europe & Asia)
+# 🚄 RailScope Global — Real-Time Rail Telemetry Platform (Europe, Asia & North America)
 
 <div align="center">
 
@@ -10,7 +10,7 @@
 [![TimescaleDB](https://img.shields.io/badge/TimescaleDB-PostgreSQL_15-FDB515?logo=postgresql&logoColor=white)](https://www.timescale.com/)
 [![Docker Compose](https://img.shields.io/badge/Docker-Compose_v3.8-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-**Rastreo en tiempo real, indexación espacio-temporal y visualización en vivo del tráfico ferroviario y de alta velocidad en Europa y Asia.**
+**Rastreo en tiempo real, indexación espacio-temporal y visualización en vivo del tráfico ferroviario y de alta velocidad en Europa, Asia y Norteamérica (EE.UU., Canadá y México).**
 
 [🌐 Ver Aplicación en Vivo (Live Demo)](https://cast0rtech.github.io/Railscope/) • [📖 Arquitectura](#arquitectura-del-sistema) • [🚀 Despliegue Rápido](#guía-de-despliegue-rápido) • [📡 Endpoints API](#referencia-de-la-api--websockets)
 
@@ -20,15 +20,16 @@
 
 ## 📌 Descripción del Proyecto
 
-**RailScope Global** es una plataforma telemática distribuida de alto rendimiento diseñada para la ingesta, indexación espacio-temporal y visualización en tiempo real del tráfico ferroviario y corredores de alta velocidad en **Europa** y **Asia**.
+**RailScope Global** es una plataforma telemática distribuida de alto rendimiento diseñada para la ingesta, indexación espacio-temporal y visualización en tiempo real del tráfico ferroviario y corredores de alta velocidad en **Europa**, **Asia** y **Norteamérica**.
 
-Monitorea simultáneamente los corredores de alta velocidad de operadores nacionales y compañías privadas en España, Francia, Italia, Alemania, Suiza, Austria, Reino Unido, Países Bajos, Bélgica, Suecia, Polonia, Portugal, así como las redes líderes de Asia en Japón (Shinkansen), China (CR / Fuxing), Corea del Sur (KTX / SRT), Taiwán (THSR), India (Vande Bharat), Uzbekistán (Afrosiyob), Turquía (YHT), Arabia Saudí (Haramain) e Indonesia (Whoosh).
+Monitorea simultáneamente los corredores de alta velocidad de operadores nacionales y compañías privadas en España, Francia, Italia, Alemania, Suiza, Austria, Reino Unido, Países Bajos, Bélgica, Suecia, Polonia, Portugal, Estados Unidos (Amtrak Acela, Brightline, Caltrain), Canadá (VIA Rail, Rocky Mountaineer), México (Tren Maya, El Insurgente), Japón (Shinkansen), China (CR / Fuxing), Corea del Sur (KTX / SRT), Taiwán (THSR), India (Vande Bharat), Uzbekistán (Afrosiyob), Turquía (YHT), Arabia Saudí (Haramain) e Indonesia (Whoosh).
 
 ---
 
 ## ⚡ Características Principales
 
-* **Cobertura Ferroviaria Multicontinental (Europa & Asia):** Rastreo en vivo de flotas estatales y operadoras privadas liberalizadas con filtrado por continente y país.
+* **Cobertura Ferroviaria Multicontinental (Europa, Asia & Norteamérica):** Rastreo en vivo de flotas estatales y operadoras privadas liberalizadas con filtrado por continente y país.
+* **Motor On-Device 100% Autosuficiente:** Funciona de forma autónoma en navegadores web y en dispositivos Android sin depender de servidores locales.
 * **Ingesta Concurrente con Semáforo:** Worker asíncrono con clientes HAFAS y barrido geográfico por cuadrículas (*Bounding Boxes*) limitado a 2 conexiones simultáneas para prevenir bloqueos de IP.
 * **Persistencia Espacio-Temporal en TimescaleDB:** 
   * Tabla `train_telemetry` convertida en **Hypertable** particionada por tiempo con índices compuestos geoespaciales (`lat`, `lon`, `time DESC`).
@@ -46,6 +47,18 @@ Monitorea simultáneamente los corredores de alta velocidad de operadores nacion
 ---
 
 ## 🚅 Operadores Ferroviarios Soportados
+
+### 🌎 Norteamérica (EE.UU., Canadá & México)
+| País / Región | Operador | Tipo | Modelo de Tren / Material Rodante | Velocidad Máx. | Corredores Clave |
+| :--- | :--- | :---: | :--- | :---: | :--- |
+| **Estados Unidos** 🇺🇸 | **Amtrak Acela** | **Estatal** | Alstom Avelia Liberty / Acela II | 240 km/h (150 mph) | Corredor Noreste (NEC): Boston - Nueva York - Filadelfia - Washington D.C. |
+| **Estados Unidos** 🇺🇸 | **Amtrak Intercity** | **Estatal** | Siemens ALC-42 Charger / Venture | 200 km/h (125 mph) | Northeast Regional, Empire Service, Pacific Surfliner, Cascades |
+| **Estados Unidos** 🇺🇸 | **Brightline Florida** | **Privado** | Siemens SCB-40 Charger | 200 km/h (125 mph) | Aeropuerto de Orlando - West Palm Beach - Fort Lauderdale - MiamiCentral |
+| **Estados Unidos** 🇺🇸 | **Caltrain Electric** | **Público** | Stadler KISS EMU | 180 km/h (110 mph) | San Francisco 4th & King - Millbrae - Palo Alto - San José Diridon |
+| **Canadá** 🇨🇦 | **VIA Rail Canada** | **Estatal** | Siemens Charger Venture Trainsets | 160 km/h (100 mph) | Corredor Québec City - Montreal - Ottawa - Kingston - Toronto Union |
+| **Canadá** 🇨🇦 | **Rocky Mountaineer** | **Privado** | GoldLeaf Dome Bi-Level | 110 km/h | Vancouver - Kamloops - Banff / Jasper (Montañas Rocosas) |
+| **México** 🇲🇽 | **Tren Maya** | **Estatal** | Alstom Xiinbal D-EMU | 160 km/h | Cancún Aeropuerto - Playa del Carmen - Tulum - Mérida - Palenque |
+| **México** 🇲🇽 | **Tren El Insurgente** | **Estatal** | CAF Civity 160 EMU | 160 km/h | Zinacantepec (Toluca) - Lerma - Santa Fe (Ciudad de México) |
 
 ### 🇪🇺 Europa
 | País / Región | Operador | Tipo | Modelo de Tren / Material Rodante | Velocidad Máx. | Corredores Clave |

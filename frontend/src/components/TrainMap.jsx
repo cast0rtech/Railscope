@@ -6,7 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import 'leaflet/dist/leaflet.css';
 
 // ==============================================================================
-// 1. Configuración de Operadores Ferroviarios (Europa & Asia)
+// 1. Configuración de Operadores Ferroviarios (Europa, Asia & Norteamérica)
 // ==============================================================================
 const OPERATOR_CONFIG = {
   // --- EUROPA: Privados / Concesionarias ---
@@ -45,6 +45,16 @@ const OPERATOR_CONFIG = {
   HARAMAIN: { name: 'Haramain High Speed', color: '#1B4D3E', country: 'SA', continent: 'AS', type: 'Estatal', model: 'Talgo 350 SRO' },
   AFROSIYOB: { name: 'Afrosiyob (UTY)', color: '#00A3E0', country: 'UZ', continent: 'AS', type: 'Estatal', model: 'Talgo 250 Afrosiyob' },
   WHOOSH: { name: 'Whoosh (KCIC)', color: '#B30000', country: 'ID', continent: 'AS', type: 'Consorcio', model: 'KCIC400AF Red Panda' },
+
+  // --- NORTEAMÉRICA: Estados Unidos, Canadá & México ---
+  AMTRAK_ACELA: { name: 'Amtrak Acela', color: '#004B87', country: 'US', continent: 'NA', type: 'Estatal', model: 'Avelia Liberty / Acela II' },
+  AMTRAK_REGIONAL: { name: 'Amtrak Intercity', color: '#1B365D', country: 'US', continent: 'NA', type: 'Estatal', model: 'Siemens ALC-42 Charger' },
+  BRIGHTLINE: { name: 'Brightline Florida', color: '#FFE600', country: 'US', continent: 'NA', type: 'Privado', model: 'Siemens SCB-40 Charger' },
+  CALTRAIN: { name: 'Caltrain Electric', color: '#D91C24', country: 'US', continent: 'NA', type: 'Público', model: 'Stadler KISS EMU' },
+  VIA_RAIL: { name: 'VIA Rail Canada', color: '#005596', country: 'CA', continent: 'NA', type: 'Estatal', model: 'Siemens Charger Venture' },
+  ROCKY_MOUNTAINEER: { name: 'Rocky Mountaineer', color: '#8B2332', country: 'CA', continent: 'NA', type: 'Privado', model: 'GoldLeaf Dome Bi-Level' },
+  TREN_MAYA: { name: 'Tren Maya', color: '#0B4F3A', country: 'MX', continent: 'NA', type: 'Estatal', model: 'Alstom Xiinbal D-EMU' },
+  EL_INSURGENTE: { name: 'Tren El Insurgente', color: '#7A1C3C', country: 'MX', continent: 'NA', type: 'Estatal', model: 'CAF Civity 160' },
 
   DEFAULT: { name: 'Operador Ferroviario', color: '#1E40AF', country: 'INT', continent: 'ALL', type: 'Comercial', model: 'Alta Velocidad' },
 };
@@ -100,10 +110,10 @@ const createTrainIcon = (operator, isRealtime) => {
 };
 
 // ==============================================================================
-// 2. Corredores de Alta Velocidad (Europa & Asia) con Cinemática en Tiempo Real
+// 2. Corredores Ferroviarios (Europa, Asia & Norteamérica) en Tiempo Real
 // ==============================================================================
 const HIGH_SPEED_CORRIDORS = [
-  // --- ESPAÑA ---
+  // --- EUROPA: ESPAÑA ---
   { train_id: 'IRYO-6014', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', origCoord: [40.4065, -3.6896], destCoord: [41.3792, 2.1401], speed: 295 },
   { train_id: 'IRYO-6122', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Zaragoza-Delicias', dest: 'Madrid P.Atocha', origCoord: [41.6586, -0.9118], destCoord: [40.4065, -3.6896], speed: 300 },
   { train_id: 'IRYO-6230', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Valencia J.Sorolla', origCoord: [40.4065, -3.6896], destCoord: [39.4667, -0.3774], speed: 285 },
@@ -118,7 +128,7 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'RENFE-AVE-3102', operator: 'RENFE', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Sevilla S.Justa', origCoord: [40.4065, -3.6896], destCoord: [37.3920, -5.9753], speed: 285 },
   { train_id: 'RENFE-AVE-4210', operator: 'RENFE', country: 'ES', continent: 'EU', origin: 'Madrid Chamartín', dest: 'Ourense', origCoord: [40.4720, -3.6826], destCoord: [42.3480, -7.8640], speed: 290 },
 
-  // --- FRANCIA ---
+  // --- EUROPA: FRANCIA ---
   { train_id: 'SNCF-TGV-9205', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Paris Gare de Lyon', dest: 'Lyon Part-Dieu', origCoord: [48.8443, 2.3744], destCoord: [45.7606, 4.8598], speed: 310 },
   { train_id: 'SNCF-TGV-6612', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Lyon Part-Dieu', dest: 'Marseille St-Charles', origCoord: [45.7606, 4.8598], destCoord: [43.3032, 5.3804], speed: 300 },
   { train_id: 'SNCF-TGV-8410', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Paris Montparnasse', dest: 'Bordeaux Saint-Jean', origCoord: [48.8412, 2.3204], destCoord: [44.8258, -0.5566], speed: 315 },
@@ -127,7 +137,7 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'EUROSTAR-9412', operator: 'EUROSTAR', country: 'DE/NL', continent: 'EU', origin: 'Köln Hbf', dest: 'Amsterdam Centraal', origCoord: [50.9422, 6.9578], destCoord: [52.3791, 4.9003], speed: 250 },
   { train_id: 'EUROSTAR-9110', operator: 'EUROSTAR', country: 'UK/FR', continent: 'EU', origin: 'London St Pancras', dest: 'Paris Gare du Nord', origCoord: [51.5314, -0.1261], destCoord: [48.8809, 2.3553], speed: 300 },
 
-  // --- ITALIA ---
+  // --- EUROPA: ITALIA ---
   { train_id: 'ITALO-9915', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Milano Centrale', dest: 'Roma Termini', origCoord: [45.4870, 9.2045], destCoord: [41.9010, 12.5020], speed: 300 },
   { train_id: 'ITALO-9928', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Roma Termini', dest: 'Napoli Centrale', origCoord: [41.9010, 12.5020], destCoord: [40.8522, 14.2722], speed: 295 },
   { train_id: 'ITALO-9942', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Torino P.Nuova', dest: 'Milano Centrale', origCoord: [45.0620, 7.6780], destCoord: [45.4870, 9.2045], speed: 290 },
@@ -137,7 +147,7 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'FS-FR-9620', operator: 'FS', country: 'IT', continent: 'EU', origin: 'Milano Centrale', dest: 'Bologna Centrale', origCoord: [45.4870, 9.2045], destCoord: [44.5058, 11.3430], speed: 285 },
   { train_id: 'FS-FR-9304', operator: 'FS', country: 'IT', continent: 'EU', origin: 'Roma Termini', dest: 'Reggio Calabria', origCoord: [41.9010, 12.5020], destCoord: [38.1030, 15.6420], speed: 260 },
 
-  // --- ALEMANIA ---
+  // --- EUROPA: ALEMANIA ---
   { train_id: 'FLIX-FLX10', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Berlin Hbf', dest: 'Frankfurt(Main)Hbf', origCoord: [52.5251, 13.3694], destCoord: [50.1071, 8.6638], speed: 200 },
   { train_id: 'FLIX-FLX20', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Hamburg Hbf', dest: 'Köln Hbf', origCoord: [53.5534, 10.0069], destCoord: [50.9422, 6.9578], speed: 200 },
   { train_id: 'FLIX-FLX30', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Köln Hbf', dest: 'Berlin Hbf', origCoord: [50.9422, 6.9578], destCoord: [52.5251, 13.3694], speed: 195 },
@@ -147,7 +157,7 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'DB-ICE42-512', operator: 'DB', country: 'DE', continent: 'EU', origin: 'Nürnberg Hbf', dest: 'Erfurt Hbf', origCoord: [49.4447, 11.0827], destCoord: [50.9725, 11.0384], speed: 300 },
   { train_id: 'DB-ICE78-802', operator: 'DB', country: 'DE', continent: 'EU', origin: 'Hamburg Hbf', dest: 'Berlin Hbf', origCoord: [53.5534, 10.0069], destCoord: [52.5251, 13.3694], speed: 230 },
 
-  // --- SUIZA & AUSTRIA ---
+  // --- EUROPA: SUIZA & AUSTRIA ---
   { train_id: 'SBB-GIR-410', operator: 'SBB', country: 'CH', continent: 'EU', origin: 'Zürich HB', dest: 'Lugano', origCoord: [47.3782, 8.5402], destCoord: [46.0053, 8.9470], speed: 250 },
   { train_id: 'SBB-IC1-720', operator: 'SBB', country: 'CH', continent: 'EU', origin: 'Genève-Cornavin', dest: 'Lausanne', origCoord: [46.2104, 6.1424], destCoord: [46.5168, 6.6291], speed: 200 },
   { train_id: 'SBB-IC5-515', operator: 'SBB', country: 'CH', continent: 'EU', origin: 'Basel SBB', dest: 'Zürich HB', origCoord: [47.5474, 7.5896], destCoord: [47.3782, 8.5402], speed: 200 },
@@ -157,7 +167,7 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'OEBB-RJ533', operator: 'OEBB', country: 'AT', continent: 'EU', origin: 'Salzburg Hbf', dest: 'Innsbruck Hbf', origCoord: [47.8129, 13.0456], destCoord: [47.2633, 11.4010], speed: 210 },
   { train_id: 'OEBB-RJX112', operator: 'OEBB', country: 'AT', continent: 'EU', origin: 'Wien Hbf', dest: 'Graz Hbf', origCoord: [48.1851, 16.3762], destCoord: [47.0722, 15.4167], speed: 200 },
 
-  // --- REINO UNIDO & BENELUX & ESCANDINAVIA & PORTUGAL & POLONIA ---
+  // --- EUROPA: REINO UNIDO & BENELUX & ESCANDINAVIA & PORTUGAL & POLONIA ---
   { train_id: 'LNER-AZ-102', operator: 'LNER', country: 'UK', continent: 'EU', origin: "London King's Cross", dest: 'Edinburgh Waverley', origCoord: [51.5320, -0.1240], destCoord: [55.9520, -3.1890], speed: 200 },
   { train_id: 'AVANTI-PEN-390', operator: 'AVANTI', country: 'UK', continent: 'EU', origin: 'London Euston', dest: 'Manchester Piccadilly', origCoord: [51.5284, -0.1332], destCoord: [53.4774, -2.2312], speed: 200 },
   { train_id: 'NS-ICNG-914', operator: 'NS', country: 'NL', continent: 'EU', origin: 'Amsterdam Centraal', dest: 'Rotterdam Centraal', origCoord: [52.3791, 4.9003], destCoord: [51.9250, 4.4690], speed: 200 },
@@ -207,6 +217,30 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'SAR-HHR-110', operator: 'HARAMAIN', country: 'SA', continent: 'AS', origin: 'Mecca Makkah', dest: 'Medina Madinah', origCoord: [21.4244, 39.7905], destCoord: [24.4606, 39.6455], speed: 300 },
   { train_id: 'SAR-HHR-125', operator: 'HARAMAIN', country: 'SA', continent: 'AS', origin: 'Jeddah Airport', dest: 'Medina Madinah', origCoord: [21.6705, 39.1558], destCoord: [24.4606, 39.6455], speed: 300 },
   { train_id: 'ID-WHOOSH-G10', operator: 'WHOOSH', country: 'ID', continent: 'AS', origin: 'Jakarta Halim', dest: 'Bandung Tegalluar', origCoord: [-6.2483, 106.8833], destCoord: [-6.9739, 107.7128], speed: 350 },
+
+  // --- NORTEAMÉRICA: ESTADOS UNIDOS ---
+  { train_id: 'AMTK-ACELA-2150', operator: 'AMTRAK_ACELA', country: 'US', continent: 'NA', origin: 'Washington Union', dest: 'New York Penn', origCoord: [38.8973, -77.0063], destCoord: [40.7505, -73.9935], speed: 240 },
+  { train_id: 'AMTK-ACELA-2165', operator: 'AMTRAK_ACELA', country: 'US', continent: 'NA', origin: 'New York Penn', dest: 'Boston South', origCoord: [40.7505, -73.9935], destCoord: [42.3522, -71.0552], speed: 240 },
+  { train_id: 'AMTK-NER-174', operator: 'AMTRAK_REGIONAL', country: 'US', continent: 'NA', origin: 'Philadelphia 30th', dest: 'Baltimore Penn', origCoord: [39.9558, -75.1820], destCoord: [39.3072, -76.6156], speed: 200 },
+  { train_id: 'AMTK-PAC-SURF-768', operator: 'AMTRAK_REGIONAL', country: 'US', continent: 'NA', origin: 'Los Angeles Union', dest: 'San Diego Santa Fe', origCoord: [34.0562, -118.2365], destCoord: [32.7169, -117.1691], speed: 145 },
+  { train_id: 'AMTK-CAS-505', operator: 'AMTRAK_REGIONAL', country: 'US/CA', continent: 'NA', origin: 'Seattle King St', dest: 'Vancouver Pacific Central', origCoord: [47.5984, -122.3299], destCoord: [49.2736, -123.0978], speed: 130 },
+  { train_id: 'AMTK-EMP-284', operator: 'AMTRAK_REGIONAL', country: 'US', continent: 'NA', origin: 'Albany-Rensselaer', dest: 'New York Penn', origCoord: [42.6416, -73.7423], destCoord: [40.7505, -73.9935], speed: 180 },
+  { train_id: 'BL-ORL-MIA-101', operator: 'BRIGHTLINE', country: 'US', continent: 'NA', origin: 'Orlando Intl Airport', dest: 'MiamiCentral', origCoord: [28.4312, -81.3081], destCoord: [25.7781, -80.1983], speed: 200 },
+  { train_id: 'BL-MIA-ORL-108', operator: 'BRIGHTLINE', country: 'US', continent: 'NA', origin: 'MiamiCentral', dest: 'West Palm Beach', origCoord: [25.7781, -80.1983], destCoord: [26.7139, -80.0578], speed: 180 },
+  { train_id: 'CALTRAIN-EL-142', operator: 'CALTRAIN', country: 'US', continent: 'NA', origin: 'San Francisco 4th & King', dest: 'San Jose Diridon', origCoord: [37.7766, -122.3949], destCoord: [37.3301, -121.9022], speed: 180 },
+
+  // --- NORTEAMÉRICA: CANADÁ ---
+  { train_id: 'VIA-CORR-64', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Toronto Union', dest: 'Montréal Gare Centrale', origCoord: [43.6453, -79.3806], destCoord: [45.4998, -73.5667], speed: 160 },
+  { train_id: 'VIA-CORR-26', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Montréal Gare Centrale', dest: 'Québec City Palais', origCoord: [45.4998, -73.5667], destCoord: [46.8174, -71.2137], speed: 160 },
+  { train_id: 'VIA-CORR-45', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Ottawa Station', dest: 'Toronto Union', origCoord: [45.4162, -75.6528], destCoord: [43.6453, -79.3806], speed: 160 },
+  { train_id: 'VIA-CAN-01', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Jasper Station', dest: 'Vancouver Pacific Central', origCoord: [52.8767, -118.0811], destCoord: [49.2736, -123.0978], speed: 130 },
+  { train_id: 'RKY-MNT-EXP', operator: 'ROCKY_MOUNTAINEER', country: 'CA', continent: 'NA', origin: 'Banff Station', dest: 'Kamloops North', origCoord: [51.1803, -115.5772], destCoord: [50.7289, -120.3547], speed: 110 },
+
+  // --- NORTEAMÉRICA: MÉXICO ---
+  { train_id: 'MAYA-XIIN-101', operator: 'TREN_MAYA', country: 'MX', continent: 'NA', origin: 'Cancún Aeropuerto', dest: 'Playa del Carmen', origCoord: [21.0372, -86.8770], destCoord: [20.6274, -87.0798], speed: 160 },
+  { train_id: 'MAYA-XIIN-204', operator: 'TREN_MAYA', country: 'MX', continent: 'NA', origin: 'Playa del Carmen', dest: 'Tulum Aeropuerto', origCoord: [20.6274, -87.0798], destCoord: [20.1638, -87.6531], speed: 160 },
+  { train_id: 'MAYA-XIIN-305', operator: 'TREN_MAYA', country: 'MX', continent: 'NA', origin: 'Campeche San Francisco', dest: 'Mérida Teya', origCoord: [19.8329, -90.5050], destCoord: [20.9419, -89.5447], speed: 160 },
+  { train_id: 'INSURGENTE-701', operator: 'EL_INSURGENTE', country: 'MX', continent: 'NA', origin: 'Zinacantepec (Toluca)', dest: 'Santa Fe (CDMX)', origCoord: [19.2753, -99.7042], destCoord: [19.3592, -99.2608], speed: 160 },
 ];
 
 // Cálculo de posición cinemática en tiempo real interpolando según el reloj de alta precisión
@@ -247,10 +281,10 @@ const ChangeMapView = ({ center, zoom }) => {
 // ==============================================================================
 const TrainMap = () => {
   const [trains, setTrains] = useState({});
-  const [continentFilter, setContinentFilter] = useState('ALL'); // ALL, EU, AS
+  const [continentFilter, setContinentFilter] = useState('ALL'); // ALL, EU, AS, NA
   const [filterType, setFilterType] = useState('ALL'); // ALL, PRIVADO, ESTATAL
-  const [mapCenter, setMapCenter] = useState([45.0, 15.0]);
-  const [mapZoom, setMapZoom] = useState(4);
+  const [mapCenter, setMapCenter] = useState([38.0, 10.0]);
+  const [mapZoom, setMapZoom] = useState(3);
 
   // Estados de conectividad y modo de ejecución
   const isNative = Capacitor.isNativePlatform();
@@ -319,9 +353,7 @@ const TrainMap = () => {
           return updated;
         });
       }
-    } catch (err) {
-      // Ignorar fallos de red en modo offline
-    }
+    } catch (err) {}
   }, []);
 
   // Detección de red online/offline nativa
@@ -434,7 +466,7 @@ const TrainMap = () => {
 
       // Filtro de tipo de operador
       if (filterType === 'PRIVADO') return cfg.type.includes('Privado');
-      if (filterType === 'ESTATAL') return cfg.type.includes('Estatal');
+      if (filterType === 'ESTATAL') return cfg.type.includes('Estatal') || cfg.type.includes('Público');
 
       return true;
     });
@@ -482,7 +514,7 @@ const TrainMap = () => {
           }} />
           <div>
             <div style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#60A5FA', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              RailScope
+              RailScope Global
               <span style={{
                 backgroundColor: '#1E293B',
                 color: '#34D399',
@@ -542,22 +574,24 @@ const TrainMap = () => {
           borderRadius: '12px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
           border: '1px solid rgba(255, 255, 255, 0.15)',
-          maxWidth: '360px',
+          maxWidth: '380px',
           width: 'calc(100vw - 28px)',
           backdropFilter: 'blur(12px)',
           fontFamily: 'system-ui, sans-serif',
+          maxHeight: '80vh',
+          overflowY: 'auto',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontWeight: 700, fontSize: '13px', color: '#93C5FD' }}>Filtros & Navegación</span>
+            <span style={{ fontWeight: 700, fontSize: '13px', color: '#93C5FD' }}>Filtros & Navegación Global</span>
             <button onClick={() => setShowFiltersPanel(false)} style={closeBtnStyle}>✕</button>
           </div>
 
           {/* Continentes */}
           <div style={{ marginBottom: '12px' }}>
             <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginBottom: '6px' }}>CONTINENTE:</div>
-            <div style={{ display: 'flex', gap: '6px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
               <button
-                onClick={() => { setContinentFilter('ALL'); jumpToRegion([38.0, 50.0], 3, 'ALL'); }}
+                onClick={() => { setContinentFilter('ALL'); jumpToRegion([32.0, -20.0], 3, 'ALL'); }}
                 style={filterBtnStyle(continentFilter === 'ALL')}
               >
                 🌍 Todos
@@ -574,6 +608,12 @@ const TrainMap = () => {
               >
                 🌏 Asia
               </button>
+              <button
+                onClick={() => { setContinentFilter('NA'); jumpToRegion([39.0, -98.0], 4, 'NA'); }}
+                style={filterBtnStyle(continentFilter === 'NA')}
+              >
+                🌎 Norteamérica
+              </button>
             </div>
           </div>
 
@@ -589,14 +629,26 @@ const TrainMap = () => {
 
           {/* Salto Rápido a Países */}
           <div>
-            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginBottom: '6px' }}>ENFOCAR PAÍS:</div>
+            <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginBottom: '6px' }}>ENFOCAR PAÍS / CORREDOR:</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              {/* Norteamérica */}
+              <button onClick={() => jumpToRegion([39.5, -75.5], 6, 'NA')} style={tagBtnStyle}>🇺🇸 EE.UU. (Acela / NEC)</button>
+              <button onClick={() => jumpToRegion([26.7, -80.2], 7, 'NA')} style={tagBtnStyle}>🇺🇸 Florida (Brightline)</button>
+              <button onClick={() => jumpToRegion([37.5, -122.1], 8, 'NA')} style={tagBtnStyle}>🇺🇸 California (Caltrain)</button>
+              <button onClick={() => jumpToRegion([44.5, -76.5], 6, 'NA')} style={tagBtnStyle}>🇨🇦 Canadá (VIA Rail)</button>
+              <button onClick={() => jumpToRegion([51.0, -117.0], 6, 'NA')} style={tagBtnStyle}>🇨🇦 Rocosas (R.Mountaineer)</button>
+              <button onClick={() => jumpToRegion([20.8, -88.0], 7, 'NA')} style={tagBtnStyle}>🇲🇽 México (Tren Maya)</button>
+              <button onClick={() => jumpToRegion([19.3, -99.4], 9, 'NA')} style={tagBtnStyle}>🇲🇽 México (Insurgente)</button>
+
+              {/* Europa */}
               <button onClick={() => jumpToRegion([40.4168, -3.7038], 6, 'EU')} style={tagBtnStyle}>🇪🇸 España</button>
               <button onClick={() => jumpToRegion([46.6034, 1.8883], 6, 'EU')} style={tagBtnStyle}>🇫🇷 Francia</button>
               <button onClick={() => jumpToRegion([51.1657, 10.4515], 6, 'EU')} style={tagBtnStyle}>🇩🇪 Alemania</button>
               <button onClick={() => jumpToRegion([42.8333, 12.8333], 6, 'EU')} style={tagBtnStyle}>🇮🇹 Italia</button>
               <button onClick={() => jumpToRegion([46.8182, 8.2275], 7, 'EU')} style={tagBtnStyle}>🇨🇭 Suiza</button>
               <button onClick={() => jumpToRegion([54.5, -2.5], 6, 'EU')} style={tagBtnStyle}>🇬🇧 Reino Unido</button>
+
+              {/* Asia */}
               <button onClick={() => jumpToRegion([36.2048, 138.2529], 6, 'AS')} style={tagBtnStyle}>🇯🇵 Japón</button>
               <button onClick={() => jumpToRegion([34.0, 113.0], 5, 'AS')} style={tagBtnStyle}>🇨🇳 China</button>
               <button onClick={() => jumpToRegion([36.5, 127.8], 7, 'AS')} style={tagBtnStyle}>🇰🇷 Corea</button>
@@ -621,23 +673,33 @@ const TrainMap = () => {
           borderRadius: '12px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
           border: '1px solid rgba(255, 255, 255, 0.15)',
-          maxWidth: '520px',
+          maxWidth: '560px',
           width: 'calc(100vw - 28px)',
-          maxHeight: '48vh',
+          maxHeight: '52vh',
           overflowY: 'auto',
           backdropFilter: 'blur(12px)',
           fontFamily: 'system-ui, sans-serif',
           fontSize: '11px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontWeight: 700, color: '#93C5FD' }}>Operadores (Europa & Asia)</span>
+            <span style={{ fontWeight: 700, color: '#93C5FD' }}>Operadores Globales (Europa, Asia & Norteamérica)</span>
             <button onClick={() => setShowLegendPanel(false)} style={closeBtnStyle}>✕</button>
           </div>
           <div style={{ color: '#FBBF24', fontSize: '10px', marginBottom: '8px' }}>
-            ★ Operadores Privados Liberalizados de Alta Velocidad
+            ★ Operadores Privados Liberalizados / Concesiones
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '6px 10px' }}>
+            {/* Norteamérica */}
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.AMTRAK_ACELA.color }} /><span><strong>Amtrak Acela</strong> (US)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.AMTRAK_REGIONAL.color }} /><span>Amtrak Intercity (US)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.BRIGHTLINE.color }} /><span><strong>Brightline</strong> (US ★)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.CALTRAIN.color }} /><span>Caltrain (US)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.VIA_RAIL.color }} /><span><strong>VIA Rail</strong> (CA)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.ROCKY_MOUNTAINEER.color }} /><span><strong>R.Mountaineer</strong> (CA ★)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.TREN_MAYA.color }} /><span><strong>Tren Maya</strong> (MX)</span></div>
+            <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.EL_INSURGENTE.color }} /><span>El Insurgente (MX)</span></div>
+
             {/* Privados Europa */}
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.IRYO.color }} /><span><strong>iryo</strong> (ES ★)</span></div>
             <div style={legendItemStyle}><span style={{ ...dotStyle, backgroundColor: OPERATOR_CONFIG.OUIGO.color }} /><span><strong>Ouigo</strong> (ES ★)</span></div>
@@ -794,6 +856,7 @@ const TrainMap = () => {
             {/* Información Técnica */}
             <div style={{ fontSize: '11px', color: '#64748B', lineHeight: 1.5, borderTop: '1px solid #1E293B', paddingTop: '10px' }}>
               <div>• Plataforma: {isNative ? 'Android Nativa (Capacitor)' : 'Navegador Web'}</div>
+              <div>• Cobertura: Europa, Asia y Norteamérica</div>
               <div>• Corredores precargados: {HIGH_SPEED_CORRIDORS.length} trenes activos</div>
               <div>• API Datos Abiertos: transport.opendata.ch (En vivo)</div>
             </div>
@@ -846,6 +909,10 @@ const TrainMap = () => {
             const opKey = train.operator?.toUpperCase() || 'DEFAULT';
             const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
 
+            let continentLabel = '🇪🇺 Europa';
+            if (train.continent === 'AS' || cfg.continent === 'AS') continentLabel = '🌏 Asia';
+            if (train.continent === 'NA' || cfg.continent === 'NA') continentLabel = '🌎 Norteamérica';
+
             return (
               <Marker
                 key={train.train_id}
@@ -869,7 +936,7 @@ const TrainMap = () => {
                     </div>
                     <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
                       <div><strong>Operador:</strong> {cfg.name} ({train.country})</div>
-                      <div><strong>Continente:</strong> {train.continent === 'AS' || cfg.continent === 'AS' ? '🌏 Asia' : '🇪🇺 Europa'}</div>
+                      <div><strong>Continente:</strong> {continentLabel}</div>
                       <div><strong>Material Rodante:</strong> {cfg.model}</div>
                       <div><strong>Ruta / Dirección:</strong> {train.last_station_name || 'En tránsito'}</div>
                       {train.speed != null && (
