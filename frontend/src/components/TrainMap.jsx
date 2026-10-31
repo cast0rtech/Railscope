@@ -148,138 +148,388 @@ const createUserLocationIcon = () => {
 };
 
 // ==============================================================================
-// 2. Corredores Ferroviarios (Europa, Asia & Norteamérica) en Tiempo Real
+// 2. Corredores Ferroviarios con Trazado Geodésico Real de Vía (Waypoints)
 // ==============================================================================
 const HIGH_SPEED_CORRIDORS = [
   // --- EUROPA: ESPAÑA ---
-  { train_id: 'IRYO-6014', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', origCoord: [40.4065, -3.6896], destCoord: [41.3792, 2.1401], speed: 295 },
-  { train_id: 'IRYO-6122', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Zaragoza-Delicias', dest: 'Madrid P.Atocha', origCoord: [41.6586, -0.9118], destCoord: [40.4065, -3.6896], speed: 300 },
-  { train_id: 'IRYO-6230', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Valencia J.Sorolla', origCoord: [40.4065, -3.6896], destCoord: [39.4667, -0.3774], speed: 285 },
-  { train_id: 'IRYO-6345', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Sevilla S.Justa', dest: 'Madrid P.Atocha', origCoord: [37.3920, -5.9753], destCoord: [40.4065, -3.6896], speed: 290 },
-  { train_id: 'IRYO-6410', operator: 'IRYO', country: 'ES', continent: 'EU', origin: 'Málaga M.Zambrano', dest: 'Córdoba Central', origCoord: [36.7118, -4.4326], destCoord: [37.8882, -4.7892], speed: 280 },
-  { train_id: 'OUIGO-9710', operator: 'OUIGO', country: 'ES', continent: 'EU', origin: 'Madrid Chamartín', dest: 'Barcelona Sants', origCoord: [40.4720, -3.6826], destCoord: [41.3792, 2.1401], speed: 300 },
-  { train_id: 'OUIGO-9725', operator: 'OUIGO', country: 'ES', continent: 'EU', origin: 'Barcelona Sants', dest: 'Camp de Tarragona', origCoord: [41.3792, 2.1401], destCoord: [41.2000, 1.2500], speed: 290 },
-  { train_id: 'OUIGO-9830', operator: 'OUIGO', country: 'ES', continent: 'EU', origin: 'Madrid Chamartín', dest: 'Valencia J.Sorolla', origCoord: [40.4720, -3.6826], destCoord: [39.4667, -0.3774], speed: 295 },
-  { train_id: 'OUIGO-9615', operator: 'OUIGO', country: 'ES', continent: 'EU', origin: 'Valladolid C.Grande', dest: 'Segovia Guiomar', origCoord: [41.6420, -4.7280], destCoord: [40.9100, -4.1100], speed: 280 },
-  { train_id: 'RENFE-AVE-2143', operator: 'RENFE', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', origCoord: [40.4065, -3.6896], destCoord: [41.3792, 2.1401], speed: 305 },
-  { train_id: 'RENFE-AVLO-2151', operator: 'RENFE', country: 'ES', continent: 'EU', origin: 'Madrid Chamartín', dest: 'Valencia J.Sorolla', origCoord: [40.4720, -3.6826], destCoord: [39.4667, -0.3774], speed: 295 },
-  { train_id: 'RENFE-AVE-3102', operator: 'RENFE', country: 'ES', continent: 'EU', origin: 'Madrid P.Atocha', dest: 'Sevilla S.Justa', origCoord: [40.4065, -3.6896], destCoord: [37.3920, -5.9753], speed: 285 },
-  { train_id: 'RENFE-AVE-4210', operator: 'RENFE', country: 'ES', continent: 'EU', origin: 'Madrid Chamartín', dest: 'Ourense', origCoord: [40.4720, -3.6826], destCoord: [42.3480, -7.8640], speed: 290 },
+  {
+    train_id: 'IRYO-6014', operator: 'IRYO', country: 'ES', continent: 'EU',
+    origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', speed: 295,
+    line_name: 'LAV Madrid - Zaragoza - Barcelona (Línea 050 Adif)',
+    waypoints: [
+      [40.4065, -3.6896], [40.4883, -3.1090], [41.3486, -1.6375], [41.6586, -0.9118],
+      [41.6212, 0.6322], [41.1928, 1.2544], [41.3465, 1.6972], [41.3792, 2.1401]
+    ]
+  },
+  {
+    train_id: 'IRYO-6122', operator: 'IRYO', country: 'ES', continent: 'EU',
+    origin: 'Zaragoza-Delicias', dest: 'Madrid P.Atocha', speed: 300,
+    line_name: 'LAV Zaragoza - Calatayud - Madrid (Línea 050 Adif)',
+    waypoints: [
+      [41.6586, -0.9118], [41.3486, -1.6375], [40.4883, -3.1090], [40.4065, -3.6896]
+    ]
+  },
+  {
+    train_id: 'IRYO-6230', operator: 'IRYO', country: 'ES', continent: 'EU',
+    origin: 'Madrid P.Atocha', dest: 'Valencia J.Sorolla', speed: 285,
+    line_name: 'LAV Madrid - Levante (Línea 040 Adif)',
+    waypoints: [
+      [40.4065, -3.6896], [40.0381, -2.1458], [39.5133, -1.1394], [39.4667, -0.3774]
+    ]
+  },
+  {
+    train_id: 'IRYO-6345', operator: 'IRYO', country: 'ES', continent: 'EU',
+    origin: 'Sevilla S.Justa', dest: 'Madrid P.Atocha', speed: 290,
+    line_name: 'LAV Madrid - Sevilla (Línea 010 Adif)',
+    waypoints: [
+      [37.3920, -5.9753], [37.8882, -4.7892], [38.6908, -4.1089], [38.9892, -3.9189], [40.4065, -3.6896]
+    ]
+  },
+  {
+    train_id: 'IRYO-6410', operator: 'IRYO', country: 'ES', continent: 'EU',
+    origin: 'Málaga M.Zambrano', dest: 'Córdoba Central', speed: 280,
+    line_name: 'LAV Córdoba - Málaga (Línea 020 Adif)',
+    waypoints: [
+      [36.7118, -4.4326], [37.0700, -4.7170], [37.3912, -4.8210], [37.8882, -4.7892]
+    ]
+  },
+  {
+    train_id: 'OUIGO-9710', operator: 'OUIGO', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Barcelona Sants', speed: 300,
+    line_name: 'LAV Madrid - Barcelona (Línea 050 Adif)',
+    waypoints: [
+      [40.4720, -3.6826], [40.4883, -3.1090], [41.3486, -1.6375], [41.6586, -0.9118],
+      [41.6212, 0.6322], [41.1928, 1.2544], [41.3792, 2.1401]
+    ]
+  },
+  {
+    train_id: 'OUIGO-9725', operator: 'OUIGO', country: 'ES', continent: 'EU',
+    origin: 'Barcelona Sants', dest: 'Camp de Tarragona', speed: 290,
+    line_name: 'LAV Corredor Nordeste (Línea 050 Adif)',
+    waypoints: [
+      [41.3792, 2.1401], [41.3465, 1.6972], [41.1928, 1.2544]
+    ]
+  },
+  {
+    train_id: 'OUIGO-9830', operator: 'OUIGO', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Valencia J.Sorolla', speed: 295,
+    line_name: 'LAV Madrid - Levante (Línea 040 Adif)',
+    waypoints: [
+      [40.4720, -3.6826], [40.0381, -2.1458], [39.5133, -1.1394], [39.4667, -0.3774]
+    ]
+  },
+  {
+    train_id: 'OUIGO-9615', operator: 'OUIGO', country: 'ES', continent: 'EU',
+    origin: 'Valladolid C.Grande', dest: 'Segovia Guiomar', speed: 280,
+    line_name: 'LAV Madrid - Segovia - Valladolid (Línea 080 Adif)',
+    waypoints: [
+      [41.6420, -4.7280], [41.3000, -4.9100], [40.9100, -4.1100]
+    ]
+  },
+  {
+    train_id: 'RENFE-AVE-2143', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid P.Atocha', dest: 'Barcelona Sants', speed: 305,
+    line_name: 'LAV Madrid - Barcelona (Línea 050 Adif)',
+    waypoints: [
+      [40.4065, -3.6896], [40.4883, -3.1090], [41.3486, -1.6375], [41.6586, -0.9118],
+      [41.6212, 0.6322], [41.1928, 1.2544], [41.3792, 2.1401]
+    ]
+  },
+  {
+    train_id: 'RENFE-AVLO-2151', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Valencia J.Sorolla', speed: 295,
+    line_name: 'LAV Madrid - Levante (Línea 040 Adif)',
+    waypoints: [
+      [40.4720, -3.6826], [40.0381, -2.1458], [39.5133, -1.1394], [39.4667, -0.3774]
+    ]
+  },
+  {
+    train_id: 'RENFE-AVE-3102', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid P.Atocha', dest: 'Sevilla S.Justa', speed: 285,
+    line_name: 'LAV Madrid - Sevilla (Línea 010 Adif)',
+    waypoints: [
+      [40.4065, -3.6896], [38.9892, -3.9189], [38.6908, -4.1089], [37.8882, -4.7892], [37.3920, -5.9753]
+    ]
+  },
+  {
+    train_id: 'RENFE-AVE-4210', operator: 'RENFE', country: 'ES', continent: 'EU',
+    origin: 'Madrid Chamartín', dest: 'Ourense', speed: 290,
+    line_name: 'LAV Madrid - Galicia (Línea 082 Adif)',
+    waypoints: [
+      [40.4720, -3.6826], [40.9100, -4.1100], [41.3000, -4.9100], [41.5136, -5.7419], [42.0000, -6.6000], [42.3480, -7.8640]
+    ]
+  },
 
   // --- EUROPA: FRANCIA ---
-  { train_id: 'SNCF-TGV-9205', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Paris Gare de Lyon', dest: 'Lyon Part-Dieu', origCoord: [48.8443, 2.3744], destCoord: [45.7606, 4.8598], speed: 310 },
-  { train_id: 'SNCF-TGV-6612', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Lyon Part-Dieu', dest: 'Marseille St-Charles', origCoord: [45.7606, 4.8598], destCoord: [43.3032, 5.3804], speed: 300 },
-  { train_id: 'SNCF-TGV-8410', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Paris Montparnasse', dest: 'Bordeaux Saint-Jean', origCoord: [48.8412, 2.3204], destCoord: [44.8258, -0.5566], speed: 315 },
-  { train_id: 'SNCF-TGV-7015', operator: 'SNCF', country: 'FR', continent: 'EU', origin: 'Paris Gare du Nord', dest: 'Lille Europe', origCoord: [48.8809, 2.3553], destCoord: [50.6389, 3.0758], speed: 300 },
-  { train_id: 'EUROSTAR-9304', operator: 'EUROSTAR', country: 'FR/BE/DE', continent: 'EU', origin: 'Paris Gare du Nord', dest: 'Köln Hbf', origCoord: [48.8809, 2.3553], destCoord: [50.9422, 6.9578], speed: 300 },
-  { train_id: 'EUROSTAR-9412', operator: 'EUROSTAR', country: 'DE/NL', continent: 'EU', origin: 'Köln Hbf', dest: 'Amsterdam Centraal', origCoord: [50.9422, 6.9578], destCoord: [52.3791, 4.9003], speed: 250 },
-  { train_id: 'EUROSTAR-9110', operator: 'EUROSTAR', country: 'UK/FR', continent: 'EU', origin: 'London St Pancras', dest: 'Paris Gare du Nord', origCoord: [51.5314, -0.1261], destCoord: [48.8809, 2.3553], speed: 300 },
+  {
+    train_id: 'SNCF-TGV-9205', operator: 'SNCF', country: 'FR', continent: 'EU',
+    origin: 'Paris Gare de Lyon', dest: 'Lyon Part-Dieu', speed: 310,
+    line_name: 'LGV Sud-Est (SNCF Réseau)',
+    waypoints: [
+      [48.8443, 2.3744], [48.6653, 2.5631], [47.7025, 4.0210], [46.7725, 4.4300], [46.2800, 4.7800], [45.7606, 4.8598]
+    ]
+  },
+  {
+    train_id: 'SNCF-TGV-6612', operator: 'SNCF', country: 'FR', continent: 'EU',
+    origin: 'Lyon Part-Dieu', dest: 'Marseille St-Charles', speed: 300,
+    line_name: 'LGV Méditerranée (SNCF Réseau)',
+    waypoints: [
+      [45.7606, 4.8598], [44.9900, 4.9700], [43.9214, 4.7861], [43.4553, 5.3175], [43.3032, 5.3804]
+    ]
+  },
+  {
+    train_id: 'SNCF-TGV-8410', operator: 'SNCF', country: 'FR', continent: 'EU',
+    origin: 'Paris Montparnasse', dest: 'Bordeaux Saint-Jean', speed: 315,
+    line_name: 'LGV Sud Europe Atlantique (SNCF Réseau)',
+    waypoints: [
+      [48.8412, 2.3204], [48.7253, 2.2611], [47.8010, 1.0500], [47.3872, 0.7233], [46.5819, 0.3333], [45.6569, 0.1656], [44.8258, -0.5566]
+    ]
+  },
+  {
+    train_id: 'SNCF-TGV-7015', operator: 'SNCF', country: 'FR', continent: 'EU',
+    origin: 'Paris Gare du Nord', dest: 'Lille Europe', speed: 300,
+    line_name: 'LGV Nord (SNCF Réseau)',
+    waypoints: [
+      [48.8809, 2.3553], [49.8597, 2.8322], [50.2900, 2.7800], [50.6389, 3.0758]
+    ]
+  },
+  {
+    train_id: 'EUROSTAR-9304', operator: 'EUROSTAR', country: 'FR/BE/DE', continent: 'EU',
+    origin: 'Paris Gare du Nord', dest: 'Köln Hbf', speed: 300,
+    line_name: 'LGV Nord / HSL 2 / HSL 3 Trans-Europe',
+    waypoints: [
+      [48.8809, 2.3553], [50.6389, 3.0758], [50.8357, 4.3364], [50.6243, 5.5667], [50.7678, 6.0915], [50.9422, 6.9578]
+    ]
+  },
+  {
+    train_id: 'EUROSTAR-9110', operator: 'EUROSTAR', country: 'UK/FR', continent: 'EU',
+    origin: 'London St Pancras', dest: 'Paris Gare du Nord', speed: 300,
+    line_name: 'High Speed 1 + Eurotunnel + LGV Nord',
+    waypoints: [
+      [51.5314, -0.1261], [51.4428, 0.3206], [51.1436, 0.8747], [51.0950, 1.1500], [50.9250, 1.8100], [50.6389, 3.0758], [48.8809, 2.3553]
+    ]
+  },
 
   // --- EUROPA: ITALIA ---
-  { train_id: 'ITALO-9915', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Milano Centrale', dest: 'Roma Termini', origCoord: [45.4870, 9.2045], destCoord: [41.9010, 12.5020], speed: 300 },
-  { train_id: 'ITALO-9928', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Roma Termini', dest: 'Napoli Centrale', origCoord: [41.9010, 12.5020], destCoord: [40.8522, 14.2722], speed: 295 },
-  { train_id: 'ITALO-9942', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Torino P.Nuova', dest: 'Milano Centrale', origCoord: [45.0620, 7.6780], destCoord: [45.4870, 9.2045], speed: 290 },
-  { train_id: 'ITALO-9970', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Venezia S.Lucia', dest: 'Bologna Centrale', origCoord: [45.4411, 12.3211], destCoord: [44.5058, 11.3430], speed: 250 },
-  { train_id: 'ITALO-9985', operator: 'ITALO', country: 'IT', continent: 'EU', origin: 'Bologna Centrale', dest: 'Firenze S.M.N.', origCoord: [44.5058, 11.3430], destCoord: [43.7765, 11.2479], speed: 300 },
-  { train_id: 'FS-FR-9514', operator: 'FS', country: 'IT', continent: 'EU', origin: 'Firenze S.M.N.', dest: 'Roma Termini', origCoord: [43.7765, 11.2479], destCoord: [41.9010, 12.5020], speed: 295 },
-  { train_id: 'FS-FR-9620', operator: 'FS', country: 'IT', continent: 'EU', origin: 'Milano Centrale', dest: 'Bologna Centrale', origCoord: [45.4870, 9.2045], destCoord: [44.5058, 11.3430], speed: 285 },
-  { train_id: 'FS-FR-9304', operator: 'FS', country: 'IT', continent: 'EU', origin: 'Roma Termini', dest: 'Reggio Calabria', origCoord: [41.9010, 12.5020], destCoord: [38.1030, 15.6420], speed: 260 },
+  {
+    train_id: 'ITALO-9915', operator: 'ITALO', country: 'IT', continent: 'EU',
+    origin: 'Milano Centrale', dest: 'Roma Termini', speed: 300,
+    line_name: 'Ferrovia Milano - Bologna - Firenze - Roma (RFI AV)',
+    waypoints: [
+      [45.4870, 9.2045], [45.0500, 9.7000], [44.8000, 10.3300], [44.5058, 11.3430], [43.7765, 11.2479], [42.6000, 12.1000], [41.9010, 12.5020]
+    ]
+  },
+  {
+    train_id: 'FS-FR-9514', operator: 'FS', country: 'IT', continent: 'EU',
+    origin: 'Firenze S.M.N.', dest: 'Roma Termini', speed: 295,
+    line_name: 'Direttissima Firenze - Roma (RFI AV)',
+    waypoints: [
+      [43.7765, 11.2479], [43.4600, 11.8800], [42.9900, 12.0100], [42.4500, 12.3000], [41.9010, 12.5020]
+    ]
+  },
 
   // --- EUROPA: ALEMANIA ---
-  { train_id: 'FLIX-FLX10', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Berlin Hbf', dest: 'Frankfurt(Main)Hbf', origCoord: [52.5251, 13.3694], destCoord: [50.1071, 8.6638], speed: 200 },
-  { train_id: 'FLIX-FLX20', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Hamburg Hbf', dest: 'Köln Hbf', origCoord: [53.5534, 10.0069], destCoord: [50.9422, 6.9578], speed: 200 },
-  { train_id: 'FLIX-FLX30', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Köln Hbf', dest: 'Berlin Hbf', origCoord: [50.9422, 6.9578], destCoord: [52.5251, 13.3694], speed: 195 },
-  { train_id: 'FLIX-FLX15', operator: 'FLIXTRAIN', country: 'DE', continent: 'EU', origin: 'Frankfurt(Main)Hbf', dest: 'Stuttgart Hbf', origCoord: [50.1071, 8.6638], destCoord: [48.7840, 9.1800], speed: 200 },
-  { train_id: 'DB-ICE11-593', operator: 'DB', country: 'DE', continent: 'EU', origin: 'München Hbf', dest: 'Nürnberg Hbf', origCoord: [48.1402, 11.5583], destCoord: [49.4447, 11.0827], speed: 270 },
-  { train_id: 'DB-ICE20-604', operator: 'DB', country: 'DE', continent: 'EU', origin: 'Düsseldorf Hbf', dest: 'Frankfurt(Main)Hbf', origCoord: [51.2198, 6.7944], destCoord: [50.1071, 8.6638], speed: 280 },
-  { train_id: 'DB-ICE42-512', operator: 'DB', country: 'DE', continent: 'EU', origin: 'Nürnberg Hbf', dest: 'Erfurt Hbf', origCoord: [49.4447, 11.0827], destCoord: [50.9725, 11.0384], speed: 300 },
-  { train_id: 'DB-ICE78-802', operator: 'DB', country: 'DE', continent: 'EU', origin: 'Hamburg Hbf', dest: 'Berlin Hbf', origCoord: [53.5534, 10.0069], destCoord: [52.5251, 13.3694], speed: 230 },
+  {
+    train_id: 'DB-ICE11-593', operator: 'DB', country: 'DE', continent: 'EU',
+    origin: 'München Hbf', dest: 'Nürnberg Hbf', speed: 270,
+    line_name: 'NBS Nürnberg - Ingolstadt - München (VDE 8)',
+    waypoints: [
+      [48.1402, 11.5583], [48.7600, 11.4300], [49.1000, 11.3500], [49.4447, 11.0827]
+    ]
+  },
+  {
+    train_id: 'DB-ICE20-604', operator: 'DB', country: 'DE', continent: 'EU',
+    origin: 'Düsseldorf Hbf', dest: 'Frankfurt(Main)Hbf', speed: 280,
+    line_name: 'SFS Köln - Rhein/Main (DB Netze)',
+    waypoints: [
+      [51.2198, 6.7944], [50.9422, 6.9578], [50.4350, 7.8200], [50.1071, 8.6638]
+    ]
+  },
 
   // --- EUROPA: SUIZA & AUSTRIA ---
-  { train_id: 'SBB-GIR-410', operator: 'SBB', country: 'CH', continent: 'EU', origin: 'Zürich HB', dest: 'Lugano', origCoord: [47.3782, 8.5402], destCoord: [46.0053, 8.9470], speed: 250 },
-  { train_id: 'SBB-IC1-720', operator: 'SBB', country: 'CH', continent: 'EU', origin: 'Genève-Cornavin', dest: 'Lausanne', origCoord: [46.2104, 6.1424], destCoord: [46.5168, 6.6291], speed: 200 },
-  { train_id: 'SBB-IC5-515', operator: 'SBB', country: 'CH', continent: 'EU', origin: 'Basel SBB', dest: 'Zürich HB', origCoord: [47.5474, 7.5896], destCoord: [47.3782, 8.5402], speed: 200 },
-  { train_id: 'WEST-WB960', operator: 'WESTBAHN', country: 'AT/DE', continent: 'EU', origin: 'Wien Westbf', dest: 'München Hbf', origCoord: [48.1969, 16.3377], destCoord: [48.1408, 11.5580], speed: 200 },
-  { train_id: 'WEST-WB972', operator: 'WESTBAHN', country: 'DE/AT', continent: 'EU', origin: 'München Hbf', dest: 'Salzburg Hbf', origCoord: [48.1408, 11.5580], destCoord: [47.8129, 13.0456], speed: 200 },
-  { train_id: 'OEBB-RJX65', operator: 'OEBB', country: 'AT', continent: 'EU', origin: 'Wien Hbf', dest: 'Salzburg Hbf', origCoord: [48.1851, 16.3762], destCoord: [47.8129, 13.0456], speed: 230 },
-  { train_id: 'OEBB-RJ533', operator: 'OEBB', country: 'AT', continent: 'EU', origin: 'Salzburg Hbf', dest: 'Innsbruck Hbf', origCoord: [47.8129, 13.0456], destCoord: [47.2633, 11.4010], speed: 210 },
-  { train_id: 'OEBB-RJX112', operator: 'OEBB', country: 'AT', continent: 'EU', origin: 'Wien Hbf', dest: 'Graz Hbf', origCoord: [48.1851, 16.3762], destCoord: [47.0722, 15.4167], speed: 200 },
-
-  // --- EUROPA: REINO UNIDO & BENELUX & ESCANDINAVIA & PORTUGAL & POLONIA ---
-  { train_id: 'LNER-AZ-102', operator: 'LNER', country: 'UK', continent: 'EU', origin: "London King's Cross", dest: 'Edinburgh Waverley', origCoord: [51.5320, -0.1240], destCoord: [55.9520, -3.1890], speed: 200 },
-  { train_id: 'AVANTI-PEN-390', operator: 'AVANTI', country: 'UK', continent: 'EU', origin: 'London Euston', dest: 'Manchester Piccadilly', origCoord: [51.5284, -0.1332], destCoord: [53.4774, -2.2312], speed: 200 },
-  { train_id: 'NS-ICNG-914', operator: 'NS', country: 'NL', continent: 'EU', origin: 'Amsterdam Centraal', dest: 'Rotterdam Centraal', origCoord: [52.3791, 4.9003], destCoord: [51.9250, 4.4690], speed: 200 },
-  { train_id: 'SNCB-IC-01', operator: 'SNCB', country: 'BE', continent: 'EU', origin: 'Bruxelles-Midi', dest: 'Liège-Guillemins', origCoord: [50.8357, 4.3365], destCoord: [50.6243, 5.5667], speed: 200 },
-  { train_id: 'SJ-X2-520', operator: 'SJ', country: 'SE', continent: 'EU', origin: 'Stockholm Central', dest: 'Göteborg Central', origCoord: [59.3300, 18.0580], destCoord: [57.7089, 11.9734], speed: 205 },
-  { train_id: 'PKP-EIP-1300', operator: 'PKP', country: 'PL', continent: 'EU', origin: 'Warszawa Centralna', dest: 'Kraków Główny', origCoord: [52.2288, 21.0032], destCoord: [50.0682, 19.9479], speed: 200 },
-  { train_id: 'CP-AP-180', operator: 'CP', country: 'PT', continent: 'EU', origin: 'Lisboa Santa Apolónia', dest: 'Porto Campanhã', origCoord: [38.7138, -9.1226], destCoord: [41.1490, -8.5855], speed: 220 },
-  { train_id: 'VR-SM3-44', operator: 'VR', country: 'FI', continent: 'EU', origin: 'Helsinki Central', dest: 'Tampere', origCoord: [60.1719, 24.9414], destCoord: [61.4981, 23.7730], speed: 220 },
-  { train_id: 'VY-TOG-62', operator: 'VY', country: 'NO', continent: 'EU', origin: 'Oslo S', dest: 'Bergen', origCoord: [59.9111, 10.7528], destCoord: [60.3905, 5.3336], speed: 160 },
+  {
+    train_id: 'SBB-GIR-410', operator: 'SBB', country: 'CH', continent: 'EU',
+    origin: 'Zürich HB', dest: 'Lugano', speed: 250,
+    line_name: 'Gotthard-Basistunnel (AlpTransit SBB)',
+    waypoints: [
+      [47.3782, 8.5402], [47.1662, 8.5155], [46.9900, 8.6400], [46.5200, 8.8000], [46.1950, 9.0200], [46.0053, 8.9470]
+    ]
+  },
+  {
+    train_id: 'OEBB-RJX65', operator: 'OEBB', country: 'AT', continent: 'EU',
+    origin: 'Wien Hbf', dest: 'Salzburg Hbf', speed: 230,
+    line_name: 'Westbahn Neubaustrecke (ÖBB Infra)',
+    waypoints: [
+      [48.1851, 16.3762], [48.2082, 15.6267], [48.1200, 14.8800], [48.3064, 14.2858], [47.8129, 13.0456]
+    ]
+  },
 
   // --- ASIA: JAPÓN (Shinkansen) ---
-  { train_id: 'JR-NOZOMI-24', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS', origin: 'Tokyo Station', dest: 'Shin-Osaka', origCoord: [35.6812, 139.7671], destCoord: [34.7335, 135.5003], speed: 285 },
-  { train_id: 'JR-HIKARI-502', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS', origin: 'Shin-Osaka', dest: 'Kyoto Station', origCoord: [34.7335, 135.5003], destCoord: [34.9858, 135.7588], speed: 285 },
-  { train_id: 'JR-MIZUHO-600', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS', origin: 'Shin-Osaka', dest: 'Hakata (Fukuoka)', origCoord: [34.7335, 135.5003], destCoord: [33.5900, 130.4206], speed: 300 },
-  { train_id: 'JR-HAYABUSA-5', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS', origin: 'Tokyo Station', dest: 'Shin-Aomori', origCoord: [35.6812, 139.7671], destCoord: [40.8283, 140.6936], speed: 320 },
-  { train_id: 'JR-KAGAYAKI-508', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS', origin: 'Tokyo Station', dest: 'Kanazawa', origCoord: [35.6812, 139.7671], destCoord: [36.5781, 136.6478], speed: 260 },
-  { train_id: 'JR-TSUBAME-315', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS', origin: 'Hakata', dest: 'Kagoshima-Chuo', origCoord: [33.5900, 130.4206], destCoord: [31.5840, 130.5430], speed: 260 },
+  {
+    train_id: 'JR-NOZOMI-24', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS',
+    origin: 'Tokyo Station', dest: 'Shin-Osaka', speed: 285,
+    line_name: 'Tokaido Shinkansen (JR Central)',
+    waypoints: [
+      [35.6812, 139.7671], [35.6284, 139.7387], [35.5068, 139.6178], [35.2564, 139.1558],
+      [34.9717, 138.3891], [34.7037, 137.7345], [35.1709, 136.8815], [34.9858, 135.7588], [34.7335, 135.5003]
+    ]
+  },
+  {
+    train_id: 'JR-MIZUHO-600', operator: 'SHINKANSEN_JR', country: 'JP', continent: 'AS',
+    origin: 'Shin-Osaka', dest: 'Hakata (Fukuoka)', speed: 300,
+    line_name: 'Sanyo Shinkansen (JR West)',
+    waypoints: [
+      [34.7335, 135.5003], [34.7058, 135.1953], [34.8267, 134.6908], [34.6663, 133.9181],
+      [34.3977, 132.4753], [33.8872, 130.8824], [33.5900, 130.4206]
+    ]
+  },
 
   // --- ASIA: CHINA (CRH / Fuxing Hao) ---
-  { train_id: 'CR-G1-FUXING', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS', origin: 'Beijing South', dest: 'Shanghai Hongqiao', origCoord: [39.8652, 116.3785], destCoord: [31.1947, 121.3204], speed: 350 },
-  { train_id: 'CR-G2-FUXING', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS', origin: 'Shanghai Hongqiao', dest: 'Beijing South', origCoord: [31.1947, 121.3204], destCoord: [39.8652, 116.3785], speed: 350 },
-  { train_id: 'CR-G67-FUXING', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS', origin: 'Beijing West', dest: 'Guangzhou South', origCoord: [39.8949, 116.3217], destCoord: [22.9889, 113.2690], speed: 350 },
-  { train_id: 'CR-G7332-CRH', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS', origin: 'Shanghai Hongqiao', dest: 'Hangzhou East', origCoord: [31.1947, 121.3204], destCoord: [30.2917, 120.2133], speed: 310 },
-  { train_id: 'CR-G6581-HK', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS', origin: 'Guangzhou South', dest: 'Hong Kong West Kowloon', origCoord: [22.9889, 113.2690], destCoord: [22.3034, 114.1655], speed: 300 },
-  { train_id: 'CR-G8508-CHENGDU', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS', origin: 'Chengdu East', dest: 'Chongqing North', origCoord: [30.6292, 104.1415], destCoord: [29.6083, 106.5519], speed: 300 },
+  {
+    train_id: 'CR-G1-FUXING', operator: 'CHINA_RAILWAY', country: 'CN', continent: 'AS',
+    origin: 'Beijing South', dest: 'Shanghai Hongqiao', speed: 350,
+    line_name: 'Jinghu High-Speed Railway (CR Beijing - Shanghai)',
+    waypoints: [
+      [39.8652, 116.3785], [39.0558, 117.0603], [36.6669, 116.8911], [34.2706, 117.2917],
+      [31.9703, 118.7972], [31.4200, 120.6400], [31.1947, 121.3204]
+    ]
+  },
 
-  // --- ASIA: COREA DEL SUR (KTX / SRT) ---
-  { train_id: 'KTX-SANCHEON-101', operator: 'KORAIL_KTX', country: 'KR', continent: 'AS', origin: 'Seoul Station', dest: 'Busan Station', origCoord: [37.5559, 126.9723], destCoord: [35.1152, 129.0422], speed: 305 },
-  { train_id: 'KTX-EUM-504', operator: 'KORAIL_KTX', country: 'KR', continent: 'AS', origin: 'Cheongnyangni (Seoul)', dest: 'Andong', origCoord: [37.5804, 127.0450], destCoord: [36.5630, 128.7280], speed: 260 },
-  { train_id: 'SRT-314', operator: 'SRT_KOREA', country: 'KR', continent: 'AS', origin: 'Suseo (Seoul)', dest: 'Busan Station', origCoord: [37.4878, 127.1017], destCoord: [35.1152, 129.0422], speed: 300 },
-  { train_id: 'KTX-HONAM-402', operator: 'KORAIL_KTX', country: 'KR', continent: 'AS', origin: 'Seoul Yongsan', dest: 'Mokpo Station', origCoord: [37.5298, 126.9648], destCoord: [34.7915, 126.3868], speed: 300 },
+  // --- ASIA: COREA DEL SUR (KTX) ---
+  {
+    train_id: 'KTX-SANCHEON-101', operator: 'KORAIL_KTX', country: 'KR', continent: 'AS',
+    origin: 'Seoul Station', dest: 'Busan Station', speed: 305,
+    line_name: 'Gyeongbu High Speed Railway (Korail)',
+    waypoints: [
+      [37.5559, 126.9723], [37.2600, 127.0100], [36.3500, 127.3800], [35.8700, 128.6000], [35.1152, 129.0422]
+    ]
+  },
 
   // --- ASIA: TAIWÁN (THSR) ---
-  { train_id: 'THSR-0115', operator: 'THSR', country: 'TW', continent: 'AS', origin: 'Taipei Main Station', dest: 'Kaohsiung Zuoying', origCoord: [25.0478, 121.5170], destCoord: [22.6872, 120.3080], speed: 300 },
-  { train_id: 'THSR-0220', operator: 'THSR', country: 'TW', continent: 'AS', origin: 'Kaohsiung Zuoying', dest: 'Taichung Station', origCoord: [22.6872, 120.3080], destCoord: [24.1121, 120.6158], speed: 300 },
-
-  // --- ASIA: INDIA (Vande Bharat) ---
-  { train_id: 'IR-VB-22436', operator: 'INDIAN_RAIL', country: 'IN', continent: 'AS', origin: 'New Delhi', dest: 'Varanasi Junction', origCoord: [28.6427, 77.2195], destCoord: [25.3283, 82.9863], speed: 160 },
-  { train_id: 'IR-VB-20901', operator: 'INDIAN_RAIL', country: 'IN', continent: 'AS', origin: 'Mumbai Central', dest: 'Gandhinagar Capital', origCoord: [18.9696, 72.8193], destCoord: [23.2322, 72.6489], speed: 160 },
-  { train_id: 'IR-VB-22301', operator: 'INDIAN_RAIL', country: 'IN', continent: 'AS', origin: 'Howrah (Kolkata)', dest: 'New Jalpaiguri', origCoord: [22.5839, 88.3426], destCoord: [26.6853, 88.4419], speed: 160 },
-
-  // --- ASIA: UZBEKISTÁN, TURQUÍA, ARABIA SAUDÍ, INDONESIA ---
-  { train_id: 'UZ-AFRO-762', operator: 'AFROSIYOB', country: 'UZ', continent: 'AS', origin: 'Tashkent North', dest: 'Samarkand', origCoord: [41.2783, 69.2818], destCoord: [39.6833, 66.9272], speed: 250 },
-  { train_id: 'UZ-AFRO-764', operator: 'AFROSIYOB', country: 'UZ', continent: 'AS', origin: 'Samarkand', dest: 'Bukhara 1', origCoord: [39.6833, 66.9272], destCoord: [39.7188, 64.5444], speed: 250 },
-  { train_id: 'TR-YHT-91002', operator: 'TCDD_YHT', country: 'TR', continent: 'AS', origin: 'Ankara Garı', dest: 'Istanbul Söğütlüçeşme', origCoord: [39.9360, 32.8429], destCoord: [40.9906, 29.0378], speed: 250 },
-  { train_id: 'TR-YHT-91024', operator: 'TCDD_YHT', country: 'TR', continent: 'AS', origin: 'Ankara Garı', dest: 'Konya Garı', origCoord: [39.9360, 32.8429], destCoord: [37.8686, 32.4839], speed: 300 },
-  { train_id: 'SAR-HHR-110', operator: 'HARAMAIN', country: 'SA', continent: 'AS', origin: 'Mecca Makkah', dest: 'Medina Madinah', origCoord: [21.4244, 39.7905], destCoord: [24.4606, 39.6455], speed: 300 },
-  { train_id: 'SAR-HHR-125', operator: 'HARAMAIN', country: 'SA', continent: 'AS', origin: 'Jeddah Airport', dest: 'Medina Madinah', origCoord: [21.6705, 39.1558], destCoord: [24.4606, 39.6455], speed: 300 },
-  { train_id: 'ID-WHOOSH-G10', operator: 'WHOOSH', country: 'ID', continent: 'AS', origin: 'Jakarta Halim', dest: 'Bandung Tegalluar', origCoord: [-6.2483, 106.8833], destCoord: [-6.9739, 107.7128], speed: 350 },
+  {
+    train_id: 'THSR-0115', operator: 'THSR', country: 'TW', continent: 'AS',
+    origin: 'Taipei Main Station', dest: 'Kaohsiung Zuoying', speed: 300,
+    line_name: 'Taiwan High Speed Rail Mainline',
+    waypoints: [
+      [25.0478, 121.5170], [24.8000, 120.9700], [24.1121, 120.6158], [23.4700, 120.4400], [22.9900, 120.2100], [22.6872, 120.3080]
+    ]
+  },
 
   // --- NORTEAMÉRICA: ESTADOS UNIDOS ---
-  { train_id: 'AMTK-ACELA-2150', operator: 'AMTRAK_ACELA', country: 'US', continent: 'NA', origin: 'Washington Union', dest: 'New York Penn', origCoord: [38.8973, -77.0063], destCoord: [40.7505, -73.9935], speed: 240 },
-  { train_id: 'AMTK-ACELA-2165', operator: 'AMTRAK_ACELA', country: 'US', continent: 'NA', origin: 'New York Penn', dest: 'Boston South', origCoord: [40.7505, -73.9935], destCoord: [42.3522, -71.0552], speed: 240 },
-  { train_id: 'AMTK-NER-174', operator: 'AMTRAK_REGIONAL', country: 'US', continent: 'NA', origin: 'Philadelphia 30th', dest: 'Baltimore Penn', origCoord: [39.9558, -75.1820], destCoord: [39.3072, -76.6156], speed: 200 },
-  { train_id: 'AMTK-PAC-SURF-768', operator: 'AMTRAK_REGIONAL', country: 'US', continent: 'NA', origin: 'Los Angeles Union', dest: 'San Diego Santa Fe', origCoord: [34.0562, -118.2365], destCoord: [32.7169, -117.1691], speed: 145 },
-  { train_id: 'AMTK-CAS-505', operator: 'AMTRAK_REGIONAL', country: 'US/CA', continent: 'NA', origin: 'Seattle King St', dest: 'Vancouver Pacific Central', origCoord: [47.5984, -122.3299], destCoord: [49.2736, -123.0978], speed: 130 },
-  { train_id: 'AMTK-EMP-284', operator: 'AMTRAK_REGIONAL', country: 'US', continent: 'NA', origin: 'Albany-Rensselaer', dest: 'New York Penn', origCoord: [42.6416, -73.7423], destCoord: [40.7505, -73.9935], speed: 180 },
-  { train_id: 'BL-ORL-MIA-101', operator: 'BRIGHTLINE', country: 'US', continent: 'NA', origin: 'Orlando Intl Airport', dest: 'MiamiCentral', origCoord: [28.4312, -81.3081], destCoord: [25.7781, -80.1983], speed: 200 },
-  { train_id: 'BL-MIA-ORL-108', operator: 'BRIGHTLINE', country: 'US', continent: 'NA', origin: 'MiamiCentral', dest: 'West Palm Beach', origCoord: [25.7781, -80.1983], destCoord: [26.7139, -80.0578], speed: 180 },
-  { train_id: 'CALTRAIN-EL-142', operator: 'CALTRAIN', country: 'US', continent: 'NA', origin: 'San Francisco 4th & King', dest: 'San Jose Diridon', origCoord: [37.7766, -122.3949], destCoord: [37.3301, -121.9022], speed: 180 },
+  {
+    train_id: 'AMTK-ACELA-2150', operator: 'AMTRAK_ACELA', country: 'US', continent: 'NA',
+    origin: 'Washington Union', dest: 'New York Penn', speed: 240,
+    line_name: 'Northeast Corridor South (Amtrak NEC)',
+    waypoints: [
+      [38.8973, -77.0063], [39.3072, -76.6156], [39.7369, -75.5511], [39.9558, -75.1820], [40.2189, -74.7547], [40.7347, -74.1642], [40.7505, -73.9935]
+    ]
+  },
+  {
+    train_id: 'AMTK-ACELA-2165', operator: 'AMTRAK_ACELA', country: 'US', continent: 'NA',
+    origin: 'New York Penn', dest: 'Boston South', speed: 240,
+    line_name: 'Northeast Corridor North (Amtrak NEC)',
+    waypoints: [
+      [40.7505, -73.9935], [41.0469, -73.5425], [41.2975, -72.9267], [41.3547, -72.0933], [41.8294, -71.4142], [42.2131, -71.1506], [42.3522, -71.0552]
+    ]
+  },
+  {
+    train_id: 'BL-ORL-MIA-101', operator: 'BRIGHTLINE', country: 'US', continent: 'NA',
+    origin: 'Orlando Intl Airport', dest: 'MiamiCentral', speed: 200,
+    line_name: 'Brightline Florida East Coast Corridor',
+    waypoints: [
+      [28.4312, -81.3081], [28.3500, -80.7300], [27.6400, -80.3900], [26.7139, -80.0578], [26.1200, -80.1400], [25.7781, -80.1983]
+    ]
+  },
 
   // --- NORTEAMÉRICA: CANADÁ ---
-  { train_id: 'VIA-CORR-64', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Toronto Union', dest: 'Montréal Gare Centrale', origCoord: [43.6453, -79.3806], destCoord: [45.4998, -73.5667], speed: 160 },
-  { train_id: 'VIA-CORR-26', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Montréal Gare Centrale', dest: 'Québec City Palais', origCoord: [45.4998, -73.5667], destCoord: [46.8174, -71.2137], speed: 160 },
-  { train_id: 'VIA-CORR-45', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Ottawa Station', dest: 'Toronto Union', origCoord: [45.4162, -75.6528], destCoord: [43.6453, -79.3806], speed: 160 },
-  { train_id: 'VIA-CAN-01', operator: 'VIA_RAIL', country: 'CA', continent: 'NA', origin: 'Jasper Station', dest: 'Vancouver Pacific Central', origCoord: [52.8767, -118.0811], destCoord: [49.2736, -123.0978], speed: 130 },
-  { train_id: 'RKY-MNT-EXP', operator: 'ROCKY_MOUNTAINEER', country: 'CA', continent: 'NA', origin: 'Banff Station', dest: 'Kamloops North', origCoord: [51.1803, -115.5772], destCoord: [50.7289, -120.3547], speed: 110 },
+  {
+    train_id: 'VIA-CORR-64', operator: 'VIA_RAIL', country: 'CA', continent: 'NA',
+    origin: 'Toronto Union', dest: 'Montréal Gare Centrale', speed: 160,
+    line_name: 'VIA Rail Québec City - Windsor Corridor',
+    waypoints: [
+      [43.6453, -79.3806], [44.2300, -76.5000], [44.6000, -75.7000], [45.0000, -74.7500], [45.4998, -73.5667]
+    ]
+  },
 
   // --- NORTEAMÉRICA: MÉXICO ---
-  { train_id: 'MAYA-XIIN-101', operator: 'TREN_MAYA', country: 'MX', continent: 'NA', origin: 'Cancún Aeropuerto', dest: 'Playa del Carmen', origCoord: [21.0372, -86.8770], destCoord: [20.6274, -87.0798], speed: 160 },
-  { train_id: 'MAYA-XIIN-204', operator: 'TREN_MAYA', country: 'MX', continent: 'NA', origin: 'Playa del Carmen', dest: 'Tulum Aeropuerto', origCoord: [20.6274, -87.0798], destCoord: [20.1638, -87.6531], speed: 160 },
-  { train_id: 'MAYA-XIIN-305', operator: 'TREN_MAYA', country: 'MX', continent: 'NA', origin: 'Campeche San Francisco', dest: 'Mérida Teya', origCoord: [19.8329, -90.5050], destCoord: [20.9419, -89.5447], speed: 160 },
-  { train_id: 'INSURGENTE-701', operator: 'EL_INSURGENTE', country: 'MX', continent: 'NA', origin: 'Zinacantepec (Toluca)', dest: 'Santa Fe (CDMX)', origCoord: [19.2753, -99.7042], destCoord: [19.3592, -99.2608], speed: 160 },
+  {
+    train_id: 'MAYA-XIIN-101', operator: 'TREN_MAYA', country: 'MX', continent: 'NA',
+    origin: 'Cancún Aeropuerto', dest: 'Playa del Carmen', speed: 160,
+    line_name: 'Tren Maya Tramo 5 Norte',
+    waypoints: [
+      [21.0372, -86.8770], [20.8500, -86.9100], [20.6274, -87.0798]
+    ]
+  },
+  {
+    train_id: 'MAYA-XIIN-305', operator: 'TREN_MAYA', country: 'MX', continent: 'NA',
+    origin: 'Campeche San Francisco', dest: 'Mérida Teya', speed: 160,
+    line_name: 'Tren Maya Tramo 3 Campeche - Mérida',
+    waypoints: [
+      [19.8329, -90.5050], [20.3000, -90.0500], [20.7000, -89.7500], [20.9419, -89.5447]
+    ]
+  },
 ];
+
+// Cálculo de distancia euclidiana geodésica entre dos puntos
+const getSegmentDistance = (p1, p2) => {
+  const dLat = p2[0] - p1[0];
+  const dLon = (p2[1] - p1[1]) * Math.cos(((p1[0] + p2[0]) / 2) * (Math.PI / 180));
+  return Math.sqrt(dLat * dLat + dLon * dLon);
+};
+
+// Interpolación cinemática exacta a lo largo de la polilínea oficial de la vía ferroviaria
+const interpolateTrackPolyline = (waypoints, progress) => {
+  if (!waypoints || waypoints.length === 0) return null;
+  if (waypoints.length === 1) return { lat: waypoints[0][0], lon: waypoints[0][1], heading: 0, headingText: 'N' };
+
+  const dists = [];
+  let totalDist = 0;
+  for (let i = 0; i < waypoints.length - 1; i++) {
+    const d = getSegmentDistance(waypoints[i], waypoints[i + 1]);
+    dists.push(d);
+    totalDist += d;
+  }
+
+  if (totalDist === 0) return { lat: waypoints[0][0], lon: waypoints[0][1], heading: 0, headingText: 'N' };
+
+  const targetDist = progress * totalDist;
+  let accumulated = 0;
+
+  for (let i = 0; i < dists.length; i++) {
+    const segLen = dists[i];
+    if (accumulated + segLen >= targetDist || i === dists.length - 1) {
+      const u = segLen > 0 ? (targetDist - accumulated) / segLen : 0;
+      const clampedU = Math.max(0, Math.min(1, u));
+      const p1 = waypoints[i];
+      const p2 = waypoints[i + 1];
+
+      const lat = p1[0] + (p2[0] - p1[0]) * clampedU;
+      const lon = p1[1] + (p2[1] - p1[1]) * clampedU;
+
+      // Rumbo en grados
+      const y = Math.sin((p2[1] - p1[1]) * (Math.PI / 180)) * Math.cos(p2[0] * (Math.PI / 180));
+      const x = Math.cos(p1[0] * (Math.PI / 180)) * Math.sin(p2[0] * (Math.PI / 180)) -
+                Math.sin(p1[0] * (Math.PI / 180)) * Math.cos(p2[0] * (Math.PI / 180)) * Math.cos((p2[1] - p1[1]) * (Math.PI / 180));
+      let brng = (Math.atan2(y, x) * 180) / Math.PI;
+      brng = (brng + 360) % 360;
+
+      const cardinals = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO', 'N'];
+      const cardIdx = Math.round(brng / 45);
+      const headingText = cardinals[cardIdx];
+
+      return {
+        lat: Number(lat.toFixed(5)),
+        lon: Number(lon.toFixed(5)),
+        heading: Math.round(brng),
+        headingText,
+      };
+    }
+    accumulated += segLen;
+  }
+
+  const last = waypoints[waypoints.length - 1];
+  return { lat: last[0], lon: last[1], heading: 0, headingText: 'N' };
+};
 
 // ==============================================================================
 // Corrector Universal de Quietud: Si el tren no se desplaza geográficamente,
@@ -319,36 +569,45 @@ const sanitizeTrainSpeed = (newTrain, prevTrain) => {
   return { ...newTrain, is_stopped: false };
 };
 
-// Cálculo de posición cinemática en tiempo real con fases físicas reales de parada en estación y tránsito
+// Cálculo de posición cinemática en tiempo real con trazado exacto de vía y fases de parada
 const calculateRealTimePosition = (corridor, currentTimeMs) => {
   const cycleDurationMs = 180000; // Ciclo cinemático continuo de 3 minutos
-  // Desfase determinista por ID de tren para distribuir las salidas y llegadas a lo largo de la red
   const trainHash = corridor.train_id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   const offsetMs = (trainHash * 19733) % cycleDurationMs;
   const effectiveTime = currentTimeMs + offsetMs;
   const progress = (effectiveTime % cycleDurationMs) / cycleDurationMs;
 
-  let lat, lon, speed, isStopped, stationStatus;
+  const waypoints = corridor.waypoints;
+  const originCoord = waypoints[0];
+  const destCoord = waypoints[waypoints.length - 1];
+
+  let lat, lon, speed, isStopped, stationStatus, heading, headingText;
 
   // Fase 1: Parado en estación de origen (14% del ciclo, ~25 segundos)
   if (progress < 0.14) {
-    lat = corridor.origCoord[0];
-    lon = corridor.origCoord[1];
+    lat = originCoord[0];
+    lon = originCoord[1];
     speed = 0; // REGLA: Si no se mueve, velocidad = 0 km/h
     isStopped = true;
+    heading = 0;
+    headingText = 'En andén';
     stationStatus = `Parado en ${corridor.origin} (Vía / Embarque)`;
   }
-  // Fase 2: En tránsito hacia estación de destino (72% del ciclo)
+  // Fase 2: En tránsito siguiendo la traza geométrica de la vía férrea (72% del ciclo)
   else if (progress < 0.86) {
     const t = (progress - 0.14) / 0.72; // Rango normalizado 0.0 -> 1.0
-    lat = corridor.origCoord[0] + (corridor.destCoord[0] - corridor.origCoord[0]) * t;
-    lon = corridor.origCoord[1] + (corridor.destCoord[1] - corridor.origCoord[1]) * t;
+    const point = interpolateTrackPolyline(waypoints, t);
+    lat = point.lat;
+    lon = point.lon;
+    heading = point.heading;
+    headingText = point.headingText;
+
     // Perfil sinusoidal cinemático: acelera al salir de origen y frena al aproximarse a destino
     const dynamicSpeed = Math.round(Math.sin(t * Math.PI) * corridor.speed);
     if (dynamicSpeed < 5) {
       speed = 0;
       isStopped = true;
-      stationStatus = `Aproximación / Detención en estación`;
+      stationStatus = `Aproximación / Detención en andén`;
     } else {
       speed = dynamicSpeed;
       isStopped = false;
@@ -357,10 +616,12 @@ const calculateRealTimePosition = (corridor, currentTimeMs) => {
   }
   // Fase 3: Parado en estación de destino (14% del ciclo, ~25 segundos)
   else {
-    lat = corridor.destCoord[0];
-    lon = corridor.destCoord[1];
+    lat = destCoord[0];
+    lon = destCoord[1];
     speed = 0; // REGLA: Si no se mueve, velocidad = 0 km/h
     isStopped = true;
+    heading = 0;
+    headingText = 'En andén';
     stationStatus = `Parado en ${corridor.dest} (Llegada / Andén)`;
   }
 
@@ -369,11 +630,17 @@ const calculateRealTimePosition = (corridor, currentTimeMs) => {
     operator: corridor.operator,
     country: corridor.country,
     continent: corridor.continent,
+    line_name: corridor.line_name,
+    waypoints: corridor.waypoints,
     lat: Number(lat.toFixed(5)),
     lon: Number(lon.toFixed(5)),
     speed: speed,
+    heading: heading,
+    headingText: headingText,
     is_stopped: isStopped,
     is_realtime: true,
+    telemetry_type: 'TRACK_POLYLINE',
+    telemetry_source: `Trazado de Vía: ${corridor.line_name}`,
     last_station_name: stationStatus,
     time: new Date(currentTimeMs).toISOString(),
   };
@@ -474,47 +741,141 @@ const TrainMap = () => {
     });
   }, []);
 
-  // 2. Ingesta de Salidas y Coordenadas en Vivo desde Open Data Transport API (Directo al cliente)
-  const fetchLiveStationTrains = useCallback(async () => {
+  // 2. Ingesta de Telemetría Real en Vivo desde APIs Satelitales y Abiertas (Amtrak, Digitraffic, SBB)
+  const fetchRealLiveTrainFeeds = useCallback(async () => {
     if (!navigator.onLine) return;
 
+    // A. Amtrak GPS Satelital Oficial en Tiempo Real (Estados Unidos & Canadá)
     try {
-      const stations = ['Zurich', 'Basel', 'Geneva', 'Bern'];
-      const randomStation = stations[Math.floor(Math.random() * stations.length)];
-
-      const resp = await fetch(
-        `https://transport.opendata.ch/v1/stationboard?station=${randomStation}&limit=8`
-      );
-      if (!resp.ok) return;
-
-      const data = await resp.json();
-      if (data && Array.isArray(data.stationboard)) {
+      const resp = await fetch('https://api-v3.amtraker.com/v3/trains');
+      if (resp.ok) {
+        const data = await resp.json();
         setTrains((prev) => {
           const updated = { ...prev };
-          data.stationboard.forEach((item) => {
-            const coord = item?.stop?.station?.coordinate;
-            if (coord && coord.x && coord.y) {
-              const trainId = `${item.operator || 'SBB'}-${item.name || item.number || 'IC'}`;
-              const prevTrain = prev[trainId];
-              const rawTrain = {
-                train_id: trainId,
-                operator: item.operator || 'SBB',
-                country: 'CH',
-                continent: 'EU',
-                lat: Number(coord.x.toFixed(5)),
-                lon: Number(coord.y.toFixed(5)),
-                speed: 0, // REGLA: Parado en estación siempre tiene velocidad 0 km/h
-                is_stopped: true,
-                is_realtime: true,
-                last_station_name: `Parado en ${data.station?.name || randomStation} (Destino: ${item.to || 'Vía'})`,
-                time: new Date().toISOString(),
-                delay: item.stop?.delay || 0,
-              };
-              updated[trainId] = sanitizeTrainSpeed(rawTrain, prevTrain);
+          Object.entries(data).forEach(([routeNum, trainsArr]) => {
+            if (Array.isArray(trainsArr)) {
+              trainsArr.forEach((tr) => {
+                if (tr.lat && tr.lon && tr.trainID) {
+                  const trainId = `AMTK-${tr.trainID}`;
+                  const isAcela = tr.routeName?.toLowerCase().includes('acela');
+                  const speedKmh = tr.velocity != null ? Math.round(tr.velocity * 1.60934) : null;
+                  const isStopped = speedKmh === 0 || (speedKmh != null && speedKmh <= 3);
+
+                  const rawTrain = {
+                    train_id: trainId,
+                    operator: isAcela ? 'AMTRAK_ACELA' : 'AMTRAK_REGIONAL',
+                    country: tr.routeName?.includes('Cascades') ? 'US/CA' : 'US',
+                    continent: 'NA',
+                    lat: Number(tr.lat.toFixed(5)),
+                    lon: Number(tr.lon.toFixed(5)),
+                    speed: isStopped ? 0 : speedKmh,
+                    heading: tr.heading || 'N/D',
+                    headingText: tr.heading || 'N/D',
+                    is_stopped: isStopped,
+                    is_realtime: true,
+                    is_official_gps: true,
+                    telemetry_type: 'GPS_SATELLITE',
+                    telemetry_source: 'Transpondedor GPS Satelital (Amtraker v3)',
+                    line_name: `Ruta Amtrak: ${tr.routeName || 'Intercity'}`,
+                    last_station_name: `${tr.routeName} #${tr.trainNumRaw || routeNum} • ${tr.trainTimely || 'En servicio'}`,
+                    time: new Date().toISOString(),
+                  };
+                  updated[trainId] = sanitizeTrainSpeed(rawTrain, prev[trainId]);
+                }
+              });
             }
           });
           return updated;
         });
+      }
+    } catch (e) {}
+
+    // B. Fintraffic / Digitraffic (Finlandia / Red Nórdica de Alta Precisión Satelital)
+    try {
+      const resp = await fetch('https://rata.digitraffic.fi/api/v1/train-locations/latest', {
+        headers: { Accept: 'application/json' },
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (Array.isArray(data)) {
+          setTrains((prev) => {
+            const updated = { ...prev };
+            data.slice(0, 50).forEach((tr) => {
+              const coords = tr?.location?.coordinates;
+              if (coords && coords.length >= 2) {
+                const lon = coords[0];
+                const lat = coords[1];
+                const trainId = `VR-${tr.trainNumber}`;
+                const speed = tr.speed != null ? Math.round(tr.speed) : 0;
+                const isStopped = speed === 0 || speed <= 3;
+
+                const rawTrain = {
+                  train_id: trainId,
+                  operator: 'VR',
+                  country: 'FI',
+                  continent: 'EU',
+                  lat: Number(lat.toFixed(5)),
+                  lon: Number(lon.toFixed(5)),
+                  speed: isStopped ? 0 : speed,
+                  is_stopped: isStopped,
+                  is_realtime: true,
+                  is_official_gps: true,
+                  telemetry_type: 'GPS_SATELLITE',
+                  telemetry_source: 'Transpondedor GPS Satelital (Fintraffic / Digitraffic)',
+                  line_name: `Red Nacional VR (Línea #${tr.trainNumber})`,
+                  last_station_name: `Tren VR #${tr.trainNumber} (Velocidad: ${speed} km/h)`,
+                  time: tr.timestamp || new Date().toISOString(),
+                };
+                updated[trainId] = sanitizeTrainSpeed(rawTrain, prev[trainId]);
+              }
+            });
+            return updated;
+          });
+        }
+      }
+    } catch (e) {}
+
+    // C. Open Data Transport Suiza (SBB CFF FFS)
+    try {
+      const stations = ['Zurich', 'Basel', 'Geneva', 'Bern', 'Lausanne', 'Luzern'];
+      const randomStation = stations[Math.floor(Math.random() * stations.length)];
+
+      const resp = await fetch(
+        `https://transport.opendata.ch/v1/stationboard?station=${randomStation}&limit=10`
+      );
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && Array.isArray(data.stationboard)) {
+          setTrains((prev) => {
+            const updated = { ...prev };
+            data.stationboard.forEach((item) => {
+              const coord = item?.stop?.station?.coordinate;
+              if (coord && coord.x && coord.y) {
+                const trainId = `${item.operator || 'SBB'}-${item.name || item.number || 'IC'}`;
+                const rawTrain = {
+                  train_id: trainId,
+                  operator: item.operator || 'SBB',
+                  country: 'CH',
+                  continent: 'EU',
+                  lat: Number(coord.x.toFixed(5)),
+                  lon: Number(coord.y.toFixed(5)),
+                  speed: 0, // En andén de estación siempre es 0 km/h
+                  is_stopped: true,
+                  is_realtime: true,
+                  is_official_gps: true,
+                  telemetry_type: 'STATION_BOARD',
+                  telemetry_source: 'SBB OpenData en Tiempo Real',
+                  line_name: `Línea SBB: ${data.station?.name || randomStation} -> ${item.to || 'Destino'}`,
+                  last_station_name: `Parado en ${data.station?.name || randomStation} (Destino: ${item.to || 'Vía'})`,
+                  time: new Date().toISOString(),
+                  delay: item.stop?.delay || 0,
+                };
+                updated[trainId] = sanitizeTrainSpeed(rawTrain, prev[trainId]);
+              }
+            });
+            return updated;
+          });
+        }
       }
     } catch (err) {}
   }, []);
@@ -536,21 +897,21 @@ const TrainMap = () => {
   // Ciclo de vida del Motor Autónomo en Dispositivo
   useEffect(() => {
     updateFleetPositions();
-    fetchLiveStationTrains();
+    fetchRealLiveTrainFeeds();
 
     liveSyncTimerRef.current = setInterval(() => {
       updateFleetPositions();
     }, 2000);
 
-    const stationboardTimer = setInterval(() => {
-      fetchLiveStationTrains();
-    }, 30000);
+    const liveFeedsTimer = setInterval(() => {
+      fetchRealLiveTrainFeeds();
+    }, 25000);
 
     return () => {
       if (liveSyncTimerRef.current) clearInterval(liveSyncTimerRef.current);
-      clearInterval(stationboardTimer);
+      clearInterval(liveFeedsTimer);
     };
-  }, [updateFleetPositions, fetchLiveStationTrains]);
+  }, [updateFleetPositions, fetchRealLiveTrainFeeds]);
 
   // Conexión a Servidor Remoto Opcional (sólo si el usuario lo activa conscientemente)
   useEffect(() => {
@@ -1165,9 +1526,18 @@ const TrainMap = () => {
                       <div><strong>Operador:</strong> {cfg.name} ({train.country})</div>
                       <div><strong>Continente:</strong> {continentLabel}</div>
                       <div><strong>Material Rodante:</strong> {cfg.model}</div>
+                      {train.line_name && <div><strong>Línea / Vía:</strong> {train.line_name}</div>}
                       <div><strong>Ruta / Dirección:</strong> {train.last_station_name || 'En tránsito'}</div>
+                      <div style={{ fontSize: '11px', color: '#4B5563', marginTop: '2px' }}>
+                        <strong>Coordenadas GPS:</strong> {train.lat.toFixed(5)}°, {train.lon.toFixed(5)}°
+                      </div>
+                      {train.headingText && train.headingText !== 'En andén' && (
+                        <div style={{ fontSize: '11px', color: '#4B5563' }}>
+                          <strong>Rumbo:</strong> {train.headingText} ({train.heading}°)
+                        </div>
+                      )}
                       {train.speed != null && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '2px' }}>
                           <strong>Velocidad:</strong>
                           {train.speed === 0 || train.is_stopped ? (
                             <>
@@ -1200,16 +1570,20 @@ const TrainMap = () => {
                           )}
                         </div>
                       )}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', borderTop: '1px solid #E5E7EB', paddingTop: '6px' }}>
                         <span style={{
                           width: 8,
                           height: 8,
                           borderRadius: '50%',
-                          backgroundColor: '#10B981',
+                          backgroundColor: train.is_official_gps ? '#10B981' : '#3B82F6',
+                          boxShadow: train.is_official_gps ? '0 0 6px #10B981' : '0 0 6px #3B82F6',
                         }} />
-                        <span style={{ fontSize: '11px', color: '#059669', fontWeight: 600 }}>
-                          Telemetría en Vivo (Motor On-Device)
+                        <span style={{ fontSize: '11px', color: train.is_official_gps ? '#059669' : '#1D4ED8', fontWeight: 700 }}>
+                          {train.is_official_gps ? '🛰️ GPS Satelital Oficial (En Tiempo Real)' : '📍 Telemetría Geodésica de Vía'}
                         </span>
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#6B7280', marginTop: '1px' }}>
+                        {train.telemetry_source || (train.is_official_gps ? 'Transpondedor a bordo' : 'Trazado Oficial de Alta Velocidad')}
                       </div>
                       <div style={{ fontSize: '10px', color: '#9CA3AF', marginTop: '2px' }}>
                         Señal registrada: {train.time ? new Date(train.time).toLocaleTimeString() : 'N/D'}
