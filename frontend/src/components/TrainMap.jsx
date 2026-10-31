@@ -669,13 +669,32 @@ const TrainMap = () => {
       }}>
         {/* Identidad de la App e Indicador de Autonomía */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            backgroundColor: engineMode === 'AUTONOMOUS' ? '#10B981' : (remoteStatus.includes('Conectado') ? '#10B981' : '#F59E0B'),
-            boxShadow: '0 0 10px #10B981',
-          }} />
+          <div style={{ position: 'relative', width: 36, height: 36, flexShrink: 0 }}>
+            <img
+              src="./logo.png"
+              alt="RailScope Icon"
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '8px',
+                border: '1.5px solid rgba(96, 165, 250, 0.6)',
+                boxShadow: '0 0 10px rgba(59, 130, 246, 0.4)',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+            />
+            <span style={{
+              position: 'absolute',
+              bottom: -2,
+              right: -2,
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: engineMode === 'AUTONOMOUS' ? '#10B981' : (remoteStatus.includes('Conectado') ? '#10B981' : '#F59E0B'),
+              border: '2px solid #0f172a',
+              boxShadow: '0 0 6px #10B981',
+            }} />
+          </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#60A5FA', display: 'flex', alignItems: 'center', gap: '6px' }}>
               RailScope Global
@@ -935,8 +954,20 @@ const TrainMap = () => {
             fontFamily: 'system-ui, sans-serif',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <div style={{ fontWeight: 800, fontSize: '16px', color: '#60A5FA' }}>
-                ⚙️ Configuración RailScope
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img
+                  src="./logo.png"
+                  alt="RailScope"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '6px',
+                    border: '1px solid rgba(96, 165, 250, 0.4)',
+                  }}
+                />
+                <div style={{ fontWeight: 800, fontSize: '16px', color: '#60A5FA' }}>
+                  ⚙️ Configuración RailScope
+                </div>
               </div>
               <button onClick={() => setShowSettingsModal(false)} style={closeBtnStyle}>✕</button>
             </div>
