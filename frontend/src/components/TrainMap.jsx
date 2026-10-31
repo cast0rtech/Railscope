@@ -109,6 +109,42 @@ const createTrainIcon = (operator, isRealtime) => {
   });
 };
 
+const createUserLocationIcon = () => {
+  const svgHtml = `
+    <div style="position: relative; width: 34px; height: 34px;">
+      <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.35);
+        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      "></div>
+      <div style="
+        position: absolute;
+        top: 7px;
+        left: 7px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #2563EB;
+        border: 2.5px solid #ffffff;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+      "></div>
+    </div>
+  `;
+
+  return L.divIcon({
+    html: svgHtml,
+    className: 'custom-user-marker',
+    iconSize: [34, 34],
+    iconAnchor: [17, 17],
+    popupAnchor: [0, -18],
+  });
+};
+
 // ==============================================================================
 // 2. Corredores Ferroviarios (Europa, Asia & Norteamérica) en Tiempo Real
 // ==============================================================================
@@ -283,8 +319,22 @@ const TrainMap = () => {
   const [trains, setTrains] = useState({});
   const [continentFilter, setContinentFilter] = useState('ALL'); // ALL, EU, AS, NA
   const [filterType, setFilterType] = useState('ALL'); // ALL, PRIVADO, ESTATAL
-  const [mapCenter, setMapCenter] = useState([38.0, 10.0]);
-  const [mapZoom, setMapZoom] = useState(3);
+
+  // Obtener ubicación guardada para iniciar inmediatamente en la posición del usuario al abrir o recargar
+  const getInitialLocation = () => {
+    try {
+      const cached = localStorage.getItem('railscope_user_location');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length === 2) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  };
+
+  const [userLocation, setUserLocation] = useState(getInitialLocation);
+  const [mapCenter, setMapCenter] = useState(() => getInitialLocation() || [40.4168, -3.7038]);
+  const [mapZoom, setMapZoom] = useState(() => (getInitialLocation() ? 12 : 5));
 
   // Estados de conectividad y modo de ejecución
   const isNative = Capacitor.isNativePlatform();
@@ -300,6 +350,38 @@ const TrainMap = () => {
 
   const wsRef = useRef(null);
   const liveSyncTimerRef = useRef(null);
+
+  // Función para obtener y centrar en la ubicación actual del usuario
+  const locateUserPosition = useCallback((isExplicitClick = false) => {
+    if (!('geolocation' in navigator)) {
+      if (isExplicitClick) alert('Geolocalización no soportada en este dispositivo.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = [
+          Number(pos.coords.latitude.toFixed(5)),
+          Number(pos.coords.longitude.toFixed(5)),
+        ];
+        setUserLocation(coords);
+        setMapCenter(coords);
+        setMapZoom(12);
+        try {
+          localStorage.setItem('railscope_user_location', JSON.stringify(coords));
+        } catch (e) {}
+      },
+      (err) => {
+        console.warn('Geolocalización no disponible o pendiente de permiso:', err);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  }, []);
+
+  // Solicitar ubicación del usuario inmediatamente al abrir la app o recargar
+  useEffect(() => {
+    locateUserPosition(false);
+  }, [locateUserPosition]);
 
   // 1. Motor cinemático local en dispositivo (Completamente autosuficiente)
   const updateFleetPositions = useCallback(() => {
@@ -535,6 +617,16 @@ const TrainMap = () => {
 
         {/* Botones de Acción Móviles */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button
+            onClick={() => locateUserPosition(true)}
+            style={{
+              ...actionPillStyle(false),
+              backgroundColor: 'rgba(37, 99, 235, 0.75)',
+            }}
+            title="Centrar mapa en mi ubicación actual"
+          >
+            📍 Mi Posición
+          </button>
           <button
             onClick={() => setShowFiltersPanel(!showFiltersPanel)}
             style={actionPillStyle(showFiltersPanel)}
@@ -896,6 +988,25 @@ const TrainMap = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
         />
+
+        {/* Marcador de Ubicación Actual del Usuario (Inicio / Recarga) */}
+        {userLocation && (
+          <Marker position={userLocation} icon={createUserLocationIcon()}>
+            <Popup>
+              <div style={{ fontFamily: 'system-ui, sans-serif', padding: '4px', minWidth: '190px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <strong style={{ fontSize: '13px', color: '#1E40AF' }}>📍 Tu Ubicación Actual</strong>
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748B' }}>
+                  Punto de inicio al abrir la aplicación
+                </div>
+                <div style={{ fontSize: '11px', color: '#0F172A', marginTop: '4px', fontWeight: 600 }}>
+                  Lat: {userLocation[0]}° | Lon: {userLocation[1]}°
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        )}
 
         {/* Agrupación Visual Inteligente de Marcadores */}
         <MarkerClusterGroup
