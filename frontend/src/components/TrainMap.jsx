@@ -895,6 +895,33 @@ const TrainMap = () => {
   const [showLegendPanel, setShowLegendPanel] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
+  // Responsividad y dimensionamiento dinámico de la cabecera
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(115);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const updateHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const isMobile = windowWidth < 768;
+  const isSmallMobile = windowWidth < 480;
+
   const wsRef = useRef(null);
   const liveSyncTimerRef = useRef(null);
 
@@ -1318,385 +1345,454 @@ const TrainMap = () => {
     setShowFiltersPanel(false);
   };
 
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden', backgroundColor: '#0f172a' }}>
-      {/* Barra Superior Móvil y de Escritorio (Optimizada para Safe Area en Android) */}
+  const renderSearchBox = (fullWidth = false) => (
+    <div style={{
+      position: 'relative',
+      flex: fullWidth ? '1 1 100%' : '1 1 260px',
+      maxWidth: fullWidth ? '100%' : '380px',
+      minWidth: fullWidth ? '100%' : '190px',
+    }}>
       <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        backgroundColor: 'rgba(15, 23, 42, 0.96)',
-        color: '#F8FAFC',
-        paddingTop: 'max(12px, env(safe-area-inset-top))',
-        paddingBottom: '10px',
-        paddingLeft: '14px',
-        paddingRight: '14px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
-        flexWrap: 'wrap',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '8px',
+        backgroundColor: 'rgba(30, 41, 59, 0.88)',
+        border: isSearchOpen ? '1.5px solid #3B82F6' : '1px solid rgba(255, 255, 255, 0.16)',
+        borderRadius: '20px',
+        padding: '5px 12px',
+        boxShadow: isSearchOpen ? '0 0 12px rgba(59, 130, 246, 0.35)' : 'none',
+        transition: 'all 0.2s ease',
       }}>
-        {/* Identidad de la App e Indicador de Autonomía */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ position: 'relative', width: 36, height: 36, flexShrink: 0 }}>
-            <img
-              src="./logo.png"
-              alt="RailScope Icon"
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: '8px',
-                border: '1.5px solid rgba(96, 165, 250, 0.6)',
-                boxShadow: '0 0 10px rgba(59, 130, 246, 0.4)',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-            <span style={{
-              position: 'absolute',
-              bottom: -2,
-              right: -2,
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: engineMode === 'AUTONOMOUS' ? '#10B981' : (remoteStatus.includes('Conectado') ? '#10B981' : '#F59E0B'),
-              border: '2px solid #0f172a',
-              boxShadow: '0 0 6px #10B981',
-            }} />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#60A5FA', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              RailScope Global
-              <span style={{
-                backgroundColor: '#1E293B',
-                color: '#34D399',
-                fontSize: '10px',
-                fontWeight: 700,
-                padding: '2px 6px',
-                borderRadius: '4px',
-                border: '1px solid rgba(52, 211, 153, 0.3)',
-              }}>
-                {engineMode === 'AUTONOMOUS' ? 'Autónomo Local' : 'Remoto'}
-              </span>
+        <span style={{ fontSize: '13px', marginRight: '6px', opacity: 0.85 }}>🔍</span>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setIsSearchOpen(true);
+          }}
+          onFocus={() => setIsSearchOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              if (searchResults.length > 0) {
+                handleSelectTrain(searchResults[0]);
+              }
+            } else if (e.key === 'Escape') {
+              setIsSearchOpen(false);
+            }
+          }}
+          placeholder="Buscar tren (ej. Alvia 04143, AVE)..."
+          style={{
+            width: '100%',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: '#F8FAFC',
+            fontSize: '12px',
+            fontWeight: 500,
+          }}
+        />
+        {searchQuery && (
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedTrainId(null);
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#94A3B8',
+              cursor: 'pointer',
+              fontSize: '12px',
+              padding: '0 4px',
+              fontWeight: 700,
+            }}
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {/* Menú Desplegable con Resultados y Sugerencias */}
+      {isSearchOpen && (
+        <div
+          className="custom-panel-scroll"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            left: 0,
+            right: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.98)',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 14px 35px rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(16px)',
+            maxHeight: '320px',
+            overflowY: 'auto',
+            zIndex: 2000,
+            padding: '8px',
+          }}
+        >
+          {/* Sugerencias Rápidas */}
+          <div style={{ marginBottom: '8px' }}>
+            <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px', paddingLeft: '4px' }}>
+              Sugerencias Rápidas:
             </div>
-            <div style={{ fontSize: '11px', color: '#94A3B8' }}>
-              {isOnline ? '🟢 Red activa' : '🟠 Modo sin conexión'} • {filteredTrains.length} trenes ({filteredTrains.filter(t => t.speed > 0).length} en marcha, {filteredTrains.filter(t => t.speed === 0 || t.is_stopped).length} en estación)
-            </div>
-          </div>
-        </div>
-
-        {/* Buscador de Trenes en Tiempo Real (ej. Alvia 04143) */}
-        <div style={{
-          position: 'relative',
-          flex: '1 1 240px',
-          maxWidth: '380px',
-          minWidth: '190px',
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'rgba(30, 41, 59, 0.88)',
-            border: isSearchOpen ? '1.5px solid #3B82F6' : '1px solid rgba(255, 255, 255, 0.16)',
-            borderRadius: '20px',
-            padding: '5px 12px',
-            boxShadow: isSearchOpen ? '0 0 12px rgba(59, 130, 246, 0.35)' : 'none',
-            transition: 'all 0.2s ease',
-          }}>
-            <span style={{ fontSize: '13px', marginRight: '6px', opacity: 0.85 }}>🔍</span>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setIsSearchOpen(true);
-              }}
-              onFocus={() => setIsSearchOpen(true)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  if (searchResults.length > 0) {
-                    handleSelectTrain(searchResults[0]);
-                  }
-                } else if (e.key === 'Escape') {
-                  setIsSearchOpen(false);
-                }
-              }}
-              placeholder="Buscar tren (ej. Alvia 04143, AVE)..."
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: '#F8FAFC',
-                fontSize: '12px',
-                fontWeight: 500,
-              }}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedTrainId(null);
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#94A3B8',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  padding: '0 4px',
-                  fontWeight: 700,
-                }}
-                title="Limpiar búsqueda"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Menú Desplegable con Resultados y Sugerencias */}
-          {isSearchOpen && (
-            <div style={{
-              position: 'absolute',
-              top: 'calc(100% + 6px)',
-              left: 0,
-              right: 0,
-              backgroundColor: 'rgba(15, 23, 42, 0.98)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
-              boxShadow: '0 14px 35px rgba(0,0,0,0.7)',
-              backdropFilter: 'blur(16px)',
-              maxHeight: '340px',
-              overflowY: 'auto',
-              zIndex: 2000,
-              padding: '8px',
-            }}>
-              {/* Sugerencias Rápidas */}
-              <div style={{ marginBottom: '8px' }}>
-                <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px', paddingLeft: '4px' }}>
-                  Sugerencias Rápidas:
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                  {QUICK_SEARCH_CHIPS.map((chip) => (
-                    <button
-                      key={chip.label}
-                      onClick={() => {
-                        setSearchQuery(chip.query);
-                        const match = Object.values(trains).find((t) =>
-                          (t.train_name && t.train_name.toLowerCase().includes(chip.query.toLowerCase())) ||
-                          t.train_id.toLowerCase().includes(chip.query.toLowerCase())
-                        );
-                        if (match) {
-                          handleSelectTrain(match);
-                        }
-                      }}
-                      style={{
-                        backgroundColor: searchQuery.toLowerCase() === chip.query.toLowerCase() ? '#2563EB' : '#1E293B',
-                        color: '#E2E8F0',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '6px',
-                        padding: '3px 8px',
-                        fontSize: '10px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {chip.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Lista de Resultados Encontrados */}
-              {searchQuery.trim() && (
-                <div>
-                  <div style={{
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              {QUICK_SEARCH_CHIPS.map((chip) => (
+                <button
+                  key={chip.label}
+                  onClick={() => {
+                    setSearchQuery(chip.query);
+                    const match = Object.values(trains).find((t) =>
+                      (t.train_name && t.train_name.toLowerCase().includes(chip.query.toLowerCase())) ||
+                      t.train_id.toLowerCase().includes(chip.query.toLowerCase())
+                    );
+                    if (match) {
+                      handleSelectTrain(match);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: searchQuery.toLowerCase() === chip.query.toLowerCase() ? '#2563EB' : '#1E293B',
+                    color: '#E2E8F0',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '6px',
+                    padding: '3px 8px',
                     fontSize: '10px',
-                    color: '#94A3B8',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    marginBottom: '6px',
-                    paddingLeft: '4px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                    paddingTop: '6px',
-                  }}>
-                    Resultados ({searchResults.length}):
-                  </div>
-                  {searchResults.length === 0 ? (
-                    <div style={{ padding: '10px', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>
-                      No se encontró ningún tren para "{searchQuery}".
-                    </div>
-                  ) : (
-                    searchResults.slice(0, 10).map((t) => {
-                      const opKey = t.operator?.toUpperCase() || 'DEFAULT';
-                      const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
-                      const isStopped = t.speed === 0 || t.is_stopped;
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-                      return (
-                        <div
-                          key={t.train_id}
-                          onClick={() => handleSelectTrain(t)}
-                          style={{
-                            padding: '8px 10px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '8px',
-                            backgroundColor: selectedTrainId === t.train_id ? 'rgba(37, 99, 235, 0.28)' : 'transparent',
-                            transition: 'background 0.15s ease',
-                            marginBottom: '2px',
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.4)')}
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              selectedTrainId === t.train_id ? 'rgba(37, 99, 235, 0.28)' : 'transparent')
-                          }
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-                            <span style={{ ...dotStyle, backgroundColor: cfg.color }} />
-                            <div style={{ overflow: 'hidden' }}>
-                              <div style={{ fontSize: '12px', fontWeight: 700, color: '#F1F5F9', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                                {t.train_name || t.train_id}
-                                <span style={{ marginLeft: '6px', fontSize: '10px', color: '#94A3B8', fontWeight: 400 }}>
-                                  ({cfg.name})
-                                </span>
-                              </div>
-                              <div style={{ fontSize: '10px', color: '#94A3B8', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                                {t.last_station_name || t.line_name || 'En ruta'}
-                              </div>
-                            </div>
+          {/* Lista de Resultados Encontrados */}
+          {searchQuery.trim() && (
+            <div>
+              <div style={{
+                fontSize: '10px',
+                color: '#94A3B8',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                marginBottom: '6px',
+                paddingLeft: '4px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                paddingTop: '6px',
+              }}>
+                Resultados ({searchResults.length}):
+              </div>
+              {searchResults.length === 0 ? (
+                <div style={{ padding: '10px', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>
+                  No se encontró ningún tren para "{searchQuery}".
+                </div>
+              ) : (
+                searchResults.slice(0, 10).map((t) => {
+                  const opKey = t.operator?.toUpperCase() || 'DEFAULT';
+                  const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+                  const isStopped = t.speed === 0 || t.is_stopped;
+
+                  return (
+                    <div
+                      key={t.train_id}
+                      onClick={() => handleSelectTrain(t)}
+                      style={{
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '8px',
+                        backgroundColor: selectedTrainId === t.train_id ? 'rgba(37, 99, 235, 0.28)' : 'transparent',
+                        transition: 'background 0.15s ease',
+                        marginBottom: '2px',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.4)')}
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          selectedTrainId === t.train_id ? 'rgba(37, 99, 235, 0.28)' : 'transparent')
+                      }
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                        <span style={{ ...dotStyle, backgroundColor: cfg.color }} />
+                        <div style={{ overflow: 'hidden' }}>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#F1F5F9', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            {t.train_name || t.train_id}
+                            <span style={{ marginLeft: '6px', fontSize: '10px', color: '#94A3B8', fontWeight: 400 }}>
+                              ({cfg.name})
+                            </span>
                           </div>
-                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                            <div style={{
-                              fontSize: '10px',
-                              fontWeight: 700,
-                              color: isStopped ? '#EF4444' : '#10B981',
-                            }}>
-                              {isStopped ? '🛑 0 km/h' : `⚡ ${t.speed} km/h`}
-                            </div>
-                            <div style={{ fontSize: '9px', color: '#64748B' }}>
-                              {t.country}
-                            </div>
+                          <div style={{ fontSize: '10px', color: '#94A3B8', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            {t.last_station_name || t.line_name || 'En ruta'}
                           </div>
                         </div>
-                      );
-                    })
-                  )}
-                </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          color: isStopped ? '#EF4444' : '#10B981',
+                        }}>
+                          {isStopped ? '🛑 0 km/h' : `⚡ ${t.speed} km/h`}
+                        </div>
+                        <div style={{ fontSize: '9px', color: '#64748B' }}>
+                          {t.country}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </div>
           )}
         </div>
+      )}
+    </div>
+  );
 
-        {/* Botones de Acción Móviles */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden', backgroundColor: '#0f172a' }}>
+      {/* Barra Superior Unificada y Responsiva (Escritorio, Tablet y Móvil) */}
+      <header
+        ref={headerRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          backgroundColor: 'rgba(15, 23, 42, 0.96)',
+          color: '#F8FAFC',
+          paddingTop: 'max(10px, env(safe-area-inset-top))',
+          paddingBottom: '8px',
+          paddingLeft: isMobile ? '10px' : '16px',
+          paddingRight: isMobile ? '10px' : '16px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: isMobile ? '8px' : '10px',
+        }}
+      >
+        {/* Fila 1: Logo/Título, Buscador (en Desktop) y Botones de Acción */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '10px',
+          width: '100%',
+        }}>
+          {/* Identidad de la App */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flexShrink: 0 }}>
+            <div style={{ position: 'relative', width: 34, height: 34, flexShrink: 0 }}>
+              <img
+                src="./logo.png"
+                alt="RailScope Icon"
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '8px',
+                  border: '1.5px solid rgba(96, 165, 250, 0.6)',
+                  boxShadow: '0 0 10px rgba(59, 130, 246, 0.4)',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+              <span style={{
+                position: 'absolute',
+                bottom: -2,
+                right: -2,
+                width: 9,
+                height: 9,
+                borderRadius: '50%',
+                backgroundColor: engineMode === 'AUTONOMOUS' ? '#10B981' : (remoteStatus.includes('Conectado') ? '#10B981' : '#F59E0B'),
+                border: '2px solid #0f172a',
+                boxShadow: '0 0 6px #10B981',
+              }} />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <div style={{
+                fontWeight: 800,
+                fontSize: isSmallMobile ? '13px' : '15px',
+                letterSpacing: '0.2px',
+                color: '#60A5FA',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap',
+              }}>
+                <span>RailScope</span>
+                {!isSmallMobile && <span>Global</span>}
+                <span style={{
+                  backgroundColor: '#1E293B',
+                  color: '#34D399',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  padding: '1px 5px',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(52, 211, 153, 0.3)',
+                }}>
+                  {engineMode === 'AUTONOMOUS' ? 'Autónomo' : 'Remoto'}
+                </span>
+              </div>
+              <div style={{
+                fontSize: isSmallMobile ? '9.5px' : '11px',
+                color: '#94A3B8',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}>
+                {isOnline ? '🟢' : '🟠'} {filteredTrains.length} trenes ({filteredTrains.filter(t => t.speed > 0).length} en marcha)
+              </div>
+            </div>
+          </div>
+
+          {/* En Desktop: Buscador integrado en Fila 1 */}
+          {!isMobile && renderSearchBox(false)}
+
+          {/* Botones de Acción */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: isSmallMobile ? '4px' : '6px',
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => locateUserPosition(true)}
+              style={{
+                ...actionPillStyle(false),
+                backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                padding: isSmallMobile ? '5px 8px' : '6px 11px',
+                fontSize: isSmallMobile ? '11px' : '12px',
+              }}
+              title="Centrar mapa en mi ubicación actual"
+            >
+              📍 {isSmallMobile ? 'GPS' : 'Posición'}
+            </button>
+            <button
+              onClick={() => {
+                setShowFiltersPanel(!showFiltersPanel);
+                if (showLegendPanel) setShowLegendPanel(false);
+              }}
+              style={{
+                ...actionPillStyle(showFiltersPanel),
+                padding: isSmallMobile ? '5px 8px' : '6px 11px',
+                fontSize: isSmallMobile ? '11px' : '12px',
+              }}
+            >
+              🌍 Filtros
+            </button>
+            <button
+              onClick={() => {
+                setShowLegendPanel(!showLegendPanel);
+                if (showFiltersPanel) setShowFiltersPanel(false);
+              }}
+              style={{
+                ...actionPillStyle(showLegendPanel),
+                padding: isSmallMobile ? '5px 8px' : '6px 11px',
+                fontSize: isSmallMobile ? '11px' : '12px',
+              }}
+            >
+              📋 Leyenda
+            </button>
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              style={{
+                ...actionPillStyle(false),
+                padding: isSmallMobile ? '5px 8px' : '6px 10px',
+                backgroundColor: 'rgba(51, 65, 85, 0.7)',
+                fontSize: isSmallMobile ? '11px' : '12px',
+              }}
+              title="Configuración de Motor"
+            >
+              ⚙️
+            </button>
+          </div>
+        </div>
+
+        {/* En Móvil: Buscador en Fila 2 (ancho completo) */}
+        {isMobile && renderSearchBox(true)}
+
+        {/* Fila de Filtros Rápidos por Categoría: Todos, Alta Velocidad, Larga y Media, Cercanías */}
+        <div
+          className="hide-scrollbar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            width: '100%',
+            paddingBottom: '2px',
+          }}
+        >
           <button
-            onClick={() => locateUserPosition(true)}
+            onClick={() => setServiceCategoryFilter('ALL')}
             style={{
-              ...actionPillStyle(false),
-              backgroundColor: 'rgba(37, 99, 235, 0.75)',
+              ...categoryPillStyle(serviceCategoryFilter === 'ALL', '#2563EB'),
+              flexShrink: 0,
             }}
-            title="Centrar mapa en mi ubicación actual"
           >
-            📍 Mi Posición
+            🌐 Todos ({serviceCategoryCounts.ALL})
           </button>
           <button
-            onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-            style={actionPillStyle(showFiltersPanel)}
-          >
-            🌍 Filtros
-          </button>
-          <button
-            onClick={() => setShowLegendPanel(!showLegendPanel)}
-            style={actionPillStyle(showLegendPanel)}
-          >
-            📋 Leyenda
-          </button>
-          <button
-            onClick={() => setShowSettingsModal(true)}
+            onClick={() => setServiceCategoryFilter('ALTA_VELOCIDAD')}
             style={{
-              ...actionPillStyle(false),
-              padding: '6px 10px',
-              backgroundColor: 'rgba(51, 65, 85, 0.7)',
+              ...categoryPillStyle(serviceCategoryFilter === 'ALTA_VELOCIDAD', '#7B2082'),
+              flexShrink: 0,
             }}
-            title="Configuración de Motor"
           >
-            ⚙️
+            ⚡ Alta Velocidad ({serviceCategoryCounts.ALTA_VELOCIDAD})
+          </button>
+          <button
+            onClick={() => setServiceCategoryFilter('LARGA_MEDIA')}
+            style={{
+              ...categoryPillStyle(serviceCategoryFilter === 'LARGA_MEDIA', '#D97706'),
+              flexShrink: 0,
+            }}
+          >
+            🚆 Larga y Media ({serviceCategoryCounts.LARGA_MEDIA})
+          </button>
+          <button
+            onClick={() => setServiceCategoryFilter('CERCANIAS')}
+            style={{
+              ...categoryPillStyle(serviceCategoryFilter === 'CERCANIAS', '#DC2626'),
+              flexShrink: 0,
+            }}
+          >
+            🚊 Cercanías ({serviceCategoryCounts.CERCANIAS})
           </button>
         </div>
-      </div>
-
-      {/* Barra Flotante de Filtros Rápidos por Categoría: Alta Velocidad, Larga y Media Distancia, Cercanías */}
-      <div style={{
-        position: 'absolute',
-        top: '68px',
-        left: '14px',
-        zIndex: 990,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        backgroundColor: 'rgba(15, 23, 42, 0.94)',
-        padding: '5px 8px',
-        borderRadius: '24px',
-        border: '1px solid rgba(255, 255, 255, 0.16)',
-        boxShadow: '0 4px 18px rgba(0,0,0,0.5)',
-        backdropFilter: 'blur(12px)',
-        overflowX: 'auto',
-        maxWidth: 'calc(100vw - 28px)',
-      }}>
-        <button
-          onClick={() => setServiceCategoryFilter('ALL')}
-          style={categoryPillStyle(serviceCategoryFilter === 'ALL', '#2563EB')}
-        >
-          🌐 Todos ({serviceCategoryCounts.ALL})
-        </button>
-        <button
-          onClick={() => setServiceCategoryFilter('ALTA_VELOCIDAD')}
-          style={categoryPillStyle(serviceCategoryFilter === 'ALTA_VELOCIDAD', '#7B2082')}
-        >
-          ⚡ Alta Velocidad ({serviceCategoryCounts.ALTA_VELOCIDAD})
-        </button>
-        <button
-          onClick={() => setServiceCategoryFilter('LARGA_MEDIA')}
-          style={categoryPillStyle(serviceCategoryFilter === 'LARGA_MEDIA', '#D97706')}
-        >
-          🚆 Larga y Media ({serviceCategoryCounts.LARGA_MEDIA})
-        </button>
-        <button
-          onClick={() => setServiceCategoryFilter('CERCANIAS')}
-          style={categoryPillStyle(serviceCategoryFilter === 'CERCANIAS', '#DC2626')}
-        >
-          🚊 Cercanías ({serviceCategoryCounts.CERCANIAS})
-        </button>
-      </div>
+      </header>
 
       {/* Panel Desplegable de Filtros y Regiones */}
       {showFiltersPanel && (
-        <div style={{
-          position: 'absolute',
-          top: '72px',
-          right: '14px',
-          zIndex: 1000,
-          backgroundColor: 'rgba(15, 23, 42, 0.97)',
-          color: '#F1F5F9',
-          padding: '14px 16px',
-          borderRadius: '12px',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          maxWidth: '380px',
-          width: 'calc(100vw - 28px)',
-          backdropFilter: 'blur(12px)',
-          fontFamily: 'system-ui, sans-serif',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-        }}>
+        <div
+          className="custom-panel-scroll"
+          style={{
+            position: 'absolute',
+            top: `${headerHeight + 6}px`,
+            right: isMobile ? '8px' : '14px',
+            left: isMobile ? '8px' : 'auto',
+            zIndex: 1000,
+            backgroundColor: 'rgba(15, 23, 42, 0.98)',
+            color: '#F1F5F9',
+            padding: '14px 16px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
+            border: '1px solid rgba(255, 255, 255, 0.16)',
+            maxWidth: isMobile ? 'none' : '400px',
+            width: isMobile ? 'auto' : '390px',
+            backdropFilter: 'blur(16px)',
+            fontFamily: 'system-ui, sans-serif',
+            maxHeight: `calc(100vh - ${headerHeight + 20}px)`,
+            overflowY: 'auto',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ fontWeight: 700, fontSize: '13px', color: '#93C5FD' }}>Filtros & Navegación Global</span>
             <button onClick={() => setShowFiltersPanel(false)} style={closeBtnStyle}>✕</button>
@@ -1820,25 +1916,29 @@ const TrainMap = () => {
 
       {/* Panel Desplegable de Leyenda de Operadores */}
       {showLegendPanel && (
-        <div style={{
-          position: 'absolute',
-          bottom: '20px',
-          left: '14px',
-          zIndex: 1000,
-          backgroundColor: 'rgba(15, 23, 42, 0.97)',
-          color: '#E2E8F0',
-          padding: '14px 16px',
-          borderRadius: '12px',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          maxWidth: '560px',
-          width: 'calc(100vw - 28px)',
-          maxHeight: '52vh',
-          overflowY: 'auto',
-          backdropFilter: 'blur(12px)',
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '11px',
-        }}>
+        <div
+          className="custom-panel-scroll"
+          style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: isMobile ? '8px' : '14px',
+            right: isMobile ? '8px' : 'auto',
+            zIndex: 1000,
+            backgroundColor: 'rgba(15, 23, 42, 0.98)',
+            color: '#E2E8F0',
+            padding: '14px 16px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            maxWidth: isMobile ? 'none' : '560px',
+            width: isMobile ? 'auto' : 'calc(100vw - 28px)',
+            maxHeight: '48vh',
+            overflowY: 'auto',
+            backdropFilter: 'blur(12px)',
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '11px',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontWeight: 700, color: '#93C5FD' }}>Operadores Globales (Europa, Asia & Norteamérica)</span>
             <button onClick={() => setShowLegendPanel(false)} style={closeBtnStyle}>✕</button>
@@ -2243,17 +2343,18 @@ const TrainMap = () => {
         return (
           <div style={{
             position: 'absolute',
-            bottom: '24px',
-            left: '14px',
+            bottom: isMobile ? '12px' : '24px',
+            left: isMobile ? '8px' : '14px',
+            right: isMobile ? '8px' : 'auto',
             zIndex: 1000,
             backgroundColor: 'rgba(15, 23, 42, 0.96)',
             color: '#F8FAFC',
             borderRadius: '14px',
-            padding: '14px 16px',
+            padding: isMobile ? '12px 14px' : '14px 16px',
             boxShadow: '0 14px 40px rgba(0,0,0,0.75)',
             border: '1.5px solid rgba(96, 165, 250, 0.4)',
-            maxWidth: '380px',
-            width: 'calc(100vw - 28px)',
+            maxWidth: isMobile ? 'none' : '380px',
+            width: isMobile ? 'auto' : 'calc(100vw - 28px)',
             backdropFilter: 'blur(14px)',
             fontFamily: 'system-ui, sans-serif',
           }}>
