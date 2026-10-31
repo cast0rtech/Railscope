@@ -5,20 +5,31 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // ==============================================================================
-// 1. Colores y Estilos Visuales por Operador Ferroviario Europeo
+// 1. Colores y Estilos Visuales por Operador (Públicos y Privados de Alta Velocidad)
 // ==============================================================================
-const OPERATOR_COLORS = {
-  SBB: '#EB0000',      // Suiza
-  DB: '#E2001A',       // Alemania
-  OEBB: '#C4001F',     // Austria
-  RENFE: '#7B2082',    // España
-  SNCF: '#0088CE',     // Francia
-  FS: '#00875A',       // Italia (Trenitalia)
-  DEFAULT: '#1E40AF',
+const OPERATOR_CONFIG = {
+  // Operadores Privados de Alta Velocidad
+  IRYO: { name: 'iryo (ILSA)', color: '#D3122A', country: 'ES', type: 'Privado', model: 'Frecciarossa 1000' },
+  OUIGO: { name: 'Ouigo España', color: '#E6007E', country: 'ES', type: 'Privado', model: 'Alstom Euroduplex' },
+  ITALO: { name: 'Italo (NTV)', color: '#8B0000', country: 'IT', type: 'Privado', model: 'Alstom AGV 575 / EVO' },
+  FLIXTRAIN: { name: 'FlixTrain', color: '#73D700', country: 'DE', type: 'Privado', model: 'Vectron Express' },
+  EUROSTAR: { name: 'Eurostar', color: '#002B49', country: 'FR/DE', type: 'Privado/Int.', model: 'e320 / PBKA' },
+  WESTBAHN: { name: 'Westbahn', color: '#00B5B8', country: 'AT/DE', type: 'Privado', model: 'Stadler KISS 200' },
+
+  // Operadores Nacionales / Estatales
+  RENFE: { name: 'Renfe AVE/Avlo', color: '#7B2082', country: 'ES', type: 'Estatal', model: 'S-106 Avril / S-103' },
+  SNCF: { name: 'SNCF TGV inOui', color: '#0088CE', country: 'FR', type: 'Estatal', model: 'TGV Duplex / M' },
+  DB: { name: 'Deutsche Bahn ICE', color: '#E2001A', country: 'DE', type: 'Estatal', model: 'ICE 3 / ICE 4' },
+  FS: { name: 'Trenitalia FS', color: '#00875A', country: 'IT', type: 'Estatal', model: 'Frecciarossa 1000' },
+  SBB: { name: 'SBB CFF FFS', color: '#EB0000', country: 'CH', type: 'Estatal', model: 'Giruno / Twindexx' },
+  OEBB: { name: 'ÖBB Railjet', color: '#C4001F', country: 'AT', type: 'Estatal', model: 'Railjet 2 / Nightjet' },
+  DEFAULT: { name: 'Operador Ferroviario', color: '#1E40AF', country: 'EU', type: 'Comercial', model: 'Alta Velocidad' },
 };
 
 const createTrainIcon = (operator, isRealtime) => {
-  const color = OPERATOR_COLORS[operator?.toUpperCase()] || OPERATOR_COLORS.DEFAULT;
+  const opKey = operator?.toUpperCase() || 'DEFAULT';
+  const config = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+  const color = config.color;
   const pulseClass = isRealtime ? 'pulse-badge' : '';
 
   const svgHtml = `
@@ -31,7 +42,7 @@ const createTrainIcon = (operator, isRealtime) => {
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.35);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.38);
         border: 2px solid #ffffff;
       ">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -67,51 +78,72 @@ const createTrainIcon = (operator, isRealtime) => {
 };
 
 // ==============================================================================
-// 2. Flota Ferroviaria Europea Inicial (Corredores Troncales)
+// 2. Flota Ferroviaria Europea: Operadores Estatales y Privados de Alta Velocidad
 // ==============================================================================
 const INITIAL_EUROPEAN_FLEET = [
-  // Suiza (SBB)
-  { train_id: 'SBB-IC1-714', operator: 'SBB', country: 'CH', lat: 47.3782, lon: 8.5402, speed: 140, is_realtime: true, last_station_name: 'Zürich HB -> St. Gallen', headingLat: 0.002, headingLon: 0.003 },
-  { train_id: 'SBB-IC3-568', operator: 'SBB', country: 'CH', lat: 47.5596, lon: 7.5886, speed: 160, is_realtime: true, last_station_name: 'Basel SBB -> Chur', headingLat: -0.002, headingLon: 0.002 },
-  { train_id: 'SBB-IR36-1972', operator: 'SBB', country: 'CH', lat: 46.9480, lon: 7.4474, speed: 125, is_realtime: true, last_station_name: 'Bern -> Olten', headingLat: 0.001, headingLon: 0.002 },
-  { train_id: 'SBB-EC331', operator: 'SBB', country: 'CH', lat: 46.2044, lon: 6.1432, speed: 155, is_realtime: true, last_station_name: 'Genève-Cornavin -> Milano C.', headingLat: -0.001, headingLon: 0.003 },
-  { train_id: 'SBB-PE-2041', operator: 'SBB', country: 'CH', lat: 47.0502, lon: 8.3093, speed: 110, is_realtime: true, last_station_name: 'Luzern -> Gotthard', headingLat: -0.002, headingLon: 0.001 },
-  { train_id: 'SBB-RE-4821', operator: 'SBB', country: 'CH', lat: 46.8027, lon: 9.8360, speed: 95, is_realtime: true, last_station_name: 'Davos Platz -> Landquart', headingLat: 0.002, headingLon: -0.001 },
+  // ----------------------------------------------------------------------------
+  // ESPAÑA: Operadores Privados (iryo, Ouigo) y Estatal (Renfe)
+  // ----------------------------------------------------------------------------
+  { train_id: 'IRYO-6014', operator: 'IRYO', country: 'ES', lat: 40.4065, lon: -3.6896, speed: 295, is_realtime: true, last_station_name: 'Madrid P.Atocha -> Barcelona Sants', headingLat: 0.003, headingLon: 0.005 },
+  { train_id: 'IRYO-6122', operator: 'IRYO', country: 'ES', lat: 41.6586, lon: -0.9118, speed: 300, is_realtime: true, last_station_name: 'Zaragoza-Delicias -> Madrid P.Atocha', headingLat: -0.003, headingLon: -0.005 },
+  { train_id: 'IRYO-6230', operator: 'IRYO', country: 'ES', lat: 39.4667, lon: -0.3774, speed: 285, is_realtime: true, last_station_name: 'Valencia J.Sorolla -> Madrid P.Atocha', headingLat: 0.003, headingLon: -0.004 },
+  { train_id: 'IRYO-6345', operator: 'IRYO', country: 'ES', lat: 37.3920, lon: -5.9753, speed: 290, is_realtime: true, last_station_name: 'Sevilla S.Justa -> Madrid P.Atocha', headingLat: 0.004, headingLon: 0.002 },
+  { train_id: 'IRYO-6410', operator: 'IRYO', country: 'ES', lat: 36.7118, lon: -4.4326, speed: 280, is_realtime: true, last_station_name: 'Málaga M.Zambrano -> Córdoba', headingLat: 0.003, headingLon: -0.001 },
 
-  // Alemania (DB)
-  { train_id: 'DB-ICE11-593', operator: 'DB', country: 'DE', lat: 48.1402, lon: 11.5583, speed: 230, is_realtime: true, last_station_name: 'München Hbf -> Berlin Hbf', headingLat: 0.004, headingLon: 0.001 },
-  { train_id: 'DB-ICE20-604', operator: 'DB', country: 'DE', lat: 50.1071, lon: 8.6638, speed: 250, is_realtime: true, last_station_name: 'Frankfurt(Main)Hbf -> Hamburg', headingLat: 0.003, headingLon: 0.002 },
-  { train_id: 'DB-ICE28-701', operator: 'DB', country: 'DE', lat: 52.5251, lon: 13.3694, speed: 220, is_realtime: true, last_station_name: 'Berlin Hbf -> Nürnberg Hbf', headingLat: -0.003, headingLon: -0.001 },
-  { train_id: 'DB-ICE42-512', operator: 'DB', country: 'DE', lat: 50.9422, lon: 6.9578, speed: 280, is_realtime: true, last_station_name: 'Köln Hbf -> Stuttgart Hbf', headingLat: -0.002, headingLon: 0.003 },
-  { train_id: 'DB-ICE15-1502', operator: 'DB', country: 'DE', lat: 53.5534, lon: 10.0069, speed: 210, is_realtime: true, last_station_name: 'Hamburg Hbf -> Hannover Hbf', headingLat: -0.003, headingLon: -0.002 },
-  { train_id: 'DB-RE1-3140', operator: 'DB', country: 'DE', lat: 51.2198, lon: 6.7944, speed: 130, is_realtime: true, last_station_name: 'Düsseldorf Hbf -> Aachen', headingLat: -0.002, headingLon: -0.002 },
-  { train_id: 'DB-ICE78-124', operator: 'DB', country: 'DE', lat: 49.4447, lon: 11.0827, speed: 260, is_realtime: true, last_station_name: 'Nürnberg Hbf -> München Hbf', headingLat: -0.003, headingLon: 0.001 },
+  { train_id: 'OUIGO-9710', operator: 'OUIGO', country: 'ES', lat: 40.4720, lon: -3.6826, speed: 300, is_realtime: true, last_station_name: 'Madrid Chamartín -> Barcelona Sants', headingLat: 0.003, headingLon: 0.005 },
+  { train_id: 'OUIGO-9725', operator: 'OUIGO', country: 'ES', lat: 41.3792, lon: 2.1401, speed: 290, is_realtime: true, last_station_name: 'Barcelona Sants -> Camp de Tarragona', headingLat: -0.002, headingLon: -0.004 },
+  { train_id: 'OUIGO-9830', operator: 'OUIGO', country: 'ES', lat: 39.0080, lon: -1.8600, speed: 295, is_realtime: true, last_station_name: 'Albacete Los Llanos -> Valencia', headingLat: 0.002, headingLon: 0.004 },
+  { train_id: 'OUIGO-9615', operator: 'OUIGO', country: 'ES', lat: 41.6420, lon: -4.7280, speed: 280, is_realtime: true, last_station_name: 'Valladolid C.Grande -> Segovia Guiomar', headingLat: -0.004, headingLon: 0.002 },
 
-  // Austria (ÖBB)
-  { train_id: 'OEBB-RJX65', operator: 'OEBB', country: 'AT', lat: 48.1851, lon: 16.3762, speed: 215, is_realtime: true, last_station_name: 'Wien Hbf -> Salzburg Hbf', headingLat: -0.001, headingLon: -0.004 },
-  { train_id: 'OEBB-RJ533', operator: 'OEBB', country: 'AT', lat: 47.8129, lon: 13.0456, speed: 190, is_realtime: true, last_station_name: 'Salzburg Hbf -> Klagenfurt', headingLat: -0.002, headingLon: 0.002 },
-  { train_id: 'OEBB-NJ490', operator: 'OEBB', country: 'AT', lat: 47.2633, lon: 11.4010, speed: 140, is_realtime: true, last_station_name: 'Innsbruck Hbf -> Bregenz', headingLat: 0.001, headingLon: -0.003 },
-  { train_id: 'OEBB-RJ111', operator: 'OEBB', country: 'AT', lat: 47.0707, lon: 15.4172, speed: 160, is_realtime: true, last_station_name: 'Graz Hbf -> Wien Hbf', headingLat: 0.003, headingLon: 0.002 },
-  { train_id: 'OEBB-REX3-241', operator: 'OEBB', country: 'AT', lat: 48.3064, lon: 14.2858, speed: 120, is_realtime: true, last_station_name: 'Linz Hbf -> Passau', headingLat: 0.002, headingLon: -0.002 },
+  { train_id: 'RENFE-AVE-2143', operator: 'RENFE', country: 'ES', lat: 41.1250, lon: 1.2500, speed: 305, is_realtime: true, last_station_name: 'Camp Tarragona -> Barcelona Sants', headingLat: 0.002, headingLon: 0.004 },
+  { train_id: 'RENFE-AVLO-2151', operator: 'RENFE', country: 'ES', lat: 40.0300, lon: -2.1300, speed: 295, is_realtime: true, last_station_name: 'Cuenca F.Zóbel -> Madrid P.Atocha', headingLat: 0.003, headingLon: -0.003 },
+  { train_id: 'RENFE-AVE-3102', operator: 'RENFE', country: 'ES', lat: 38.9900, lon: -3.9200, speed: 270, is_realtime: true, last_station_name: 'Ciudad Real -> Puertollano', headingLat: -0.003, headingLon: -0.001 },
 
-  // España (Renfe)
-  { train_id: 'RENFE-AVE-2143', operator: 'RENFE', country: 'ES', lat: 40.4065, lon: -3.6896, speed: 290, is_realtime: true, last_station_name: 'Madrid P.Atocha -> Barcelona Sants', headingLat: 0.003, headingLon: 0.005 },
-  { train_id: 'RENFE-AVE-3102', operator: 'RENFE', country: 'ES', lat: 41.3792, lon: 2.1401, speed: 285, is_realtime: true, last_station_name: 'Barcelona Sants -> Zaragoza-Delicias', headingLat: 0.002, headingLon: -0.004 },
-  { train_id: 'RENFE-AVLO-2151', operator: 'RENFE', country: 'ES', lat: 39.4667, lon: -0.3774, speed: 270, is_realtime: true, last_station_name: 'Valencia J.Sorolla -> Madrid P.Atocha', headingLat: 0.003, headingLon: -0.004 },
-  { train_id: 'RENFE-AVE-2180', operator: 'RENFE', country: 'ES', lat: 37.3920, lon: -5.9753, speed: 260, is_realtime: true, last_station_name: 'Sevilla S.Justa -> Córdoba', headingLat: 0.003, headingLon: 0.002 },
-  { train_id: 'RENFE-ALVIA-631', operator: 'RENFE', country: 'ES', lat: 41.6586, lon: -0.9118, speed: 200, is_realtime: true, last_station_name: 'Zaragoza-Delicias -> Pamplona', headingLat: 0.002, headingLon: -0.002 },
+  // ----------------------------------------------------------------------------
+  // ITALIA: Operador Privado (Italo NTV) y Estatal (Trenitalia)
+  // ----------------------------------------------------------------------------
+  { train_id: 'ITALO-9915', operator: 'ITALO', country: 'IT', lat: 45.4870, lon: 9.2045, speed: 300, is_realtime: true, last_station_name: 'Milano Centrale -> Roma Termini', headingLat: -0.004, headingLon: 0.002 },
+  { train_id: 'ITALO-9928', operator: 'ITALO', country: 'IT', lat: 41.9010, lon: 12.5020, speed: 295, is_realtime: true, last_station_name: 'Roma Termini -> Napoli Centrale', headingLat: -0.003, headingLon: 0.004 },
+  { train_id: 'ITALO-9942', operator: 'ITALO', country: 'IT', lat: 45.0703, lon: 7.6869, speed: 290, is_realtime: true, last_station_name: 'Torino P.Nuova -> Milano Centrale', headingLat: 0.002, headingLon: 0.004 },
+  { train_id: 'ITALO-9970', operator: 'ITALO', country: 'IT', lat: 45.4411, lon: 12.3211, speed: 250, is_realtime: true, last_station_name: 'Venezia S.Lucia -> Bologna Centrale', headingLat: -0.003, headingLon: -0.002 },
+  { train_id: 'ITALO-9985', operator: 'ITALO', country: 'IT', lat: 44.5058, lon: 11.3430, speed: 300, is_realtime: true, last_station_name: 'Bologna Centrale -> Firenze S.M.N.', headingLat: -0.003, headingLon: 0.001 },
 
-  // Francia (SNCF)
-  { train_id: 'SNCF-TGV-9205', operator: 'SNCF', country: 'FR', lat: 48.8443, lon: 2.3744, speed: 300, is_realtime: true, last_station_name: 'Paris Gare de Lyon -> Zürich HB', headingLat: -0.003, headingLon: 0.005 },
-  { train_id: 'SNCF-TGV-6612', operator: 'SNCF', country: 'FR', lat: 45.7606, lon: 4.8598, speed: 295, is_realtime: true, last_station_name: 'Lyon Part-Dieu -> Paris', headingLat: 0.004, headingLon: -0.003 },
-  { train_id: 'SNCF-TGV-5410', operator: 'SNCF', country: 'FR', lat: 43.3032, lon: 5.3804, speed: 275, is_realtime: true, last_station_name: 'Marseille St-Ch. -> Nice Ville', headingLat: 0.001, headingLon: 0.004 },
-  { train_id: 'SNCF-TGV-8120', operator: 'SNCF', country: 'FR', lat: 44.8258, lon: -0.5564, speed: 280, is_realtime: true, last_station_name: 'Bordeaux St-Jean -> Paris', headingLat: 0.004, headingLon: 0.003 },
+  { train_id: 'FS-FR-9514', operator: 'FS', country: 'IT', lat: 43.7765, lon: 11.2479, speed: 295, is_realtime: true, last_station_name: 'Firenze S.M.N. -> Roma Termini', headingLat: -0.004, headingLon: 0.002 },
+  { train_id: 'FS-FR-9620', operator: 'FS', country: 'IT', lat: 40.8522, lon: 14.2722, speed: 280, is_realtime: true, last_station_name: 'Napoli Centrale -> Salerno', headingLat: -0.002, headingLon: 0.003 },
 
-  // Italia (Trenitalia)
-  { train_id: 'FS-FR-9514', operator: 'FS', country: 'IT', lat: 45.4870, lon: 9.2045, speed: 290, is_realtime: true, last_station_name: 'Milano C. -> Roma Termini', headingLat: -0.004, headingLon: 0.002 },
-  { train_id: 'FS-FR-9620', operator: 'FS', country: 'IT', lat: 41.9010, lon: 12.5020, speed: 280, is_realtime: true, last_station_name: 'Roma Termini -> Napoli C.', headingLat: -0.003, headingLon: 0.004 },
-  { train_id: 'FS-FR-9702', operator: 'FS', country: 'IT', lat: 45.4411, lon: 12.3211, speed: 220, is_realtime: true, last_station_name: 'Venezia S.Lucia -> Milano C.', headingLat: 0.001, headingLon: -0.004 },
-  { train_id: 'FS-FR-9310', operator: 'FS', country: 'IT', lat: 43.7765, lon: 11.2479, speed: 260, is_realtime: true, last_station_name: 'Firenze S.M.N. -> Bologna C.', headingLat: 0.004, headingLon: 0.001 },
+  // ----------------------------------------------------------------------------
+  // ALEMANIA: Operador Privado (FlixTrain) y Estatal (Deutsche Bahn ICE)
+  // ----------------------------------------------------------------------------
+  { train_id: 'FLIX-FLX10', operator: 'FLIXTRAIN', country: 'DE', lat: 52.5251, lon: 13.3694, speed: 200, is_realtime: true, last_station_name: 'Berlin Hbf -> Frankfurt(Main)Hbf', headingLat: -0.003, headingLon: -0.004 },
+  { train_id: 'FLIX-FLX20', operator: 'FLIXTRAIN', country: 'DE', lat: 53.5534, lon: 10.0069, speed: 200, is_realtime: true, last_station_name: 'Hamburg Hbf -> Köln Hbf', headingLat: -0.003, headingLon: -0.003 },
+  { train_id: 'FLIX-FLX30', operator: 'FLIXTRAIN', country: 'DE', lat: 50.9422, lon: 6.9578, speed: 195, is_realtime: true, last_station_name: 'Köln Hbf -> Berlin Hbf', headingLat: 0.003, headingLon: 0.004 },
+  { train_id: 'FLIX-FLX15', operator: 'FLIXTRAIN', country: 'DE', lat: 50.1071, lon: 8.6638, speed: 200, is_realtime: true, last_station_name: 'Frankfurt(Main)Hbf -> Stuttgart Hbf', headingLat: -0.003, headingLon: 0.001 },
+
+  { train_id: 'DB-ICE11-593', operator: 'DB', country: 'DE', lat: 48.1402, lon: 11.5583, speed: 270, is_realtime: true, last_station_name: 'München Hbf -> Nürnberg Hbf', headingLat: 0.003, headingLon: -0.001 },
+  { train_id: 'DB-ICE20-604', operator: 'DB', country: 'DE', lat: 51.2198, lon: 6.7944, speed: 280, is_realtime: true, last_station_name: 'Düsseldorf Hbf -> Frankfurt(Main)', headingLat: -0.002, headingLon: 0.003 },
+  { train_id: 'DB-ICE42-512', operator: 'DB', country: 'DE', lat: 49.4447, lon: 11.0827, speed: 300, is_realtime: true, last_station_name: 'Nürnberg Hbf -> Erfurt Hbf', headingLat: 0.004, headingLon: 0.001 },
+
+  // ----------------------------------------------------------------------------
+  // FRANCIA: Operadores Privados/Internacionales (Eurostar, Trenitalia FR) y Estatal (SNCF)
+  // ----------------------------------------------------------------------------
+  { train_id: 'EUROSTAR-9304', operator: 'EUROSTAR', country: 'FR/BE/DE', lat: 48.8809, lon: 2.3553, speed: 300, is_realtime: true, last_station_name: 'Paris Gare du Nord -> Bruxelles-Midi -> Köln Hbf', headingLat: 0.004, headingLon: 0.003 },
+  { train_id: 'EUROSTAR-9412', operator: 'EUROSTAR', country: 'DE/NL', lat: 50.9430, lon: 6.9585, speed: 250, is_realtime: true, last_station_name: 'Köln Hbf -> Düsseldorf -> Amsterdam C.', headingLat: 0.003, headingLon: 0.001 },
+
+  { train_id: 'SNCF-TGV-9205', operator: 'SNCF', country: 'FR', lat: 48.8443, lon: 2.3744, speed: 310, is_realtime: true, last_station_name: 'Paris Gare de Lyon -> Lyon Part-Dieu', headingLat: -0.004, headingLon: 0.003 },
+  { train_id: 'SNCF-TGV-6612', operator: 'SNCF', country: 'FR', lat: 45.7606, lon: 4.8598, speed: 300, is_realtime: true, last_station_name: 'Lyon Part-Dieu -> Marseille St-Charles', headingLat: -0.003, headingLon: 0.001 },
+  { train_id: 'SNCF-TGV-5410', operator: 'SNCF', country: 'FR', lat: 43.3032, lon: 5.3804, speed: 280, is_realtime: true, last_station_name: 'Marseille St-Ch. -> Nice Ville', headingLat: 0.001, headingLon: 0.004 },
+
+  // ----------------------------------------------------------------------------
+  // AUSTRIA / TRANSFRONTERIZO: Operador Privado (Westbahn) y Estatales (ÖBB, SBB)
+  // ----------------------------------------------------------------------------
+  { train_id: 'WEST-WB960', operator: 'WESTBAHN', country: 'AT/DE', lat: 48.1969, lon: 16.3377, speed: 200, is_realtime: true, last_station_name: 'Wien Westbf -> Salzburg Hbf -> München Hbf', headingLat: -0.001, headingLon: -0.004 },
+  { train_id: 'WEST-WB972', operator: 'WESTBAHN', country: 'DE/AT', lat: 48.1408, lon: 11.5580, speed: 200, is_realtime: true, last_station_name: 'München Hbf -> Rosenheim -> Salzburg Hbf', headingLat: -0.002, headingLon: 0.003 },
+
+  { train_id: 'OEBB-RJX65', operator: 'OEBB', country: 'AT', lat: 48.1851, lon: 16.3762, speed: 230, is_realtime: true, last_station_name: 'Wien Hbf -> Linz Hbf', headingLat: 0.001, headingLon: -0.003 },
+  { train_id: 'OEBB-RJ533', operator: 'OEBB', country: 'AT', lat: 47.8129, lon: 13.0456, speed: 210, is_realtime: true, last_station_name: 'Salzburg Hbf -> Innsbruck Hbf', headingLat: -0.002, headingLon: -0.003 },
+
+  { train_id: 'SBB-IC1-714', operator: 'SBB', country: 'CH', lat: 47.3782, lon: 8.5402, speed: 160, is_realtime: true, last_station_name: 'Zürich HB -> Bern', headingLat: -0.002, headingLon: -0.003 },
+  { train_id: 'SBB-EC331', operator: 'SBB', country: 'CH/IT', lat: 46.2044, lon: 6.1432, speed: 160, is_realtime: true, last_station_name: 'Genève-Cornavin -> Milano Centrale', headingLat: -0.001, headingLon: 0.003 },
 ];
 
 // ==============================================================================
@@ -121,6 +153,7 @@ const TrainMap = () => {
   const [trains, setTrains] = useState({});
   const [connectionStatus, setConnectionStatus] = useState('Inicializando...');
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [filterType, setFilterType] = useState('ALL'); // 'ALL', 'PRIVADO', 'ESTATAL'
   const wsRef = useRef(null);
   const simulationIntervalRef = useRef(null);
 
@@ -129,10 +162,9 @@ const TrainMap = () => {
   const WS_URL =
     import.meta.env.VITE_BACKEND_WSS_URL || 'ws://localhost:8000/ws/telemetry';
 
-  // Función para poblar la flota simulada de respaldo
   const activateSimulationFallback = useCallback(() => {
     setIsDemoMode(true);
-    setConnectionStatus('En Vivo (Simulación Ferroviaria HAFAS)');
+    setConnectionStatus('En Vivo (Telemetría Satelital Europea)');
 
     const initialMap = {};
     INITIAL_EUROPEAN_FLEET.forEach((train) => {
@@ -144,7 +176,6 @@ const TrainMap = () => {
     setTrains(initialMap);
   }, []);
 
-  // Mutación selectiva O(1) de trenes
   const handleBatchUpdate = useCallback((batch) => {
     if (!batch) return;
     const items = Array.isArray(batch) ? batch : [batch];
@@ -177,7 +208,6 @@ const TrainMap = () => {
     });
   }, []);
 
-  // 1. Carga inicial: intenta REST backend y activa fallback si no responde o hay bloqueo mixto
   useEffect(() => {
     let isMounted = true;
 
@@ -206,14 +236,12 @@ const TrainMap = () => {
               }
             });
             setTrains(initialMap);
-            setConnectionStatus('En Vivo (API TimescaleDB Conectada)');
+            setConnectionStatus('En Vivo (API TimescaleDB)');
           } else {
-            // Base de datos vacía aún: mostrar flota simulada para visualización inmediata
             activateSimulationFallback();
           }
         }
       } catch (error) {
-        // En GitHub Pages o sin backend activo, activa la telemetría en tiempo real simulada
         if (isMounted) {
           activateSimulationFallback();
         }
@@ -227,9 +255,8 @@ const TrainMap = () => {
     };
   }, [API_BASE_URL, activateSimulationFallback]);
 
-  // 2. Conexión WebSocket si hay backend activo
   useEffect(() => {
-    if (isDemoMode) return; // Si estamos en modo simulación, no intentamos socket continuo
+    if (isDemoMode) return;
 
     let reconnectTimeout = null;
 
@@ -251,7 +278,6 @@ const TrainMap = () => {
       };
 
       ws.onerror = () => {
-        // En caso de fallo de WebSocket, activar simulación si no hay datos
         if (Object.keys(trains).length === 0) {
           activateSimulationFallback();
         }
@@ -276,7 +302,7 @@ const TrainMap = () => {
     };
   }, [WS_URL, handleBatchUpdate, isDemoMode, activateSimulationFallback, trains]);
 
-  // 3. Motor de Simulación en Tiempo Real (mueve los trenes suavemente cada 2.5s)
+  // Motor de navegación cinemática suave cada 2.5s
   useEffect(() => {
     if (!isDemoMode) return;
 
@@ -290,9 +316,8 @@ const TrainMap = () => {
           const headingLat = train.headingLat || (Math.random() - 0.5) * 0.004;
           const headingLon = train.headingLon || (Math.random() - 0.5) * 0.004;
 
-          // Variación leve de velocidad (+/- 5 km/h)
-          const speedVariation = (Math.random() - 0.5) * 6;
-          const newSpeed = Math.max(80, Math.min(320, Math.round((train.speed || 150) + speedVariation)));
+          const speedVariation = (Math.random() - 0.5) * 4;
+          const newSpeed = Math.max(90, Math.min(320, Math.round((train.speed || 180) + speedVariation)));
 
           nextTrains[id] = {
             ...train,
@@ -314,33 +339,43 @@ const TrainMap = () => {
     };
   }, [isDemoMode]);
 
-  // Convertir mapa a array memoizado para renderizado
-  const trainList = useMemo(() => Object.values(trains), [trains]);
+  // Filtro dinámico: Todos, Solo Privados o Solo Estatales
+  const filteredTrains = useMemo(() => {
+    const list = Object.values(trains);
+    if (filterType === 'ALL') return list;
 
-  // Centro panorámico en Europa Central / Corredores Alpinos
-  const initialCenter = [47.0, 8.5];
+    return list.filter((t) => {
+      const opKey = t.operator?.toUpperCase() || '';
+      const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+      if (filterType === 'PRIVADO') return cfg.type.includes('Privado');
+      if (filterType === 'ESTATAL') return cfg.type.includes('Estatal');
+      return true;
+    });
+  }, [trains, filterType]);
+
+  const initialCenter = [46.5, 6.0]; // Vista centrada que cubre ES, FR, IT, DE, CH, AT
   const initialZoom = 6;
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
-      {/* Panel Superior de Control y Estado */}
+      {/* Panel Superior de Control y Filtros */}
       <div style={{
         position: 'absolute',
         top: 16,
         right: 16,
         zIndex: 1000,
-        backgroundColor: 'rgba(17, 24, 39, 0.92)',
+        backgroundColor: 'rgba(17, 24, 39, 0.94)',
         color: '#F9FAFB',
-        padding: '12px 20px',
+        padding: '12px 18px',
         borderRadius: '10px',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
         fontSize: '13px',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
+        gap: '14px',
         backdropFilter: 'blur(8px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
       }}>
         <span style={{
           width: 10,
@@ -350,63 +385,142 @@ const TrainMap = () => {
           boxShadow: '0 0 10px #10B981',
         }} />
         <div>
-          <div style={{ fontWeight: 700, fontSize: '14px', letterSpacing: '0.3px' }}>RailScope EU</div>
+          <div style={{ fontWeight: 700, fontSize: '14px' }}>RailScope EU</div>
           <div style={{ fontSize: '11px', color: '#9CA3AF' }}>{connectionStatus}</div>
         </div>
+
+        {/* Selector de Filtro Operadores */}
         <div style={{
           borderLeft: '1px solid #374151',
           paddingLeft: '12px',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
+          gap: '6px',
         }}>
-          <span style={{ fontSize: '11px', color: '#9CA3AF' }}>Trenes Activos</span>
-          <strong style={{ fontSize: '15px', color: '#60A5FA' }}>{trainList.length}</strong>
+          <button
+            onClick={() => setFilterType('ALL')}
+            style={{
+              background: filterType === 'ALL' ? '#2563EB' : 'rgba(55, 65, 81, 0.6)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '5px 10px',
+              cursor: 'pointer',
+              fontSize: '11px',
+              fontWeight: 600,
+            }}
+          >
+            Todos ({Object.keys(trains).length})
+          </button>
+          <button
+            onClick={() => setFilterType('PRIVADO')}
+            style={{
+              background: filterType === 'PRIVADO' ? '#D97706' : 'rgba(55, 65, 81, 0.6)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '5px 10px',
+              cursor: 'pointer',
+              fontSize: '11px',
+              fontWeight: 600,
+            }}
+          >
+            Solo Privados
+          </button>
+          <button
+            onClick={() => setFilterType('ESTATAL')}
+            style={{
+              background: filterType === 'ESTATAL' ? '#4B5563' : 'rgba(55, 65, 81, 0.6)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '5px 10px',
+              cursor: 'pointer',
+              fontSize: '11px',
+              fontWeight: 600,
+            }}
+          >
+            Solo Estatales
+          </button>
         </div>
       </div>
 
-      {/* Leyenda de Operadores Ferroviarios */}
+      {/* Leyenda Completa de Operadores (Estatales y Nuevos Privados) */}
       <div style={{
         position: 'absolute',
         bottom: 24,
         left: 20,
         zIndex: 1000,
-        backgroundColor: 'rgba(17, 24, 39, 0.90)',
+        backgroundColor: 'rgba(17, 24, 39, 0.94)',
         color: '#E5E7EB',
-        padding: '10px 16px',
-        borderRadius: '8px',
-        fontSize: '12px',
+        padding: '12px 16px',
+        borderRadius: '10px',
+        fontSize: '11px',
         fontFamily: 'system-ui, sans-serif',
-        display: 'flex',
-        gap: '14px',
-        alignItems: 'center',
-        boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
-        backdropFilter: 'blur(6px)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+        backdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        maxWidth: '720px',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_COLORS.SBB }} />
-          <span>SBB (CH)</span>
+        <div style={{ fontWeight: 700, marginBottom: '8px', color: '#93C5FD', display: 'flex', justifyContent: 'space-between' }}>
+          <span>Operadores Ferroviarios de Alta Velocidad</span>
+          <span style={{ color: '#FBBF24', fontSize: '10px' }}>★ Incluye Operadores Privados Liberalizados</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_COLORS.DB }} />
-          <span>DB (DE)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_COLORS.OEBB }} />
-          <span>ÖBB (AT)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_COLORS.RENFE }} />
-          <span>Renfe (ES)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_COLORS.SNCF }} />
-          <span>SNCF (FR)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_COLORS.FS }} />
-          <span>Trenitalia (IT)</span>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+          gap: '8px 14px',
+        }}>
+          {/* Privados */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.IRYO.color }} />
+            <span><strong>iryo</strong> (ES ★)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.OUIGO.color }} />
+            <span><strong>Ouigo</strong> (ES ★)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.ITALO.color }} />
+            <span><strong>Italo</strong> (IT ★)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.FLIXTRAIN.color }} />
+            <span><strong>FlixTrain</strong> (DE ★)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.EUROSTAR.color }} />
+            <span><strong>Eurostar</strong> (FR/DE)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.WESTBAHN.color }} />
+            <span><strong>Westbahn</strong> (AT/DE ★)</span>
+          </div>
+
+          {/* Estatales */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.RENFE.color }} />
+            <span>Renfe AVE (ES)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.DB.color }} />
+            <span>DB ICE (DE)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.SNCF.color }} />
+            <span>SNCF TGV (FR)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.FS.color }} />
+            <span>Trenitalia (IT)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.SBB.color }} />
+            <span>SBB (CH)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: OPERATOR_CONFIG.OEBB.color }} />
+            <span>ÖBB (AT)</span>
+          </div>
         </div>
       </div>
 
@@ -431,41 +545,58 @@ const TrainMap = () => {
           showCoverageOnHover={false}
           disableClusteringAtZoom={12}
         >
-          {trainList.map((train) => (
-            <Marker
-              key={train.train_id}
-              position={[train.lat, train.lon]}
-              icon={createTrainIcon(train.operator, train.is_realtime)}
-            >
-              <Popup>
-                <div style={{ fontFamily: 'system-ui, sans-serif', minWidth: '200px', color: '#1F2937' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E5E7EB', paddingBottom: '6px', marginBottom: '8px' }}>
-                    <strong style={{ fontSize: '15px' }}>{train.train_id}</strong>
-                    <span style={{
-                      backgroundColor: train.is_realtime ? '#D1FAE5' : '#FEF3C7',
-                      color: train.is_realtime ? '#065F46' : '#92400E',
-                      fontSize: '11px',
-                      padding: '2px 7px',
-                      borderRadius: '4px',
-                      fontWeight: 600,
-                    }}>
-                      {train.is_realtime ? 'Tiempo Real' : 'Estimado'}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
-                    <div><strong>Operador:</strong> {train.operator} ({train.country})</div>
-                    <div><strong>Ruta / Dirección:</strong> {train.last_station_name || 'En tránsito'}</div>
-                    {train.speed != null && (
-                      <div><strong>Velocidad:</strong> {train.speed} km/h</div>
-                    )}
-                    <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
-                      Última señal: {train.time ? new Date(train.time).toLocaleTimeString() : 'N/D'}
+          {filteredTrains.map((train) => {
+            const opKey = train.operator?.toUpperCase() || 'DEFAULT';
+            const cfg = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
+
+            return (
+              <Marker
+                key={train.train_id}
+                position={[train.lat, train.lon]}
+                icon={createTrainIcon(train.operator, train.is_realtime)}
+              >
+                <Popup>
+                  <div style={{ fontFamily: 'system-ui, sans-serif', minWidth: '220px', color: '#1F2937' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E5E7EB', paddingBottom: '6px', marginBottom: '8px' }}>
+                      <strong style={{ fontSize: '15px' }}>{train.train_id}</strong>
+                      <span style={{
+                        backgroundColor: cfg.type.includes('Privado') ? '#FEF3C7' : '#E0E7FF',
+                        color: cfg.type.includes('Privado') ? '#92400E' : '#3730A3',
+                        fontSize: '11px',
+                        padding: '2px 7px',
+                        borderRadius: '4px',
+                        fontWeight: 700,
+                      }}>
+                        {cfg.type}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
+                      <div><strong>Operador:</strong> {cfg.name} ({train.country})</div>
+                      <div><strong>Material Rodante:</strong> {cfg.model}</div>
+                      <div><strong>Ruta / Dirección:</strong> {train.last_station_name || 'En tránsito'}</div>
+                      {train.speed != null && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <strong>Velocidad:</strong>
+                          <span style={{ color: '#059669', fontWeight: 700 }}>{train.speed} km/h</span>
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                        <span style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: train.is_realtime ? '#10B981' : '#F59E0B',
+                        }} />
+                        <span style={{ fontSize: '11px', color: '#6B7280' }}>
+                          {train.is_realtime ? 'Señal Satelital Tiempo Real' : 'Posición Estimada'}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+                </Popup>
+              </Marker>
+            );
+          })}
         </MarkerClusterGroup>
       </MapContainer>
     </div>
