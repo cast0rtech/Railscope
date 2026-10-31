@@ -82,3 +82,39 @@ body,
   font-weight: bold;
 }
 
+/* Evitar solapamiento de cualquier control de Leaflet con la barra superior de la app */
+.leaflet-top {
+  top: 75px !important;
+}
+
+@media (max-width: 640px) {
+  .leaflet-top {
+    top: 92px !important;
+  }
+}
+
+/* Estilo oscuro moderno para los controles de zoom de Leaflet */
+.leaflet-bar {
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: rgba(15, 23, 42, 0.92) !important;
+  color: #60a5fa !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.leaflet-bar a:hover {
+  background-color: rgba(30, 41, 59, 1) !important;
+  color: #93c5fd !important;
+}
+
+.leaflet-bar a:last-child {
+  border-bottom: none !important;
+}
+
+

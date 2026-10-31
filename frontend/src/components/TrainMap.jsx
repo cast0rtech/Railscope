@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import { Capacitor } from '@capacitor/core';
@@ -1092,9 +1092,12 @@ const TrainMap = () => {
         center={mapCenter}
         zoom={mapZoom}
         scrollWheelZoom={true}
+        zoomControl={false}
         style={{ width: '100%', height: '100%' }}
       >
         <ChangeMapView center={mapCenter} zoom={mapZoom} />
+        {/* Controles de zoom reubicados en la esquina inferior derecha para no solapar el logo/navbar */}
+        <ZoomControl position="bottomright" />
 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
