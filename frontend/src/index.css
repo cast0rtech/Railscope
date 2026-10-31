@@ -29,6 +29,10 @@ body,
   animation: pulse 2s infinite;
 }
 
+.stopped-badge {
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.6);
+}
+
 /* Animación y estilo para la ubicación del usuario */
 @keyframes pulse-ring {
   0% {

@@ -59,10 +59,12 @@ const OPERATOR_CONFIG = {
   DEFAULT: { name: 'Operador Ferroviario', color: '#1E40AF', country: 'INT', continent: 'ALL', type: 'Comercial', model: 'Alta Velocidad' },
 };
 
-const createTrainIcon = (operator, isRealtime) => {
+const createTrainIcon = (operator, isRealtime, isStopped = false) => {
   const opKey = operator?.toUpperCase() || 'DEFAULT';
   const config = OPERATOR_CONFIG[opKey] || OPERATOR_CONFIG.DEFAULT;
   const color = config.color;
+  const badgeColor = isStopped ? '#EF4444' : '#10B981';
+  const badgeTitle = isStopped ? 'Parado en estación (0 km/h)' : 'En marcha';
 
   const svgHtml = `
     <div style="position: relative; width: 34px; height: 34px;">
@@ -87,16 +89,16 @@ const createTrainIcon = (operator, isRealtime) => {
           <circle cx="16" cy="15" r="1" fill="#fff"/>
         </svg>
       </div>
-      <div class="pulse-badge" style="
+      <div class="${isStopped ? 'stopped-badge' : 'pulse-badge'}" style="
         position: absolute;
         bottom: 0px;
         right: 0px;
         width: 10px;
         height: 10px;
-        background-color: #10B981;
+        background-color: ${badgeColor};
         border: 1.5px solid #ffffff;
         border-radius: 50%;
-      "></div>
+      " title="${badgeTitle}"></div>
     </div>
   `;
 
@@ -279,13 +281,88 @@ const HIGH_SPEED_CORRIDORS = [
   { train_id: 'INSURGENTE-701', operator: 'EL_INSURGENTE', country: 'MX', continent: 'NA', origin: 'Zinacantepec (Toluca)', dest: 'Santa Fe (CDMX)', origCoord: [19.2753, -99.7042], destCoord: [19.3592, -99.2608], speed: 160 },
 ];
 
-// Cálculo de posición cinemática en tiempo real interpolando según el reloj de alta precisión
+// ==============================================================================
+// Corrector Universal de Quietud: Si el tren no se desplaza geográficamente,
+// su velocidad física se corrige estrictamente a 0 km/h.
+// ==============================================================================
+const sanitizeTrainSpeed = (newTrain, prevTrain) => {
+  if (!newTrain) return newTrain;
+
+  // Si ya viene marcado como parado o con velocidad cero
+  if (newTrain.is_stopped || newTrain.speed === 0) {
+    return { ...newTrain, speed: 0, is_stopped: true };
+  }
+
+  // Si tenemos registro previo, verificar si realmente se ha desplazado en coordenadas GPS
+  if (prevTrain && prevTrain.lat != null && prevTrain.lon != null) {
+    const dLat = Math.abs(newTrain.lat - prevTrain.lat);
+    const dLon = Math.abs(newTrain.lon - prevTrain.lon);
+    // Margen de 0.00008 grados (~8 metros, tolerancia por andén/GPS)
+    if (dLat < 0.00008 && dLon < 0.00008) {
+      return {
+        ...newTrain,
+        speed: 0,
+        is_stopped: true,
+      };
+    }
+  }
+
+  // Velocidades mínimas de aproximación (<= 3 km/h) se consideran detención completa
+  if (newTrain.speed != null && newTrain.speed <= 3) {
+    return {
+      ...newTrain,
+      speed: 0,
+      is_stopped: true,
+    };
+  }
+
+  return { ...newTrain, is_stopped: false };
+};
+
+// Cálculo de posición cinemática en tiempo real con fases físicas reales de parada en estación y tránsito
 const calculateRealTimePosition = (corridor, currentTimeMs) => {
   const cycleDurationMs = 180000; // Ciclo cinemático continuo de 3 minutos
-  const progress = (currentTimeMs % cycleDurationMs) / cycleDurationMs;
+  // Desfase determinista por ID de tren para distribuir las salidas y llegadas a lo largo de la red
+  const trainHash = corridor.train_id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const offsetMs = (trainHash * 19733) % cycleDurationMs;
+  const effectiveTime = currentTimeMs + offsetMs;
+  const progress = (effectiveTime % cycleDurationMs) / cycleDurationMs;
 
-  const lat = corridor.origCoord[0] + (corridor.destCoord[0] - corridor.origCoord[0]) * progress;
-  const lon = corridor.origCoord[1] + (corridor.destCoord[1] - corridor.origCoord[1]) * progress;
+  let lat, lon, speed, isStopped, stationStatus;
+
+  // Fase 1: Parado en estación de origen (14% del ciclo, ~25 segundos)
+  if (progress < 0.14) {
+    lat = corridor.origCoord[0];
+    lon = corridor.origCoord[1];
+    speed = 0; // REGLA: Si no se mueve, velocidad = 0 km/h
+    isStopped = true;
+    stationStatus = `Parado en ${corridor.origin} (Vía / Embarque)`;
+  }
+  // Fase 2: En tránsito hacia estación de destino (72% del ciclo)
+  else if (progress < 0.86) {
+    const t = (progress - 0.14) / 0.72; // Rango normalizado 0.0 -> 1.0
+    lat = corridor.origCoord[0] + (corridor.destCoord[0] - corridor.origCoord[0]) * t;
+    lon = corridor.origCoord[1] + (corridor.destCoord[1] - corridor.origCoord[1]) * t;
+    // Perfil sinusoidal cinemático: acelera al salir de origen y frena al aproximarse a destino
+    const dynamicSpeed = Math.round(Math.sin(t * Math.PI) * corridor.speed);
+    if (dynamicSpeed < 5) {
+      speed = 0;
+      isStopped = true;
+      stationStatus = `Aproximación / Detención en estación`;
+    } else {
+      speed = dynamicSpeed;
+      isStopped = false;
+      stationStatus = `${corridor.origin} -> ${corridor.dest}`;
+    }
+  }
+  // Fase 3: Parado en estación de destino (14% del ciclo, ~25 segundos)
+  else {
+    lat = corridor.destCoord[0];
+    lon = corridor.destCoord[1];
+    speed = 0; // REGLA: Si no se mueve, velocidad = 0 km/h
+    isStopped = true;
+    stationStatus = `Parado en ${corridor.dest} (Llegada / Andén)`;
+  }
 
   return {
     train_id: corridor.train_id,
@@ -294,9 +371,10 @@ const calculateRealTimePosition = (corridor, currentTimeMs) => {
     continent: corridor.continent,
     lat: Number(lat.toFixed(5)),
     lon: Number(lon.toFixed(5)),
-    speed: Math.round(corridor.speed + (Math.sin(progress * Math.PI * 4) * 8)),
+    speed: speed,
+    is_stopped: isStopped,
     is_realtime: true,
-    last_station_name: `${corridor.origin} -> ${corridor.dest}`,
+    last_station_name: stationStatus,
     time: new Date(currentTimeMs).toISOString(),
   };
 };
@@ -389,8 +467,8 @@ const TrainMap = () => {
     setTrains((prev) => {
       const updated = { ...prev };
       HIGH_SPEED_CORRIDORS.forEach((corridor) => {
-        const trainData = calculateRealTimePosition(corridor, now);
-        updated[trainData.train_id] = trainData;
+        const rawTrain = calculateRealTimePosition(corridor, now);
+        updated[rawTrain.train_id] = sanitizeTrainSpeed(rawTrain, prev[rawTrain.train_id]);
       });
       return updated;
     });
@@ -417,19 +495,22 @@ const TrainMap = () => {
             const coord = item?.stop?.station?.coordinate;
             if (coord && coord.x && coord.y) {
               const trainId = `${item.operator || 'SBB'}-${item.name || item.number || 'IC'}`;
-              updated[trainId] = {
+              const prevTrain = prev[trainId];
+              const rawTrain = {
                 train_id: trainId,
                 operator: item.operator || 'SBB',
                 country: 'CH',
                 continent: 'EU',
                 lat: Number(coord.x.toFixed(5)),
                 lon: Number(coord.y.toFixed(5)),
-                speed: 120 + Math.floor(Math.random() * 40),
+                speed: 0, // REGLA: Parado en estación siempre tiene velocidad 0 km/h
+                is_stopped: true,
                 is_realtime: true,
-                last_station_name: `${data.station?.name || randomStation} -> ${item.to || 'En Ruta'}`,
+                last_station_name: `Parado en ${data.station?.name || randomStation} (Destino: ${item.to || 'Vía'})`,
                 time: new Date().toISOString(),
                 delay: item.stop?.delay || 0,
               };
+              updated[trainId] = sanitizeTrainSpeed(rawTrain, prevTrain);
             }
           });
           return updated;
@@ -502,7 +583,8 @@ const TrainMap = () => {
               const next = { ...prev };
               items.forEach((item) => {
                 if (item?.train_id && item.lat && item.lon) {
-                  next[item.train_id] = { ...next[item.train_id], ...item };
+                  const sanitized = sanitizeTrainSpeed(item, prev[item.train_id]);
+                  next[item.train_id] = { ...next[item.train_id], ...sanitized };
                 }
               });
               return next;
@@ -610,7 +692,7 @@ const TrainMap = () => {
               </span>
             </div>
             <div style={{ fontSize: '11px', color: '#94A3B8' }}>
-              {isOnline ? '🟢 Red activa' : '🟠 Modo sin conexión'} • {filteredTrains.length} trenes procesados
+              {isOnline ? '🟢 Red activa' : '🟠 Modo sin conexión'} • {filteredTrains.length} trenes ({filteredTrains.filter(t => t.speed > 0).length} en marcha, {filteredTrains.filter(t => t.speed === 0 || t.is_stopped).length} en estación)
             </div>
           </div>
         </div>
@@ -1028,7 +1110,7 @@ const TrainMap = () => {
               <Marker
                 key={train.train_id}
                 position={[train.lat, train.lon]}
-                icon={createTrainIcon(train.operator, train.is_realtime)}
+                icon={createTrainIcon(train.operator, train.is_realtime, train.speed === 0 || train.is_stopped)}
               >
                 <Popup>
                   <div style={{ fontFamily: 'system-ui, sans-serif', minWidth: '230px', color: '#1F2937' }}>
@@ -1051,9 +1133,37 @@ const TrainMap = () => {
                       <div><strong>Material Rodante:</strong> {cfg.model}</div>
                       <div><strong>Ruta / Dirección:</strong> {train.last_station_name || 'En tránsito'}</div>
                       {train.speed != null && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                           <strong>Velocidad:</strong>
-                          <span style={{ color: '#059669', fontWeight: 700 }}>{train.speed} km/h</span>
+                          {train.speed === 0 || train.is_stopped ? (
+                            <>
+                              <span style={{ color: '#DC2626', fontWeight: 800 }}>0 km/h</span>
+                              <span style={{
+                                backgroundColor: '#FEE2E2',
+                                color: '#991B1B',
+                                fontSize: '10px',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                fontWeight: 700,
+                              }}>
+                                🛑 Parado en estación
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span style={{ color: '#059669', fontWeight: 700 }}>{train.speed} km/h</span>
+                              <span style={{
+                                backgroundColor: '#D1FAE5',
+                                color: '#065F46',
+                                fontSize: '10px',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                fontWeight: 700,
+                              }}>
+                                ⚡ En marcha
+                              </span>
+                            </>
+                          )}
                         </div>
                       )}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>

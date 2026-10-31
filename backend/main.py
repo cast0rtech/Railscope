@@ -177,15 +177,31 @@ async def websocket_telemetry_endpoint(websocket: WebSocket):
         logger.error(f"Excepción en WebSocket: {e}")
         manager.disconnect(websocket)
 
+# Diccionario en memoria para rastreo de posiciones previas y corrección de quietud
+_last_train_positions: Dict[str, Tuple[float, float]] = {}
+
 @app.post("/api/telemetry/batch", status_code=status.HTTP_201_CREATED, tags=["Telemetry"])
 async def ingest_telemetry_batch(batch: List[TelemetryPoint]):
     """
     Ingesta masiva de telemetría:
-    1. Inserta las coordenadas en TimescaleDB en una sola llamada usando asyncpg.executemany.
-    2. Emite el lote de inmediato vía WebSocket a todos los frontends conectados.
+    1. Si un tren no se ha movido respecto a su última coordenada, su velocidad se corrige a 0.0.
+    2. Inserta las coordenadas en TimescaleDB en una sola llamada usando asyncpg.executemany.
+    3. Emite el lote de inmediato vía WebSocket a todos los frontends conectados.
     """
     if not batch:
         return {"status": "ignored", "message": "Batch vacío"}
+
+    # Corrección de velocidad: Si no hay desplazamiento espacial, velocidad = 0.0 (parado en estación)
+    for item in batch:
+        prev = _last_train_positions.get(item.train_id)
+        if prev:
+            prev_lat, prev_lon = prev
+            # Umbral ~0.00008 grados (~8 metros de margen GPS)
+            if abs(item.lat - prev_lat) < 0.00008 and abs(item.lon - prev_lon) < 0.00008:
+                item.speed = 0.0
+        elif item.speed is not None and item.speed <= 3.0:
+            item.speed = 0.0
+        _last_train_positions[item.train_id] = (item.lat, item.lon)
 
     records = [
         (

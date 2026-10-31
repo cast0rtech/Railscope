@@ -183,6 +183,9 @@ async def scan_zone_radar(zone: Dict[str, Any]) -> List[Any]:
     # Radar method signature: radar(north, west, south, east)
     return await asyncio.to_thread(client.radar, n, w, s, e)
 
+# Caché de posiciones previas para verificar quietud
+_worker_train_coords: Dict[str, Tuple[float, float]] = {}
+
 async def process_zone(
     session: aiohttp.ClientSession,
     zone: Dict[str, Any],
@@ -191,6 +194,7 @@ async def process_zone(
     Procesa un cuadrante geográfico:
     - Adquiere el semáforo para garantizar máximo 2 peticiones HAFAS concurrentes.
     - Extrae las posiciones satelitales en tiempo real.
+    - Si el tren no se ha movido respecto a la última muestra, corrige la velocidad a 0.0.
     - Transmite el payload validado vía POST al backend.
     """
     zone_id = zone["id"]
@@ -215,17 +219,31 @@ async def process_zone(
     for train in active_trains:
         train_id = f"{operator}-{train.id}"
         station_name = getattr(train, "direction", None) or "Desconocido"
-        speed = getattr(train, "speed", None)
+        raw_speed = getattr(train, "speed", None)
+        lat = float(train.latitude)
+        lon = float(train.longitude)
+
+        # Si el tren no se mueve geográficamente, la velocidad se corrige siempre a cero
+        speed = float(raw_speed) if raw_speed is not None else None
+        prev_coords = _worker_train_coords.get(train_id)
+        if prev_coords:
+            prev_lat, prev_lon = prev_coords
+            if abs(lat - prev_lat) < 0.00008 and abs(lon - prev_lon) < 0.00008:
+                speed = 0.0
+        elif speed is not None and speed <= 3.0:
+            speed = 0.0
+
+        _worker_train_coords[train_id] = (lat, lon)
 
         payload.append({
             "train_id": train_id,
             "operator": operator,
             "country": country,
-            "lat": float(train.latitude),
-            "lon": float(train.longitude),
+            "lat": lat,
+            "lon": lon,
             "is_realtime": True,  # Atributo estricto solicitado
             "last_station_name": station_name,
-            "speed": float(speed) if speed is not None else None,
+            "speed": speed,
             "timestamp": current_timestamp,
         })
 
