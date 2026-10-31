@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # 1. TimescaleDB (Time-series & Spatiotemporal Storage)
+  # ============================================================================
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: railscope_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rail_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_rail_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-railscope}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rail_admin} -d ${POSTGRES_DB:-railscope}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rail_network
+    restart: always
+
+  # ============================================================================
+  # 2. Backend (FastAPI Core Telemetry API)
+  # ============================================================================
+  backend:
+    build: ./backend
+    container_name: railscope_fastapi
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-rail_admin}:${POSTGRES_PASSWORD:-secure_rail_pass}@timescaledb:5432/${POSTGRES_DB:-railscope}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    volumes:
+      - ./logs/backend:/app/logs
+    networks:
+      - rail_network
+    restart: always
+
+  # ============================================================================
+  # 3. Worker (PyHAFAS Scanner & Ingestion Engine)
+  # ============================================================================
+  worker:
+    build: ./worker
+    container_name: railscope_hafas_worker
+    environment:
+      BACKEND_URL: http://backend:8000/api/telemetry/batch
+    depends_on:
+      backend:
+        condition: service_started
+    volumes:
+      - ./logs/worker:/app/logs
+    networks:
+      - rail_network
+    restart: always
+
+  # ============================================================================
+  # 4. Observability - Loki (Log Aggregation Engine)
+  # ============================================================================
+  loki:
+    image: grafana/loki:latest
+    container_name: railscope_loki
+    ports:
+      - "127.0.0.1:3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - rail_network
+    restart: always
+
+  # ============================================================================
+  # 5. Observability - Promtail (Log Collector & Shipper)
+  # ============================================================================
+  promtail:
+    image: grafana/promtail:latest
+    container_name: railscope_promtail
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./logs:/var/log/railscope:ro
+      - ./promtail-config.yml:/etc/promtail/config.yml:ro
+    depends_on:
+      - loki
+    networks:
+      - rail_network
+    restart: always
+
+  # ============================================================================
+  # 6. Observability - Grafana (Dashboards & Visualization)
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: railscope_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - timescaledb
+      - loki
+    networks:
+      - rail_network
+    restart: always
+
+volumes:
+  timescale_data:
+
+networks:
+  rail_network:
+    driver: bridge
+

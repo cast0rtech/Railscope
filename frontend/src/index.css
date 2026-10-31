@@ -1,0 +1,59 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Animación sutil para marcadores con posición en tiempo real */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.pulse-badge {
+  animation: pulse 2s infinite;
+}
+
+/* Cluster Marker Styling */
+.marker-cluster-small {
+  background-color: rgba(30, 64, 175, 0.4);
+}
+.marker-cluster-small div {
+  background-color: rgba(30, 64, 175, 0.85);
+  color: #fff;
+  font-weight: bold;
+}
+
+.marker-cluster-medium {
+  background-color: rgba(226, 0, 26, 0.4);
+}
+.marker-cluster-medium div {
+  background-color: rgba(226, 0, 26, 0.85);
+  color: #fff;
+  font-weight: bold;
+}
+
+.marker-cluster-large {
+  background-color: rgba(187, 0, 31, 0.5);
+}
+.marker-cluster-large div {
+  background-color: rgba(187, 0, 31, 0.9);
+  color: #fff;
+  font-weight: bold;
+}
+

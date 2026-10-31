@@ -1,0 +1,31 @@
+# ==============================================================================
+# RailScope - Fail2ban Configuration (Production Security Hardening)
+# Destination path on Linux VPS: /etc/fail2ban/jail.local
+# ==============================================================================
+
+[DEFAULT]
+# Tiempo de castigo en segundos (3600 = 1 hora)
+bantime  = 3600
+# Margen de tiempo para acumular fallos (10 minutos)
+findtime  = 600
+# Intentos máximos antes del baneo
+maxretry = 5
+
+[sshd]
+enabled = true
+port    = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s
+
+[nginx-http-auth]
+enabled = true
+port    = http,https
+logpath = /var/log/nginx/error.log
+
+[nginx-botsearch]
+# Banea bots que buscan vulnerabilidades (ej. wp-admin, phpmyadmin, env probes)
+enabled = true
+port     = http,https
+logpath  = /var/log/nginx/access.log
+maxretry = 2
+
